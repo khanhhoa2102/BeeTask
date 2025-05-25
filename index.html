@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeeTask Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar"></div>
+                <div class="info">
+                    <span class="username">Nguyễn H...</span>
+                    <span class="email">nguyenhuuson***@gmail.com</span>
+                </div>
+            </div>
+            <button class="toggle-btn"><i class="fas fa-bars"></i></button>
+            <ul class="menu">
+                <li class="active"><i class="fas fa-home"></i> <span>Home</span></li>
+                <li><i class="fas fa-copy"></i> <span>Templates</span></li>
+                <li><i class="fas fa-calendar-day"></i> <span>Today</span></li>
+                <li><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
+                <li><i class="fas fa-cog"></i> <span>Setting</span></li>
+            </ul>
+            <div class="my-project">
+                <h4>My project</h4>
+                <ul class="project-list">
+                    <li>Dự án con bò</li>
+                    <li>Dự án con Tem</li>
+                    <li>Dự án Vua Game</li>
+                </ul>
+            </div>
+            <ul class="menu help-menu">
+                <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
+            </ul>
+            <div class="drag-handle"></div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div class="header-content-wrapper">
+                    <div class="header-left">
+                        <button class="icon-btn">
+                            <img src="Logo dài.png" alt="Logo" />
+                        </button>
+                    </div>
+                    <div class="header-center">
+                        <input type="text" class="search-box" placeholder="Search" />
+                        <button class="create-btn">Create Project</button>
+                    </div>
+                    <div class="header-right">
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle" />
+                            <span class="slider"></span>
+                        </label>
+                        <span class="dark-label">Dark Mode</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <div class="column">
+                    <h3>Recently viewed</h3>
+                    <div class="recent-item">
+                        <img src="image_ (32).png" alt="Project Thumbnail" />
+                        <div>
+                            <p class="project-title">Dự án con bò</p>
+                            <p class="start-date">Start: 10/4/2025</p>
+                        </div>
+                    </div>
+                    <div class="recent-item">
+                        <img src="image_ (28).png" alt="Project Thumbnail" />
+                        <div>
+                            <p class="project-title">Dự án con Tem</p>
+                            <p class="start-date">Start: 5/4/2025</p>
+                        </div>
+                    </div>
+                    <div class="recent-item">
+                        <img src="A_colorful_cartoon_style_illustration_of_a_golden_buffalo_horn_hanging_on_a_farm_gate_The_scene_should_be_vibrant_and_cheerful_with_a_rustic_wooden_gate_and_farm_elements_like_fields_animals_and_a_bright_sky_in_the.png" alt="Project Thumbnail" />
+                        <div>
+                            <p class="project-title">Dự án Vua Game</p>
+                            <p class="start-date">Start: 1/1/2025</p>
+                        </div>
+                    </div>
+                    <h3>Up Next</h3>
+                    <div class="task-card">
+                        <div class="task-banner" style="background-image: url('image_ (28).png');">
+                            <div class="task-content">
+                                <p class="label">Design UI/UX</p>
+                                <span class="priority high">High</span>
+                            </div>
+                        </div>
+                        <p class="task-title">Dự án con bò</p>
+                        <p class="deadline">Deadline: May 16, 2025, 8:30PM</p>
+                        <div class="task-buttons">
+                            <button class="move-btn"><i class="fas fa-share"></i> Move to ...</button>
+                            <button class="dismiss-btn"><i class="fas fa-times"></i> Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>Pin project</h3>
+                    <div class="pin-project">
+                        <img src="image_ (48).png" alt="Pin Thumbnail" />
+                        <div>
+                            <p class="project-title">Dự án con bò</p>
+                            <p class="start-date">Start: 10/4/2025</p>
+                        </div>
+                        <i class="fas fa-star"></i>
+                    </div>
+
+                    <h3>Assignee to me</h3>
+                    <div class="assignee-card">
+                        <div class="task-banner" style="background-image: url('image_ (48).png');">
+                            <div class="task-content">
+                                <p class="label">Design UI/UX</p>
+                                <span class="priority high">High</span>
+                            </div>
+                        </div>
+                        <p class="task-title">Dự án con bò</p>
+                        <p class="deadline">Deadline: May 16, 2025, 8:30PM</p>
+                        <div class="task-buttons">
+                            <button class="go-btn">Go to project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

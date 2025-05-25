@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeeTask - Tasks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar"></div>
+                <div class="info">
+                    <span class="username">Nguyễn H...</span>
+                    <span class="email">nguyenhuuson***@gmail.com</span>
+                </div>
+            </div>
+            <button class="toggle-btn"><i class="fas fa-bars"></i></button>
+            <ul class="menu">
+                <li><i class="fas fa-tachometer-alt"></i> <span>Dash Board</span></li>
+                <li class="active"><i class="fas fa-list"></i> <span>Task</span></li>
+                <li><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
+                <li><i class="fas fa-table"></i> <span>Table</span></li>
+                <li><i class="fas fa-cog"></i> <span>Setting</span></li>
+            </ul>
+            <ul class="menu help-menu">
+                <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
+            </ul>
+            <div class="drag-handle"></div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div class="header-content-wrapper">
+                    <div class="header-left">
+                        <button class="icon-btn">
+                            <img src="Logo dài.png" alt="Logo" />
+                        </button>
+                    </div>
+                    <div class="header-center">
+                        <input type="text" class="search-box" placeholder="Search Tasks" />
+                        <button class="create-btn">Create Task</button>
+                    </div>
+                    <div class="header-right">
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle" />
+                            <span class="slider"></span>
+                        </label>
+                        <span class="dark-label">Dark Mode</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-header-bar">
+                <div class="project-header-name">Tên Project</div>
+                <div class="project-header-actions">
+                    <div class="project-user-avatar"></div>
+                    <button class="project-action-btn project-filter-btn"><i class="fas fa-filter"></i></button>
+                    <button class="project-action-btn project-pin-btn"><i class="fas fa-thumbtack"></i></button>
+                    <button class="project-action-btn project-visibility-btn">Change visibility</button>
+                    <button class="project-action-btn project-share-btn">Share</button>
+                    <button class="project-action-btn project-more-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+            </div>
+
+            <div class="project-dashboard">
+                <div class="task-status-container">
+                    <div class="task-column to-do">
+                        <h3>
+                            <div class="board-detail">
+                                <span>To Do</span>
+                                <span>(2)</span>
+                            </div>
+                            <span>
+                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
+                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                            </span>
+                        </h3>
+                        <div class="task-card">
+                            <img src="image_ (28).png" alt="Task Image" />
+                            <p class="task-title">Write a Document</p>
+                            <p class="task-date">May 16</p>
+                        </div>
+                        <div class="task-card">
+                            <p class="task-title">Write a Document</p>
+                            <p class="task-date">May 17</p>
+                        </div>
+                    </div>
+                    <div class="task-column in-progress">
+
+                        <h3>
+                            <div class="board-detail">
+                                <span>In Progress</span>
+                                <span>(2)</span>
+                            </div>
+                            <span>
+                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
+                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                            </span>
+
+                        </h3>
+                        <div class="task-card">
+                            <p class="task-title">Write a Document</p>
+                            <p class="task-date">May 19</p>
+                        </div>
+                        <div class="task-card">
+                            <p class="task-title">Write a Document</p>
+                            <p class="task-date">May 17</p>
+                        </div>
+                    </div>
+                    <div class="task-column done">
+                        <h3>
+                            <div class="board-detail">
+                                <span>Done</span>
+                                <span>(2)</span>
+                            </div>
+                            <span>
+                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
+                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                            </span>
+
+                        </h3>
+                        <div class="task-card">
+                            <p class="task-title">Write a Document</p>
+                            <p class="task-date">May 18</p>
+                        </div>
+                        <div class="task-card">
+                            <img src="image_ (43).png" alt="Task Image" />
+                            <p class="task-title">Write a Document</p>
+                            <p class="task-date">May 17</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tasks-overview">
+                    <h3>Tasks</h3>
+                    <div class="task-list">
+                        <div class="task-row">
+                            <div class="task-cell">Write a Document</div>
+                            <div class="task-cell">May 17</div>
+                            <div class="task-cell priority done">Done</div>
+                            <div class="task-cell">8:00 - 19PM</div>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-cell">Write a Document</div>
+                            <div class="task-cell">May 17</div>
+                            <div class="task-cell priority inflight">Inflight</div>
+                            <div class="task-cell">8:00 - 19PM</div>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-cell">Write a Document</div>
+                            <div class="task-cell">May 17</div>
+                            <div class="task-cell priority low">Low</div>
+                            <div class="task-cell">8:00 - 10PM</div>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-cell">Write a Document</div>
+                            <div class="task-cell">May 17</div>
+                            <div class="task-cell priority crfs">CRFS</div>
+                            <div class="task-cell">8:00 - 10PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
