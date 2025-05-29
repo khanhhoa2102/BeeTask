@@ -1,0 +1,488 @@
+/* Content Wrapper */
+.content-wrapper {
+    display: flex;
+    flex-direction: column; /* Đảm bảo nội dung xếp dọc */
+    background-color: transparent; /* Nền trong suốt */
+    margin-top: 60px; /* Khoảng cách từ header (đồng bộ với height của header) */
+    margin-left: 180px; /* Bắt đầu từ mép phải của sidebar (180px khi mở) */
+    position: relative; /* Sử dụng relative để tránh lệch */
+    top: 0; /* Đặt top về 0 để không bị đẩy xuống */
+    width: calc(100% - 180px); /* Chiều rộng trừ đi chiều rộng sidebar */
+    min-height: calc(100vh - 60px); /* Đảm bảo chiều cao tối thiểu bằng chiều cao màn hình trừ header */
+    z-index: 1; /* Đảm bảo nội dung nằm trên nền nhưng dưới sidebar */
+    padding-left: 10px; /* Thêm padding trái để tránh chồng lấn với sidebar */
+    box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng */
+    overflow-y: auto; /* Thêm thanh cuộn dọc nếu nội dung vượt quá chiều cao */
+    transition: margin-left 0.3s ease, width 0.3s ease, background-color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .content-wrapper {
+    background-color: #f5f5f5; /* Nền light mode */
+}
+
+/* Khi sidebar thu gọn */
+.sidebar.collapsed ~ .content-wrapper {
+    margin-left: 60px; /* Điều chỉnh margin-left khi sidebar thu gọn (60px) */
+    width: calc(100% - 60px); /* Điều chỉnh chiều rộng khi sidebar thu gọn */
+}
+
+/* Dashboard */
+.dashboard {
+    display: flex;
+    justify-content: center; /* Căn giữa các cột trong dashboard */
+    gap: 20px;
+    padding: 20px 40px;
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng tối đa để căn giữa */
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: #1E2333; /* Nền dark mode */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ cho dark mode */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Chuyển đổi mượt mà */
+    margin: 0 auto; /* Căn giữa trong không gian khả dụng */
+}
+
+body:not(.dark-mode) .dashboard {
+    background-color: #ffffff; /* Nền light mode cho dashboard */
+    border: 1px solid #e0e0e0; /* Viền cho light mode */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Bóng đổ cho light mode */
+}
+
+/* Column */
+.column {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Section Titles */
+.column h3 {
+    margin: 0 0 10px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    background: transparent;
+    border-radius: 5px 5px 0 0;
+    transition: color 0.3s ease, background 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .column h3 {
+    color: #333333;
+}
+
+/* Recent Item */
+.recent-item {
+    background-color: transparent;
+    border: 1px solid #3a4663;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .recent-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    color: #333333;
+}
+
+.recent-item:hover {
+    background-color: #3a4663;
+    border-color: #4a5b78;
+}
+
+body:not(.dark-mode) .recent-item:hover {
+    background-color: #f0f0f0;
+    border-color: #cccccc;
+}
+
+.recent-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.recent-item .project-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .recent-item .project-title {
+    color: #333333;
+}
+
+.recent-item .start-date {
+    margin: 0;
+    font-size: 12px;
+    color: #a1a1aa;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .recent-item .start-date {
+    color: #666666;
+}
+
+/* Task Card (Up Next) */
+.task-card {
+    background-color: #191B20;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+    position: relative; /* Để định vị .menu-dot */
+}
+
+body:not(.dark-mode) .task-card {
+    background-color: #F6F2E2;
+}
+
+.task-banner {
+    width: 98%; /* Chiếm 98% chiều rộng của task-card */
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: flex-end;
+    padding: 5px;
+    background-color: transparent; /* Nền banner trong suốt */
+    margin-left: auto; /* Căn giữa */
+    margin-right: auto; /* Căn giữa */
+}
+
+.task-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.task-content .label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 2px 8px;
+    border-radius: 3px;
+    transition: color 0.3s ease, background-color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .task-content .label {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.task-content .priority {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    background-color: #ff4444;
+    color: #ffffff;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .task-content .priority {
+    background-color: #ff6666;
+    color: #ffffff;
+}
+
+.task-card .task-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .task-card .task-title {
+    color: #000000;
+}
+
+.task-card .deadline {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #a1a1aa;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .task-card .deadline {
+    color: #666666;
+}
+
+.task-buttons {
+    display: flex;
+    flex-direction: row; /* Giữ nút nằm ngang */
+    gap: 5px;
+    margin-top: 5px;
+}
+
+/* Đồng bộ Move-btn và Go-btn */
+.move-btn,
+.go-btn {
+    background: linear-gradient(90deg, #3a4663, #2a3550); /* Gradient màu xanh/xám đậm */
+    border: none; /* Bỏ viền */
+    color: #ffffff; /* Chữ màu trắng */
+    font-size: 10px;
+    cursor: pointer;
+    padding: 8px 10px; /* Tăng padding dọc để nút cao hơn */
+    border-radius: 3px;
+    transition: background 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Căn giữa nội dung (icon và text) */
+    gap: 5px;
+    flex: 1; /* Chia đều chiều rộng */
+    text-align: center; /* Căn giữa văn bản */
+}
+
+body:not(.dark-mode) .move-btn,
+body:not(.dark-mode) .go-btn {
+    background: linear-gradient(90deg, #3a4663, #2a3550); /* Gradient giống dark mode */
+    color: #ffffff; /* Chữ trắng cho light mode */
+}
+
+.move-btn:hover,
+.go-btn:hover {
+    background: linear-gradient(90deg, #4a5b78, #3a4663); /* Gradient sáng hơn khi hover */
+    color: #ffffff; /* Chữ vẫn trắng */
+}
+
+body:not(.dark-mode) .move-btn:hover,
+body:not(.dark-mode) .go-btn:hover {
+    background: linear-gradient(90deg, #4a5b78, #3a4663); /* Gradient giống dark mode khi hover */
+    color: #ffffff; /* Chữ vẫn trắng */
+}
+
+/* Tách biệt Dismiss-btn với màu đỏ đậm */
+.dismiss-btn {
+    background: linear-gradient(90deg, #622227, #4F1B1F); /* Gradient màu đỏ đậm */
+    border: none; /* Bỏ viền */
+    color: #ffffff; /* Chữ màu trắng */
+    font-size: 10px;
+    cursor: pointer;
+    padding: 8px 10px; /* Tăng padding dọc để nút cao hơn, đồng bộ với move-btn và go-btn */
+    border-radius: 3px;
+    transition: background 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Căn giữa nội dung (icon và text) */
+    gap: 5px;
+    flex: 1; /* Chia đều chiều rộng */
+    text-align: center; /* Căn giữa văn bản */
+}
+
+body:not(.dark-mode) .dismiss-btn {
+    background: linear-gradient(90deg, #622227, #4F1B1F); /* Gradient giống dark mode */
+    color: #ffffff;
+}
+
+.dismiss-btn:hover {
+    background: linear-gradient(90deg, #4F1B1F, #3C1419); /* Gradient đỏ đậm hơn khi hover */
+    color: #ffffff;
+}
+
+body:not(.dark-mode) .dismiss-btn:hover {
+    background: linear-gradient(90deg, #4F1B1F, #3C1419); /* Gradient giống dark mode khi hover */
+    color: #ffffff;
+}
+
+/* Điều chỉnh Go-btn để chiếm toàn bộ chiều rộng trong Assignee Card (đã được áp dụng trong .go-btn) */
+.go-btn {
+    width: 100%; /* Đã có, đảm bảo đồng bộ */
+    text-align: center;
+}
+
+/* Menu Dot (Nút 3 chấm) */
+.menu-dot {
+    position: absolute; /* Định vị tuyệt đối trong .task-card */
+    right: 10px; /* Căn phải cách 10px */
+    top: 50%; /* Căn giữa theo chiều dọc */
+    transform: translateY(-50%); /* Điều chỉnh để căn chính giữa */
+    background: none; /* Không nền để trông giống nút mặc định */
+    border: none; /* Bỏ viền */
+    color: #ffffff; /* Chữ màu trắng */
+    font-size: 16px; /* Kích thước chữ lớn hơn để nổi bật */
+    cursor: pointer;
+    padding: 5px; /* Padding nhẹ */
+    border-radius: 3px;
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .menu-dot {
+    color: #333333; /* Chữ màu xám trong light mode */
+}
+
+.menu-dot:hover {
+    color: #a1a1aa; /* Màu xám nhạt khi hover */
+}
+
+body:not(.dark-mode) .menu-dot:hover {
+    color: #666666; /* Màu xám nhạt trong light mode khi hover */
+}
+
+/* Pin Project */
+.pin-project {
+    background-color: transparent;
+    border: 1px solid #3a4663;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    position: relative;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .pin-project {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    color: #333333;
+}
+
+.pin-project:hover {
+    background-color: #3a4663;
+    border-color: #4a5b78;
+}
+
+body:not(.dark-mode) .pin-project:hover {
+    background-color: #f0f0f0;
+    border-color: #cccccc;
+}
+
+.pin-project img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.pin-project .project-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .pin-project .project-title {
+    color: #333333;
+}
+
+.pin-project .start-date {
+    margin: 0;
+    font-size: 12px;
+    color: #a1a1aa;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .pin-project .start-date {
+    color: #666666;
+}
+
+.pin-project .fa-star {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #facc15;
+}
+
+body:not(.dark-mode) .pin-project .fa-star {
+    color: #facc15;
+}
+
+/* Assignee Card */
+.assignee-card {
+    background-color: #191B20;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .assignee-card {
+    background-color: #F6F2E2;
+    color: #000000;
+}
+
+.assignee-card .task-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .assignee-card .task-title {
+    color: #000000;
+}
+
+.assignee-card .deadline {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #a1a1aa;
+    font-family: Arial, sans-serif; /* Định nghĩa font-family cụ thể */
+    transition: color 0.3s ease; /* Chuyển đổi mượt mà */
+}
+
+body:not(.dark-mode) .assignee-card .deadline {
+    color: #666666;
+}
+
+/* Media Queries */
+@media (max-width: 900px) {
+    .dashboard {
+        flex-direction: column;
+        padding: 20px 20px;
+    }
+
+    .column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard {
+        padding: 10px 20px;
+    }
+
+    .task-buttons {
+        flex-direction: column; /* Trở lại cột trên màn hình nhỏ */
+    }
+
+    .move-btn,
+    .dismiss-btn,
+    .go-btn {
+        width: 100%; /* Đảm bảo full width trên màn hình nhỏ */
+        text-align: center;
+    }
+
+    .menu-dot {
+        top: auto; /* Đặt lại vị trí trên màn hình nhỏ */
+        bottom: 10px; /* Đặt dưới nút trên màn hình nhỏ */
+        transform: none; /* Bỏ transform */
+    }
+}

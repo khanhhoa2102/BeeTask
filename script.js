@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dragHandle = document.querySelector('.drag-handle');
     const darkModeToggle = document.querySelector('#darkModeToggle');
     const darkLabel = document.querySelector('.dark-label');
+    const contentWrapper = document.querySelector('.content-wrapper');
 
     // Kiểm tra trạng thái Dark Mode từ localStorage
     const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
@@ -24,9 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleBtn.querySelector('i').classList.toggle('fa-bars', !isCollapsed);
         toggleBtn.querySelector('i').classList.toggle('fa-angle-left', isCollapsed);
 
-        sidebar.style.width = isCollapsed ? '60px' : '180px';
-        mainContent.style.marginLeft = isCollapsed ? '80px' : '200px';
-        mainContent.style.width = isCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 200px)';
+        // Cập nhật width và margin-left cho sidebar và content-wrapper
+        if (isCollapsed) {
+            sidebar.style.width = '60px';
+            contentWrapper.style.marginLeft = '60px';
+            contentWrapper.style.width = 'calc(100% - 60px)';
+            mainContent.style.marginLeft = '80px';
+            mainContent.style.width = 'calc(100% - 80px)';
+        } else {
+            sidebar.style.width = '180px';
+            contentWrapper.style.marginLeft = '180px';
+            contentWrapper.style.width = 'calc(100% - 180px)';
+            mainContent.style.marginLeft = '200px';
+            mainContent.style.width = 'calc(100% - 200px)';
+        }
     });
 
     // Drag functionality for sidebar
@@ -43,6 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const newWidth = e.clientX;
         if (newWidth >= 60 && newWidth <= 300) {
             sidebar.style.width = newWidth + 'px';
+            contentWrapper.style.marginLeft = newWidth + 'px';
+            contentWrapper.style.width = `calc(100% - ${newWidth}px)`;
             mainContent.style.marginLeft = newWidth + 20 + 'px';
             mainContent.style.width = `calc(100% - ${newWidth + 20}px)`;
 
@@ -77,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Collapse button functionality for task columns
+    // Collapse button functionality for task columns (nếu có)
     document.querySelectorAll('.collapse-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             btn.closest('.task-column').classList.toggle('collapsed');
@@ -91,7 +105,12 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleBtn.querySelector('i').classList.remove('fa-bars');
         toggleBtn.querySelector('i').classList.add('fa-angle-left');
         sidebar.style.width = '60px';
+        contentWrapper.style.marginLeft = '60px';
+        contentWrapper.style.width = 'calc(100% - 60px)';
         mainContent.style.marginLeft = '80px';
         mainContent.style.width = 'calc(100% - 80px)';
     }
+
+    // Loại bỏ đoạn fetch header-sidebar.html vì nó không cần thiết trong trường hợp này
+    // (Nếu bạn cần load header-sidebar.html, hãy thêm lại và điều chỉnh đường dẫn)
 });
