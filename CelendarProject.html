@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Project</title>
+    <link rel="stylesheet" href="header-sidebar.css">
+    <link rel="stylesheet" href="CelendarProject.css">
+    <!-- Add Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-profile">
+            <div class="avatar"></div>
+            <div class="info">
+                <span class="username">Nguyễn H...</span>
+                <span class="email">nguyenhuuson***@gmail.com</span>
+            </div>
+        </div>
+        <button class="toggle-btn"><i class="fas fa-bars"></i></button>
+        <ul class="menu">
+            <li class="active"><i class="fas fa-tachometer-alt"></i><span>Dash Board</span></li>
+            <li><i class="fas fa-tasks"></i><span>Task</span></li>
+            <li><i class="fas fa-calendar-alt"></i><span>Calendar</span></li>
+            <li><i class="fas fa-table"></i><span>Table</span></li>
+            <li><i class="fas fa-cog"></i><span>Setting</span></li>
+        </ul>
+        <ul class="help-menu">
+            <li class="help-item"><i class="fas fa-question-circle"></i><span>Help</span></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content-wrapper">
+                <div class="header-left">
+                    <button class="icon-btn"><img src="logo.png" alt="Logo"></button>
+                </div>
+                <div class="header-center">
+                    <input type="text" class="search-box" placeholder="Search...">
+                    <button class="create-btn"><i class="fas fa-plus"></i> Create Task</button>
+                </div>
+                <div class="header-right">
+                    <label class="dark-label">Dark Mode</label>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Header Bar -->
+        <div class="project-header-bar">
+            <div class="project-header-name">Tên Project</div>
+            <div class="project-header-actions">
+                <div class="project-user-avatar"></div>
+                <button class="project-action-btn project-filter-btn"><i class="fas fa-filter"></i> Filter</button>
+                <button class="project-action-btn project-pin-btn"><i class="fas fa-thumbtack"></i> Pin</button>
+                <button class="project-action-btn project-visibility-btn"><i class="fas fa-eye"></i> Change visibility</button>
+                <button class="project-action-btn project-share-btn"><i class="fas fa-share"></i> Share</button>
+                <button class="project-action-btn project-more-btn"><i class="fas fa-ellipsis-h"></i> More</button>
+            </div>
+        </div>
+
+        <!-- Calendar Content -->
+        <div class="dashboard-container">
+            <div class="calendar-header">
+                <span id="month-year">May 2025</span>
+                <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                <span id="current-month">This Month</span>
+                <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                <span class="view-mode"><i class="fas fa-calendar"></i> Month</span>
+            </div>
+            <table class="calendar">
+                <thead>
+                    <tr>
+                        <th>Sunday</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    <tr>
+                        <td><div class="date">1</div><div class="event orange"><i class="fas fa-file-alt"></i></div></td>
+                        <td><div class="date">2</div><div class="event green"><i class="fas fa-file-alt"></i></div></td>
+                        <td><div class="date">3</div></td>
+                        <td><div class="date">4</div></td>
+                        <td><div class="date">5</div></td>
+                        <td><div class="date">6</div><div class="event green"><i class="fas fa-file-alt"></i></div></td>
+                        <td><div class="date">7</div></td>
+                    </tr>
+                    <tr>
+                        <td><div class="date">8</div><div class="event orange"><i class="fas fa-file-alt"></i></div></td>
+                        <td><div class="date">9</div></td>
+                        <td><div class="date">10</div></td>
+                        <td><div class="date">11</div></td>
+                        <td><div class="date">12</div></td>
+                        <td><div class="date">13</div></td>
+                        <td><div class="date">14</div></td>
+                    </tr>
+                    <tr>
+                        <td><div class="date">15</div><div class="event orange"><i class="fas fa-file-alt"></i></div></td>
+                        <td><div class="date">16</div></td>
+                        <td><div class="date">17</div></td>
+                        <td><div class="date">18</div></td>
+                        <td><div class="date">19</div></td>
+                        <td><div class="date">20</div></td>
+                        <td><div class="date">21</div></td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+            <button class="add-btn" id="add-event-btn"><i class="fas fa-plus"></i> Add</button>
+        </div>
+    </div>
+
+    <script src="CelendarProjectScript.js"></script>
+</body>
+</html>

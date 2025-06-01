@@ -11,8 +11,8 @@
 </head>
 
 <body class="dark-mode">
-    <!-- Header và Sidebar trực tiếp trong index.html -->
     <div class="container">
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar"></div>
@@ -22,6 +22,7 @@
                 </div>
             </div>
             <button class="toggle-btn"><i class="fas fa-bars"></i></button>
+
             <ul class="menu">
                 <li class="active"><i class="fas fa-home"></i> <span>Home</span></li>
                 <li><i class="fas fa-copy"></i> <span>Templates</span></li>
@@ -29,6 +30,7 @@
                 <li><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
                 <li><i class="fas fa-cog"></i> <span>Setting</span></li>
             </ul>
+
             <div class="my-project">
                 <h4>My project</h4>
                 <ul class="project-list">
@@ -37,12 +39,14 @@
                     <li>Dự án Vua Game</li>
                 </ul>
             </div>
+
             <ul class="menu help-menu">
                 <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
             </ul>
             <div class="drag-handle"></div>
         </aside>
 
+        <!-- Main Header -->
         <main class="main-content">
             <div class="header">
                 <div class="header-content-wrapper">
@@ -70,8 +74,10 @@
     <!-- Nội dung chính -->
     <div class="content-wrapper">
         <div class="dashboard">
+            <!-- Cột trái -->
             <div class="column">
                 <h3>Recently viewed</h3>
+
                 <div class="recent-item">
                     <img src="image_ (32).png" alt="Project Thumbnail" />
                     <div>
@@ -79,6 +85,7 @@
                         <p class="start-date">Start: 10/4/2025</p>
                     </div>
                 </div>
+
                 <div class="recent-item">
                     <img src="image_ (28).png" alt="Project Thumbnail" />
                     <div>
@@ -86,34 +93,37 @@
                         <p class="start-date">Start: 5/4/2025</p>
                     </div>
                 </div>
+
                 <div class="recent-item">
-                    <img src="./image_ (48).png" alt="Project Thumbnail" />
+                    <img src="image_ (48).png" alt="Project Thumbnail" />
                     <div>
                         <p class="project-title">Dự án Vua Game</p>
                         <p class="start-date">Start: 1/1/2025</p>
                     </div>
                 </div>
+
                 <h3>Up Next</h3>
                 <div class="task-card">
-                    <div class="task-banner" style="background-image: url('image_ (28).png');">
+                    <div class="task-banner" style="background-image: url('./image_\ \(28\).png');">
                         <div class="task-content">
                             <p class="label">Design UI/UX</p>
                             <span class="priority high">High</span>
                         </div>
                     </div>
+
                     <div class="title-menu-wrapper">
                         <p class="task-title">Dự án con bò</p>
                         <button class="menu-dot"><i class="fas fa-ellipsis-h"></i></button>
                     </div>
                     <p class="deadline">Deadline: May 16, 2025, 8:30PM</p>
                     <div class="task-buttons">
-                        <button class="move-btn"><i class="fas fa-share"></i> Move to ...</button>
+                        <button class="move-btn"><i class="fas fa-share"></i> Move to...</button>
                         <button class="dismiss-btn"><i class="fas fa-times"></i> Dismiss</button>
                     </div>
                 </div>
             </div>
 
-
+            <!-- Cột phải -->
             <div class="column">
                 <h3>Pin project</h3>
                 <div class="pin-project">
@@ -126,13 +136,9 @@
                 </div>
 
                 <h3>Assignee to me</h3>
+                <p>Bạn có một assignee mới từ NguyễnHUUsơn</p>
                 <div class="assignee-card">
-                    <div class="task-banner" style="background-image: url('image_ (48).png');">
-                        <div class="task-content">
-                            <p class="label">Design UI/UX</p>
-                            <span class="priority high">High</span>
-                        </div>
-                    </div>
+                    <div class="task-banner" style="background-image: url('image_ (48).png');"></div>
                     <div class="title-menu-wrapper">
                         <p class="task-title">Dự án con bò</p>
                         <button class="menu-dot"><i class="fas fa-ellipsis-h"></i></button>
@@ -146,8 +152,8 @@
         </div>
     </div>
 
-    <!-- Liên kết đến file script.js -->
-    <script src="script.js"></script>
+    <!-- Script -->
+    <script src="homeScript.js"></script>
 </body>
 
 </html>

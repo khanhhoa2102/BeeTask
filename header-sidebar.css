@@ -247,6 +247,44 @@ body.dark-mode .menu li {
     background: transparent;
     cursor: ew-resize;
 }
+.my-project {
+    margin-top: 20px;
+}
+
+.my-project h4 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #f97316;
+}
+
+.project-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.project-list li {
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 13px;
+    color: inherit;
+}
+
+.project-list li:hover {
+    background-color: #f97316;
+    color: white;
+}
+
+/* dark mode override */
+body.dark-mode .project-list li:hover {
+    background-color: #f97316;
+    color: white;
+}
 
 /* Ẩn phần My Project khi sidebar thu gọn */
 .sidebar.collapsed .my-project {

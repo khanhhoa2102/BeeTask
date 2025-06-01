@@ -1,0 +1,140 @@
+/* DashboardProject.css */
+
+/* Light Mode (Mặc định) */
+body {
+    background-color: #f5f5f5;
+    color: #333333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #161C2C;
+    color: white;
+}
+
+/* Container của Dashboard */
+.dashboard-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .dashboard-container {
+    background-color: #161C2C;
+}
+
+/* Calendar Header */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: #f97316;
+}
+
+.calendar-header button {
+    background: none;
+    border: 1px solid #f97316;
+    color: #f97316;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+body.dark-mode .calendar-header {
+    color: #f97316;
+}
+
+.calendar-header span {
+    font-size: 16px;
+}
+
+.calendar-header .view-mode {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Calendar Table */
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #161C2C;
+    color: white;
+}
+
+.calendar th {
+    padding: 10px;
+    text-align: center;
+    background-color: #2f3b57;
+}
+
+body.dark-mode .calendar th {
+    background-color: #2f3b57;
+}
+
+.calendar td {
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    height: 80px;
+}
+
+.date {
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    margin: 0 auto;
+    background-color: #2f3b57;
+}
+
+body.dark-mode .date {
+    background-color: #2f3b57;
+}
+
+.event {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.event.green {
+    background-color: #10b981;
+}
+
+.event.orange {
+    background-color: #f97316;
+}
+
+/* Add Button */
+.add-btn {
+    background-color: #f97316;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100px;
+}
+
+body.dark-mode .add-btn {
+    background-color: #f97316;
+    color: white;
+}
