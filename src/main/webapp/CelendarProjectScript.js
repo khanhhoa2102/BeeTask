@@ -15,10 +15,20 @@ function initializeSidebarToggle() {
         return;
     }
 
+    // Áp dụng trạng thái sidebar từ localStorage
+    const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
+    if (savedSidebarState === 'collapsed') {
+        sidebar.classList.add('collapsed');
+    } else {
+        sidebar.classList.remove('collapsed');
+    }
+
     toggleButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-            console.log('Sidebar toggled. Collapsed:', sidebar.classList.contains('collapsed'));
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
+            console.log('Sidebar toggled. Collapsed:', isCollapsed);
         });
     });
 }
@@ -30,16 +40,20 @@ function initializeDarkMode() {
         return;
     }
 
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode === 'enabled') {
+    // Áp dụng theme từ localStorage
+    const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+    if (savedTheme === 'dark-mode') {
         document.body.classList.add('dark-mode');
         darkModeToggle.checked = true;
+    } else {
+        document.body.classList.remove('dark-mode');
+        darkModeToggle.checked = false;
     }
 
     darkModeToggle.addEventListener('change', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+        const isDarkMode = darkModeToggle.checked;
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
         console.log('Dark Mode:', isDarkMode);
     });
 }

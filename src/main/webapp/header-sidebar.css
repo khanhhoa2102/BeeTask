@@ -159,6 +159,21 @@ body.dark-mode .menu li {
     color: #ffffff !important;
 }
 
+/* Style the <a> tags inside the menu */
+.sidebar .menu li a {
+    text-decoration: none !important; /* Remove underline */
+    color: inherit !important; /* Inherit the color from the parent li */
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Ensure no underline or color change on hover */
+.sidebar .menu li a:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
 .menu li i {
     margin-right: 10px;
 }
@@ -215,6 +230,21 @@ body.dark-mode .menu li {
     color: #ffffff !important;
 }
 
+/* Style the <a> tags inside the help menu */
+.sidebar .help-menu .help-item a {
+    text-decoration: none !important; /* Remove underline */
+    color: inherit !important; /* Inherit the color from the parent */
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Ensure no underline or color change on hover */
+.sidebar .help-menu .help-item a:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
 .help-menu .help-item i {
     margin-right: 10px;
 }
@@ -247,6 +277,45 @@ body.dark-mode .menu li {
     background: transparent;
     cursor: ew-resize;
 }
+.my-project {
+    margin-top: 20px;
+}
+
+.my-project h4 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #f97316;
+}
+
+.project-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.project-list li {
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 13px;
+    color: inherit;
+}
+
+.project-list li:hover {
+    background-color: #f97316;
+    color: white;
+}
+
+/* dark mode override */
+body.dark-mode .project-list li:hover {
+    background-color: #f97316;
+    color: white;
+}
+
 .my-project {
     margin-top: 20px;
 }
@@ -453,8 +522,8 @@ body.dark-mode .dark-label {
 
 /* Project Header Bar */
 .project-header-bar {
-    background-color: rgba(104, 104, 104, 0.5);
-    color: #000000;
+    background-color: #e5e7eb; /* Màu xám nhạt như trong hình */
+    color: #333333;
     height: 60px;
     display: flex;
     align-items: center;
@@ -464,14 +533,25 @@ body.dark-mode .dark-label {
 }
 
 body.dark-mode .project-header-bar {
-    background-color: rgba(104, 104, 104, 0.5);
-    color: white;
+    background-color: #374151; /* Màu xám đậm hơn cho dark mode */
+    color: #ffffff;
 }
 
 .project-header-name {
     font-size: 20px;
     font-weight: bold;
     transition: color 0.3s ease;
+}
+
+/* Style for <a> tags inside project-header-name (nếu có) */
+.project-header-name a {
+    text-decoration: none !important; /* Remove underline */
+    color: inherit !important; /* Inherit color from parent */
+}
+
+.project-header-name a:hover {
+    text-decoration: none !important;
+    color: inherit !important;
 }
 
 .project-header-actions {
@@ -483,14 +563,14 @@ body.dark-mode .project-header-bar {
 .project-user-avatar {
     width: 34px;
     height: 34px;
-    background-color: #22d3ee;
+    background-color: #22d3ee; /* Màu xanh dương như trong hình */
     border-radius: 50%;
     cursor: pointer;
 }
 
 .project-action-btn {
     background: none;
-    color: #000000;
+    color: #333333;
     font-size: 14px;
     cursor: pointer;
     padding: 5px 10px;
@@ -500,15 +580,15 @@ body.dark-mode .project-header-bar {
 }
 
 body.dark-mode .project-action-btn {
-    color: white;
+    color: #ffffff;
 }
 
 .project-action-btn:hover {
-    background-color: #e0e0e0;
+    background-color: #d1d5db; /* Màu xám nhạt khi hover */
 }
 
 body.dark-mode .project-action-btn:hover {
-    background-color: #2f3b57;
+    background-color: #4b5563; /* Màu xám đậm hơn khi hover trong dark mode */
 }
 
 .project-action-btn i {
@@ -518,7 +598,6 @@ body.dark-mode .project-action-btn:hover {
 .project-filter-btn,
 .project-pin-btn,
 .project-visibility-btn,
-.project-share-btn,
 .project-more-btn {
     display: flex;
     align-items: center;
@@ -526,14 +605,14 @@ body.dark-mode .project-action-btn:hover {
 }
 
 .project-share-btn {
-    background-color: #1da1f2;
+    background-color: #1da1f2; /* Màu xanh dương như trong hình cho nút Share */
     color: white;
     padding: 5px 15px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .project-share-btn:hover {
-    background-color: #1a91da;
+    background-color: #1a91da; /* Màu xanh đậm hơn khi hover */
 }
 
 body.dark-mode .project-share-btn {
@@ -542,6 +621,20 @@ body.dark-mode .project-share-btn {
 
 body.dark-mode .project-share-btn:hover {
     background-color: #1a91da;
+}
+
+/* Style for <a> tags inside project-action-btn (nếu có) */
+.project-action-btn a {
+    text-decoration: none !important; /* Remove underline */
+    color: inherit !important; /* Inherit color from parent */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Maintain spacing for icons */
+}
+
+.project-action-btn a:hover {
+    text-decoration: none !important;
+    color: inherit !important;
 }
 
 /* Media Queries */

@@ -30,21 +30,19 @@ function getChartColors() {
     console.log('Chế độ hiện tại:', isDarkMode ? 'Dark Mode' : 'Light Mode');
     return {
         userChart: {
-            // Màu riêng cho từng cột trong userChart
             backgroundColors: isDarkMode 
-                ? ['#60a5fa', '#34d399', '#f87171'] // Xanh dương, xanh lá, đỏ cho dark mode
-                : ['#3b82f6', '#10b981', '#ef4444'], // Đậm hơn cho light mode
+                ? ['#60a5fa', '#34d399', '#f87171']
+                : ['#3b82f6', '#10b981', '#ef4444'],
         },
         timeChart: {
-            teamA: isDarkMode ? '#facc15' : '#eab308', // Vàng
-            teamB: isDarkMode ? '#22c55e' : '#16a34a', // Xanh lá
-            teamC: isDarkMode ? '#ef4444' : '#dc2626', // Đỏ
+            teamA: isDarkMode ? '#facc15' : '#eab308',
+            teamB: isDarkMode ? '#22c55e' : '#16a34a',
+            teamC: isDarkMode ? '#ef4444' : '#dc2626',
         },
         taskChart: {
-            // Màu riêng cho từng cột trong taskChart
             backgroundColors: isDarkMode 
-                ? ['#a78bfa', '#f472b6', '#4ade80'] // Tím, hồng, xanh lá cho dark mode
-                : ['#8b5cf6', '#ec4899', '#22c55e'], // Đậm hơn cho light mode
+                ? ['#a78bfa', '#f472b6', '#4ade80']
+                : ['#8b5cf6', '#ec4899', '#22c55e'],
         },
     };
 }
@@ -54,7 +52,6 @@ function updateCharts() {
     const colors = getChartColors();
     console.log('Cập nhật biểu đồ với màu:', colors);
 
-    // Biểu đồ tham gia người dùng
     const userChart = new Chart(document.getElementById('userChart'), {
         type: 'bar',
         data: {
@@ -63,7 +60,7 @@ function updateCharts() {
                 {
                     label: 'Tham gia',
                     data: [4, 2, 6],
-                    backgroundColor: colors.userChart.backgroundColors, // Màu riêng cho từng cột
+                    backgroundColor: colors.userChart.backgroundColors,
                 },
             ],
         },
@@ -74,7 +71,6 @@ function updateCharts() {
         },
     });
 
-    // Biểu đồ động lực thời gian
     const timeChart = new Chart(document.getElementById('timeChart'), {
         type: 'line',
         data: {
@@ -107,7 +103,6 @@ function updateCharts() {
         },
     });
 
-    // Biểu đồ số lượng nhiệm vụ
     const taskChart = new Chart(document.getElementById('taskChart'), {
         type: 'bar',
         data: {
@@ -116,7 +111,7 @@ function updateCharts() {
                 {
                     label: 'Số lượng nhiệm vụ',
                     data: [3, 2, 5],
-                    backgroundColor: colors.taskChart.backgroundColors, // Màu riêng cho từng cột
+                    backgroundColor: colors.taskChart.backgroundColors,
                 },
             ],
         },
@@ -132,32 +127,34 @@ function updateCharts() {
 
 // Khởi tạo và xử lý thay đổi chế độ cho biểu đồ
 function initializeCharts() {
+    // Áp dụng theme từ localStorage khi tải trang
+    const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+    if (savedTheme === 'dark-mode') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').checked = true;
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('darkModeToggle').checked = false;
+    }
+
     // Khởi tạo biểu đồ ban đầu
     let charts = updateCharts();
 
     // Kiểm tra trạng thái ban đầu của dark mode
     const darkModeToggle = document.getElementById('darkModeToggle');
     if (darkModeToggle) {
-        // Đặt trạng thái ban đầu dựa trên checkbox
-        if (darkModeToggle.checked) {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-        console.log('Trạng thái ban đầu darkModeToggle:', darkModeToggle.checked);
-
-        // Lắng nghe sự kiện change của darkModeToggle
         darkModeToggle.addEventListener('change', () => {
-            document.body.classList.toggle('dark-mode');
-            console.log('darkModeToggle changed. Dark Mode:', document.body.classList.contains('dark-mode'));
-            // Hủy và cập nhật biểu đồ
+            const isDarkMode = darkModeToggle.checked;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
+            console.log('Dark Mode:', isDarkMode);
             charts.userChart.destroy();
             charts.timeChart.destroy();
             charts.taskChart.destroy();
             charts = updateCharts();
         });
     } else {
-        console.warn('Phần tử #darkModeToggle không tồn tại. Light mode/dark mode toggle sẽ không hoạt động.');
+        console.warn('Phần tử #darkModeToggle không tồn tại.');
     }
 
     // Theo dõi thay đổi lớp dark-mode trên body

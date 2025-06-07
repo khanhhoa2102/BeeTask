@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,8 +8,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeeTask - Tasks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="./header-sidebar.css" />
-    <link rel="stylesheet" href="./taskContent.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Task.css">
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        // Áp dụng theme
+        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+        if (savedTheme === 'dark-mode') {
+            document.body.classList.add('dark-mode');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = true;
+        } else {
+            document.body.classList.remove('dark-mode');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = false;
+        }
+
+        // Áp dụng trạng thái sidebar
+        const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            if (savedSidebarState === 'collapsed') {
+                sidebar.classList.add('collapsed');
+            } else {
+                sidebar.classList.remove('collapsed');
+            }
+        }
+
+        // Xử lý sự kiện thay đổi theme
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('change', () => {
+                const isDarkMode = darkModeToggle.checked;
+                document.body.classList.toggle('dark-mode', isDarkMode);
+                localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
+                console.log('Dark Mode:', isDarkMode);
+            });
+        } else {
+            console.warn('Phần tử #darkModeToggle không tồn tại.');
+        }
+    });
+</script>
 </head>
 
 <body class="dark-mode">
@@ -16,17 +57,42 @@
             <div class="user-profile">
                 <div class="avatar"></div>
                 <div class="info">
-                    <span class="username">Nguyễn H...</span>
-                    <span class="email">nguyenhuuson***@gmail.com</span>
+                    <span class="username">Nguyễn Hữu Sơn</span>
+                    <span class="email">nguyenhuusona6@gmail.com</span>
                 </div>
             </div>
             <button class="toggle-btn"><i class="fas fa-bars"></i></button>
             <ul class="menu">
-                <li><i class="fas fa-tachometer-alt"></i> <span>Dash Board</span></li>
-                <li class="active"><i class="fas fa-list"></i> <span>Task</span></li>
-                <li><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
-                <li><i class="fas fa-table"></i> <span>Table</span></li>
-                <li><i class="fas fa-cog"></i> <span>Setting</span></li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/DashboardProject.jsp">
+                        <i class="fas fa-tachometer-alt"></i><span>Dash Board</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="${pageContext.request.contextPath}/Task.jsp">
+                        <i class="fas fa-tasks"></i><span>Task</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/CalendarProject.jsp">
+                        <i class="fas fa-calendar-alt"></i><span>Calendar</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/Table.jsp">
+                        <i class="fas fa-table"></i><span>Table</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/Table.jsp">
+                        <i class="fas fa-table"></i><span>Statitics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/Setting.jsp">
+                        <i class="fas fa-cog"></i><span>Setting</span>
+                    </a>
+                </li>
             </ul>
             <ul class="menu help-menu">
                 <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
@@ -39,7 +105,7 @@
                 <div class="header-content-wrapper">
                     <div class="header-left">
                         <button class="icon-btn">
-                            <img src="Logo dài.png" alt="Logo" />
+                            <img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="Logo">
                         </button>
                     </div>
                     <div class="header-center">
@@ -82,7 +148,7 @@
                             </span>
                         </h3>
                         <div class="task-card">
-                            <img src="image_ (28).png" alt="Task Image" />
+                            <img src="${pageContext.request.contextPath}/Asset/image5.png" alt="Logo">
                             <p class="task-title" contenteditable="false">Write a Document</p>
                             <p class="task-date" contenteditable="false">May 16</p>
                         </div>
@@ -127,7 +193,7 @@
                             <p class="task-date" contenteditable="false">May 18</p>
                         </div>
                         <div class="task-card">
-                            <img src="image_ (43).png" alt="Task Image" />
+                            <img src="${pageContext.request.contextPath}/Asset/image4.png" alt="Logo">
                             <p class="task-title" contenteditable="false">Write a Document</p>
                             <p class="task-date" contenteditable="false">May 17</p>
                         </div>
@@ -308,7 +374,7 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="${pageContext.request.contextPath}/TaskScript.js"></script>
 </body>
 
 </html>

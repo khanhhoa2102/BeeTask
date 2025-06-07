@@ -3,6 +3,7 @@ document.getElementById('darkModeToggle').addEventListener('change', function ()
     document.body.classList.toggle('dark-mode');
 });
 
+
 // Toggle sidebar collapse
 document.querySelector('.toggle-btn').addEventListener('click', function () {
     document.querySelector('.sidebar').classList.toggle('collapsed');

@@ -58,10 +58,10 @@ body.dark-mode .calendar-box {
 
 /* Sidebar Calendar */
 .sidebar-calendar {
-    width: 250px;
+    width: 200px;
     flex-shrink: 0;
     background-color: #DAD4B9;
-    padding: 0.5rem;
+    padding: 1rem;
     border-radius: 10px;
     display: none; /* Hidden by default */
 }
