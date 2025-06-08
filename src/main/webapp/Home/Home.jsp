@@ -38,11 +38,7 @@
     </script>
 </head>
 
-<<<<<<< HEAD:src/main/webapp/Home/Home.jsp
-<body>
-=======
 <body class="dark-mode">
->>>>>>> fcad0d7a9b382bb21abfd02abe9ff8c731147cd6:Home.html
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -145,11 +141,7 @@
                 </div>
 
                 <div class="recent-item">
-<<<<<<< HEAD:src/main/webapp/Home/Home.jsp
                     <img src="${pageContext.request.contextPath}/Asset/image3.png" alt="Project Thumbnail">
-=======
-                    <img src="image_ (48).png" alt="Project Thumbnail" />
->>>>>>> fcad0d7a9b382bb21abfd02abe9ff8c731147cd6:Home.html
                     <div>
                         <p class="project-title">Dự án Vua Game</p>
                         <p class="start-date">Start: 1/1/2025</p>
@@ -158,11 +150,7 @@
 
                 <h3>Up Next</h3>
                 <div class="task-card">
-<<<<<<< HEAD:src/main/webapp/Home/Home.jsp
                     <div class="task-banner" style="background-image: url('${pageContext.request.contextPath}/Asset/image3.png');">
-=======
-                    <div class="task-banner" style="background-image: url('./image_\ \(28\).png');">
->>>>>>> fcad0d7a9b382bb21abfd02abe9ff8c731147cd6:Home.html
                         <div class="task-content">
                             <p class="label">Design UI/UX</p>
                             <span class="priority high">High</span>
@@ -192,20 +180,15 @@
                     </div>
                     <i class="fas fa-star"></i>
                 </div>
-
-                <h3>Assignee to me</h3>
-                <p>Bạn có một assignee mới từ NguyễnHUUsơn</p>
-                <div class="assignee-card">
-<<<<<<< HEAD:src/main/webapp/Home/Home.jsp
+                    <h3>Assignee to me</h3>
+                <div class="task-card">
                     <div class="task-banner" style="background-image: url('${pageContext.request.contextPath}/Asset/image4.png');">
                         <div class="task-content">
                             <p class="label">Design UI/UX</p>
                             <span class="priority high">High</span>
                         </div>
                     </div>
-=======
-                    <div class="task-banner" style="background-image: url('image_ (48).png');"></div>
->>>>>>> fcad0d7a9b382bb21abfd02abe9ff8c731147cd6:Home.html
+
                     <div class="title-menu-wrapper">
                         <p class="task-title">Dự án con bò</p>
                         <button class="menu-dot"><i class="fas fa-ellipsis-h"></i></button>
@@ -220,11 +203,7 @@
     </div>
 
     <!-- Script -->
-<<<<<<< HEAD:src/main/webapp/Home/Home.jsp
-    <script src="${pageContext.request.contextPath}/HomeScript.js"></script>
-=======
-    <script src="homeScript.js"></script>
->>>>>>> fcad0d7a9b382bb21abfd02abe9ff8c731147cd6:Home.html
+    <script src="${pageContext.request.contextPath}/Home/HomeScript.js"></script>
 </body>
 
 </html>
