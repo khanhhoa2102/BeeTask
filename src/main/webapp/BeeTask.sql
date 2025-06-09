@@ -749,27 +749,3 @@ INSERT INTO SearchLogs (UserId, Keyword) VALUES
 (6, N'owasp top 10'),
 (7, N'accessibility');
 
--- ========== VERIFY DATA INTEGRITY ==========
-SELECT 'Users' as TableName, COUNT(*) as RecordCount FROM Users
-UNION ALL
-SELECT 'Projects', COUNT(*) FROM Projects
-UNION ALL
-SELECT 'Tasks', COUNT(*) FROM Tasks
-UNION ALL
-SELECT 'CalendarEvents', COUNT(*) FROM CalendarEvents
-UNION ALL
-SELECT 'AISchedules', COUNT(*) FROM AISchedules
-UNION ALL
-SELECT 'Notifications', COUNT(*) FROM Notifications
-UNION ALL
-SELECT 'SearchLogs', COUNT(*) FROM SearchLogs;
-
-PRINT 'Optimized database seeding completed successfully!';
-PRINT 'Records reduced to approximately 70% of original:';
-PRINT '- Users: 14 (was 20)';
-PRINT '- Projects: 7 (was 10)';
-PRINT '- Tasks: 32 (was 45)';
-PRINT '- CalendarEvents: 21 (was 30)';
-PRINT '- AISchedules: 18 (was 25)';
-PRINT '- Notifications: 35 (was 50)';
-PRINT '- SearchLogs: 35 (was 50)';
