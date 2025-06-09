@@ -5,24 +5,69 @@
     <artifactId>BeeTask</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>BeeTask-1.0-SNAPSHOT</name>
-    
+
+    <name>BeeTask</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jakartaee>10.0.0</jakartaee>
+        <maven.compiler.source>17</maven.compiler.source>  
+        <maven.compiler.target>17</maven.compiler.target>
+        <jakartaee.version>10.0.0</jakartaee.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-    
+
     <dependencies>
+        <!-- Jakarta EE 10 API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>${jakartaee}</version>
+            <version>${jakartaee.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- JDBC Driver for SQL Server -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.4.2.jre11</version>
+        </dependency>
+
+        <!-- Jakarta Servlet API (dành riêng cho Tomcat 10) -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JSP API (cần cho Tomcat 10) -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        
+
+
     </dependencies>
-    
+
     <build>
         <plugins>
+            <!-- Plugin để biên dịch mã nguồn Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -37,6 +82,17 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
             </plugin>
+
+            <!-- Plugin để tích hợp Tomcat 10 -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat10-maven-plugin</artifactId>
+                <version>10.1.18</version>
+                <configuration>
+                    <path>/BookShop</path>
+                </configuration>
+            </plugin>
+           
         </plugins>
     </build>
 </project>
