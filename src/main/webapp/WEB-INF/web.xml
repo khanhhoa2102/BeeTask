@@ -12,7 +12,7 @@
 
     <!-- Trang JSP đầu tiên được chạy khi truy cập root -->
     <welcome-file-list>
-        <welcome-file>LandingPage.jsp</welcome-file>
+        <welcome-file>landing</welcome-file>
     </welcome-file-list>
-
+    
 </web-app>
