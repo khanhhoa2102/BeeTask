@@ -21,7 +21,7 @@ body.dark-mode {
 
 /* Sidebar */
 .sidebar {
-    width: 180px;
+    width: 180px;   
     background-color: #ffffff;
     color: #333333;
     display: flex;

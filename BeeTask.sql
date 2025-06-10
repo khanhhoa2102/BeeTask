@@ -56,8 +56,11 @@ CREATE TABLE Templates (
     TemplateId INT PRIMARY KEY IDENTITY,
     Name NVARCHAR(100) NOT NULL,
     Description NVARCHAR(255) NULL,
+    Category NVARCHAR(100) NULL,
+    ThumbnailUrl NVARCHAR(255) NULL,
     SampleData NVARCHAR(MAX) NULL,
     CreatedBy INT NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_Templates_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
 );
 
@@ -128,6 +131,18 @@ CREATE TABLE Tasks (
     CONSTRAINT FK_Tasks_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
 );
 
+-- =========== TASK APPROVE ============
+CREATE TABLE TaskApprovals (
+    ApprovalId INT PRIMARY KEY IDENTITY,
+    TaskId INT NOT NULL UNIQUE,
+    LeaderId INT NOT NULL,
+    ApprovalStatus NVARCHAR(20) NOT NULL CHECK (ApprovalStatus IN ('Approved', 'Rejected')),
+    Feedback NVARCHAR(MAX) NULL,
+    ActionTime DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_TaskApprovals_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId) ON DELETE CASCADE,
+    CONSTRAINT FK_TaskApprovals_Users FOREIGN KEY (LeaderId) REFERENCES Users(UserId)
+);
+
 -- ========== TASK ASSIGNEES ==========
 CREATE TABLE TaskAssignees (
     TaskId INT NOT NULL,
@@ -191,7 +206,7 @@ CREATE TABLE Notes (
 
 -- ========== CALENDAR EVENTS ==========
 CREATE TABLE CalendarEvents (
-    EventId INT PRIMARY KEY IDENTITY,
+    EventId INT PRIMARY KEY IDENTITY,	
     UserId INT NOT NULL,
     TaskId INT NULL,
     Title NVARCHAR(100) NOT NULL,
@@ -235,9 +250,9 @@ CREATE TABLE SearchLogs (
     CONSTRAINT FK_SearchLogs_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 
--- ========== DATA INSERTS (OPTIMIZED TO ~70%) ==========
+-- ========== DATA INSERTS  ==========
 
--- USERS (14 users - reduced from 20)
+-- USERS 
 INSERT INTO Users (FullName, Email, PasswordHash, AvatarUrl) VALUES
 (N'Nguyễn Văn A', 'a@gmail.com', 'hash1', 'avatar1.png'),
 (N'Lê Thị B', 'b@gmail.com', 'hash2', 'avatar2.png'),
@@ -254,7 +269,7 @@ INSERT INTO Users (FullName, Email, PasswordHash, AvatarUrl) VALUES
 (N'Chu Thị M', 'm@gmail.com', 'hash13', 'avatar13.png'),
 (N'Dương Văn N', 'n@gmail.com', 'hash14', 'avatar14.png');
 
--- LABELS (8 labels - reduced from 12)
+-- LABELS 
 INSERT INTO Labels (Name, Color) VALUES
 (N'Medium', 'yellow'),
 (N'Important', 'red'),
@@ -265,7 +280,7 @@ INSERT INTO Labels (Name, Color) VALUES
 (N'Feature', 'blue'),
 (N'Testing', 'brown');
 
--- PROJECTS (7 projects - reduced from 10)
+-- PROJECTS 
 INSERT INTO Projects (Name, Description, CreatedBy) VALUES
 (N'Website Development', N'Phát triển website công ty', 1),
 (N'Mobile App', N'Ứng dụng di động cho khách hàng', 2),
@@ -275,7 +290,7 @@ INSERT INTO Projects (Name, Description, CreatedBy) VALUES
 (N'Security Audit', N'Kiểm tra bảo mật hệ thống', 6),
 (N'UI/UX Redesign', N'Thiết kế lại giao diện', 7);
 
--- PROJECT MEMBERS (21 memberships - reduced from 30)
+-- PROJECT MEMBERS
 INSERT INTO ProjectMembers (ProjectId, UserId, Role) VALUES
 (1, 1, 'Leader'), (1, 2, 'Member'), (1, 3, 'Member'),
 (2, 2, 'Leader'), (2, 4, 'Member'), (2, 5, 'Member'),
@@ -285,14 +300,18 @@ INSERT INTO ProjectMembers (ProjectId, UserId, Role) VALUES
 (6, 6, 'Leader'), (6, 12, 'Member'), (6, 13, 'Member'),
 (7, 7, 'Leader'), (7, 14, 'Member'), (7, 1, 'Member');
 
--- TEMPLATES (4 templates - reduced from 5)
-INSERT INTO Templates (Name, Description, SampleData, CreatedBy) VALUES
-(N'Software Development', N'Template cho dự án phần mềm', N'{"boards": ["Planning", "Development", "Testing"]}', 1),
-(N'Marketing Campaign', N'Template cho chiến dịch marketing', N'{"boards": ["Research", "Planning", "Execution"]}', 2),
-(N'Event Planning', N'Template cho tổ chức sự kiện', N'{"boards": ["Preparation", "Coordination", "Execution"]}', 3),
-(N'Product Launch', N'Template cho ra mắt sản phẩm', N'{"boards": ["Research", "Development", "Marketing"]}', 4);
+-- TEMPLATES 
+INSERT INTO Templates (Name, Description, Category, ThumbnailUrl, SampleData, CreatedBy)
+VALUES 
+(N'Kanban Template', N'Organize tasks with visual boards', N'Project Management', N'https://www.hdwallpapers.in/download/beautiful_view_of_trees_lights_reflection_on_water_mountains_background_under_clouds_sky_hd_lock_screen-HD.jpg', N'{"boards": ["To Do", "In Progress", "Done"]}', 1),
+(N'To Do Template', N'Simple task management', N'Personal', N'https://c4.wallpaperflare.com/wallpaper/654/989/292/love-image-4k-full-screen-wallpaper-preview.jpg', N'{"boards": ["To Do"]}', 1),
+(N'V Model Template', N'Software development lifecycle', N'Development', N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT61lS44nkvxUYAnK2yFxVjJOHjCu0-o9Uzsw&s', N'{"boards": ["Requirements", "Design", "Implementation", "Testing"]}', 1),
+(N'Agile Template', N'Agile project methodology', N'Development', N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQ4RS5OsphIEbQkrANKyulho5dIxIc7pCBSw&s', N'{"boards": ["Backlog", "Sprint", "Review"]}', 1),
+(N'Waterfall Template', N'Sequential project phases', N'Development', N'https://thumbs.dreamstime.com/b/textured-wood-terrace-beautiful-dusky-sky-free-copy-space-use-background-backdrop-to-display-goods-new-product-41480172.jpg', N'{"boards": ["Requirements", "Design", "Build", "Test", "Deploy"]}', 1),
+(N'Scrum Template', N'Sprint-based development', N'Development', N'https://img.freepik.com/free-photo/majestic-mountain-peak-tranquil-winter-landscape-generated-by-ai_188544-15662.jpg?semt=ais_items_boosted&w=740', N'{"boards": ["Sprint Backlog", "In Progress", "Done", "Retrospective"]}', 1);
 
--- TEMPLATE BOARDS (10 boards - reduced from 15)
+
+-- TEMPLATE BOARDS
 INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (1, N'Planning', N'Lập kế hoạch dự án'),
 (1, N'Development', N'Phát triển sản phẩm'),
@@ -305,7 +324,8 @@ INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (4, N'Research', N'Nghiên cứu sản phẩm'),
 (4, N'Development', N'Phát triển sản phẩm');
 
--- TEMPLATE TASKS (18 tasks - reduced from 25)
+
+-- TEMPLATE TASKS 
 INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
 (1, N'Phân tích yêu cầu', N'Phân tích chi tiết yêu cầu dự án', 'To Do'),
 (1, N'Thiết kế architecture', N'Thiết kế kiến trúc hệ thống', 'To Do'),
@@ -326,7 +346,7 @@ INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
 (9, N'Competitor analysis', N'Phân tích đối thủ cạnh tranh', 'In Progress'),
 (10, N'Feature development', N'Phát triển tính năng sản phẩm', 'In Progress');
 
--- BOARDS (10 boards - reduced from 15)
+-- BOARDS 
 INSERT INTO Boards (ProjectId, Name, Description) VALUES
 (1, N'Frontend Development', N'Phát triển giao diện người dùng'),
 (1, N'Backend Development', N'Phát triển backend API'),
@@ -339,7 +359,7 @@ INSERT INTO Boards (ProjectId, Name, Description) VALUES
 (6, N'Vulnerability Assessment', N'Đánh giá lỗ hổng bảo mật'),
 (7, N'User Research', N'Nghiên cứu người dùng');
 
--- BOARD MEMBERS (30 memberships - reduced from 45)
+-- BOARD MEMBERS 
 INSERT INTO BoardMembers (BoardId, UserId, Role) VALUES
 (1, 1, 'Leader'), (1, 2, 'Member'), (1, 3, 'Member'),
 (2, 1, 'Leader'), (2, 4, 'Member'), (2, 5, 'Member'),
@@ -352,7 +372,7 @@ INSERT INTO BoardMembers (BoardId, UserId, Role) VALUES
 (9, 6, 'Leader'), (9, 4, 'Member'), (9, 5, 'Member'),
 (10, 7, 'Leader'), (10, 6, 'Member'), (10, 8, 'Member');
 
--- LISTS (30 lists - reduced from 45)
+-- LISTS 
 INSERT INTO Lists (BoardId, Name) VALUES
 (1, N'To Do'), (1, N'In Progress'), (1, N'Done'),
 (2, N'Backlog'), (2, N'Development'), (2, N'Testing'),
@@ -365,7 +385,7 @@ INSERT INTO Lists (BoardId, Name) VALUES
 (9, N'Assessment'), (9, N'Remediation'), (9, N'Verified'),
 (10, N'Research'), (10, N'Analysis'), (10, N'Recommendations');
 
--- TASKS (32 tasks - reduced from 45)
+-- TASKS 
 INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedBy) VALUES
 (1, 1, N'Thiết kế component Button', N'Tạo component Button tái sử dụng', 1, '2025-06-15', 1),
 (1, 1, N'Thiết kế component Input', N'Tạo component Input form', 1, '2025-06-20', 2),
@@ -400,7 +420,7 @@ INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, Creat
 (10, 30, N'User journey mapping', N'Lập bản đồ hành trình người dùng', 1, '2025-06-18', 1),
 (1, 2, N'Component library', N'Xây dựng thư viện component', 2, '2025-06-20', 9);
 
--- TASK ASSIGNEES (56 assignments - reduced from 80)
+-- TASK ASSIGNEES
 INSERT INTO TaskAssignees (TaskId, UserId) VALUES
 (1, 1), (1, 2), (2, 2), (2, 3), (3, 1), (3, 4),
 (4, 3), (4, 5), (5, 1), (5, 6), (6, 4), (6, 7),
@@ -414,7 +434,7 @@ INSERT INTO TaskAssignees (TaskId, UserId) VALUES
 (28, 6), (28, 10), (29, 7), (29, 11), (30, 14), (30, 12),
 (31, 1), (31, 13), (32, 9), (32, 14);
 
--- TASK LABELS (63 label assignments - reduced from 90, fixed duplicates)
+-- TASK LABELS 
 INSERT INTO TaskLabels (TaskId, LabelId) VALUES
 (1, 1), (1, 7), (2, 1), (2, 7), (3, 2), (3, 7),
 (4, 3), (4, 7), (5, 2), (5, 6), (6, 4), (6, 6),
@@ -428,7 +448,7 @@ INSERT INTO TaskLabels (TaskId, LabelId) VALUES
 (28, 3), (28, 7), (29, 2), (29, 7), (30, 5), (30, 7),
 (31, 4), (31, 6), (32, 2), (32, 6);
 
--- TASK ATTACHMENTS (21 attachments - reduced from 30)
+-- TASK ATTACHMENTS
 INSERT INTO TaskAttachments (TaskId, FileUrl, FileName, FileType, FileSize) VALUES
 (1, 'https://example.com/files/button-spec.pdf', 'button-specification.pdf', 'pdf', 1024000),
 (2, 'https://example.com/files/input-design.fig', 'input-design.fig', 'figma', 2048000),
@@ -452,7 +472,7 @@ INSERT INTO TaskAttachments (TaskId, FileUrl, FileName, FileType, FileSize) VALU
 (6, 'https://example.com/files/auth-test.postman', 'auth-api-tests.postman_collection.json', 'json', 128000),
 (9, 'https://example.com/files/coredata-model.xcdatamodeld', 'coredata-model.xcdatamodeld', 'xcode', 64000);
 
--- TASK COMMENTS (35 comments - reduced from 50)
+-- TASK COMMENTS 
 INSERT INTO TaskComments (TaskId, UserId, Content) VALUES
 (1, 2, N'Đã review thiết kế, cần điều chỉnh màu sắc theo brand guideline'),
 (1, 1, N'Cảm ơn feedback, sẽ update trong phiên bản tiếp theo'),
@@ -490,14 +510,14 @@ INSERT INTO TaskComments (TaskId, UserId, Content) VALUES
 (22, 3, N'ML model cần more training data'),
 (25, 4, N'Security vulnerabilities cần được prioritize');
 
--- COMMENT MENTIONS (18 mentions - reduced from 25)
+-- COMMENT MENTIONS 
 INSERT INTO CommentMentions (CommentId, MentionedUserId) VALUES
 (1, 1), (3, 1), (4, 4), (6, 1), (7, 4),
 (8, 2), (9, 6), (11, 3), (12, 10), (14, 3),
 (16, 4), (17, 14), (19, 5), (20, 2), (22, 6),
 (23, 7), (24, 4), (26, 7), (27, 2), (28, 4);
 
--- NOTES (28 notes - reduced from 40)
+-- NOTES
 INSERT INTO Notes (UserId, Title, Content, Tag) VALUES
 (1, N'Meeting Notes - Sprint Planning', N'Đã thảo luận về sprint goals và task assignments. Cần focus vào performance optimization.', N'meeting'),
 (2, N'Research Findings - User Behavior', N'Người dùng thường abandon form khi có quá nhiều fields. Cần simplify registration process.', N'research'),
@@ -528,7 +548,7 @@ INSERT INTO Notes (UserId, Title, Content, Tag) VALUES
 (13, N'Testing Strategy', N'Unit tests: 80% coverage\nIntegration tests: Critical paths\nE2E tests: User journeys\nPerformance tests: Load & stress', N'testing'),
 (14, N'Vendor Evaluation - Cloud Services', N'AWS: Comprehensive but expensive\nGoogle Cloud: Good AI/ML services\nAzure: Strong enterprise features', N'vendor');
 
--- CALENDAR EVENTS (21 events - reduced from 30)
+-- CALENDAR EVENTS 
 INSERT INTO CalendarEvents (UserId, TaskId, Title, Description, StartTime, EndTime, ReminderTime) VALUES
 (1, 1, N'Design Review - Button Component', N'Review thiết kế button component với team', '2025-06-10 09:00:00', '2025-06-10 10:00:00', '2025-06-10 08:45:00'),
 (2, 3, N'Login Implementation Sprint', N'Sprint để implement login functionality', '2025-06-15 10:00:00', '2025-06-15 12:00:00', '2025-06-15 09:45:00'),
@@ -552,7 +572,7 @@ INSERT INTO CalendarEvents (UserId, TaskId, Title, Description, StartTime, EndTi
 (1, 6, N'API Testing Session', N'Testing authentication API', '2025-06-25 11:00:00', '2025-06-25 12:00:00', '2025-06-25 10:45:00'),
 (2, 8, N'iOS Development Review', N'Review iOS app development progress', '2025-06-20 15:00:00', '2025-06-20 16:00:00', '2025-06-20 14:45:00');
 
--- AI SCHEDULES (18 schedules - reduced from 25)
+-- AI SCHEDULES 
 INSERT INTO AISchedules (TaskId, SuggestedStartTime, SuggestedEndTime, ConfidenceScore, Status) VALUES
 (1, '2025-06-10 09:00:00', '2025-06-10 11:00:00', 0.85, 'Accepted'),
 (2, '2025-06-11 14:00:00', '2025-06-11 16:00:00', 0.78, 'Pending'),
@@ -573,7 +593,7 @@ INSERT INTO AISchedules (TaskId, SuggestedStartTime, SuggestedEndTime, Confidenc
 (30, '2025-07-03 10:00:00', '2025-07-03 12:00:00', 0.77, 'Pending'),
 (32, '2025-07-04 15:00:00', '2025-07-04 17:00:00', 0.85, 'Accepted');
 
--- NOTIFICATIONS (35 notifications - reduced from 50)
+-- NOTIFICATIONS
 INSERT INTO Notifications (UserId, Message, IsRead) VALUES
 (1, N'Task "Thiết kế component Button" đã được assign cho bạn', 1),
 (2, N'Bạn có comment mới trong task "Login Implementation"', 0),
@@ -611,7 +631,7 @@ INSERT INTO Notifications (UserId, Message, IsRead) VALUES
 (10, N'Database optimization đã hoàn thành', 1),
 (11, N'AI model accuracy đã cải thiện 15%', 0);
 
--- SEARCH LOGS (35 logs - reduced from 50)
+-- SEARCH LOGS 
 INSERT INTO SearchLogs (UserId, Keyword) VALUES
 (1, N'button component'),
 (1, N'react hooks'),
@@ -648,4 +668,12 @@ INSERT INTO SearchLogs (UserId, Keyword) VALUES
 (5, N'neural networks'),
 (6, N'owasp top 10'),
 (7, N'accessibility');
+
+INSERT INTO TaskApprovals (TaskId, LeaderId, ApprovalStatus, Feedback)
+VALUES
+(1, 2, 'Approved', N'Làm tốt, cần duy trì phong độ.'),
+(2, 3, 'Rejected', N'Thiếu phần kiểm thử, bổ sung test case trước khi xác nhận.'),
+(3, 2, 'Approved', N'Hoàn thành đúng tiến độ. Giao diện rõ ràng.'),
+(4, 1, 'Rejected', N'Yêu cầu thêm demo prototype và hướng dẫn triển khai.'),
+(5, 4, 'Approved', N'Task này được thực hiện xuất sắc. Không có điểm cần chỉnh.');
 

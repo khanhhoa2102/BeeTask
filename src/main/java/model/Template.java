@@ -1,20 +1,21 @@
-
 package model;
-
 
 public class Template {
     private int templateId;
     private String name;
     private String description;
-    private String sampleData;
-    private int createdBy;
+    private String category;
+    private String thumbnailUrl;
 
-    public Template(int templateId, String name, String description, String sampleData, int createdBy) {
+    public Template() {
+    }
+
+    public Template(int templateId, String name, String description, String category, String thumbnailUrl) {
         this.templateId = templateId;
         this.name = name;
         this.description = description;
-        this.sampleData = sampleData;
-        this.createdBy = createdBy;
+        this.category = category;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public int getTemplateId() {
@@ -41,25 +42,19 @@ public class Template {
         this.description = description;
     }
 
-    public String getSampleData() {
-        return sampleData;
+    public String getCategory() {
+        return category;
     }
 
-    public void setSampleData(String sampleData) {
-        this.sampleData = sampleData;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public int getCreatedBy() {
-        return createdBy;
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
 
-    public void setCreatedBy(int createdBy) {
-        this.createdBy = createdBy;
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
-
-    @Override
-    public String toString() {
-        return "Template{" + "templateId=" + templateId + ", name=" + name + ", description=" + description + ", sampleData=" + sampleData + ", createdBy=" + createdBy + '}';
-    }
-    
 }
