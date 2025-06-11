@@ -98,7 +98,6 @@
                     }
                 %>
             </div>
-
             <div class="view-all">
                 <button class="btn btn-outline btn-large">
                     Xem tất cả Template <i class="fas fa-arrow-right"></i>
@@ -147,4 +146,5 @@
 
     <script src="${pageContext.request.contextPath}/LandingPage.js"></script>
 </body>
+
 </html>
