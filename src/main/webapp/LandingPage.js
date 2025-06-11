@@ -42,28 +42,7 @@ document.querySelectorAll(".template-card").forEach((card) => {
   })
 })
 
-// Button click handlers
-document.querySelectorAll(".btn").forEach((button) => {
-  button.addEventListener("click", function (e) {
-    // Prevent default for demo purposes
-    if (this.textContent.includes("Đăng nhập")) {
-      alert("Chuyển hướng đến trang đăng nhập")
-      // window.location.href = 'login.html';
-    } else if (this.textContent.includes("Đăng ký")) {
-      alert("Chuyển hướng đến trang đăng ký")
-      // window.location.href = 'register.html';
-    } else if (this.textContent.includes("Bắt đầu miễn phí")) {
-      alert("Chuyển hướng đến trang đăng ký")
-      // window.location.href = 'register.html';
-    } else if (this.textContent.includes("Xem demo")) {
-      alert("Hiển thị demo")
-      // Có thể mở modal hoặc chuyển hướng đến trang demo
-    } else if (this.textContent.includes("Xem tất cả Template")) {
-      alert("Chuyển hướng đến trang tất cả templates")
-      // window.location.href = 'all-templates.html';
-    }
-  })
-})
+
 
 // Header scroll effect
 window.addEventListener("scroll", () => {

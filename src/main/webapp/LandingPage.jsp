@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BeeTask - Quản lý công việc và ghi chú</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/LandingPage.css">
+        <link rel="stylesheet" href="LandingPage.css">
     </head>
     <body>
         <!-- Header -->
@@ -28,13 +28,14 @@
                         </div>
                     </div>
                     <div class="auth-buttons">
-                        <button class="btn btn-ghost">
+                        <button class="btn btn-ghost" onclick="window.location.href = 'Login.jsp'">
                             <i class="fas fa-sign-in-alt"></i> Đăng nhập
                         </button>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" onclick="window.location.href = 'Register.jsp'">
                             <i class="fas fa-user-plus"></i> Đăng ký
                         </button>
                     </div>
+
                 </div>
             </div>
         </header>
