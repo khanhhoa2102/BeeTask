@@ -251,6 +251,7 @@ CREATE TABLE SearchLogs (
 );
 
 -- ========== DATA INSERTS  ==========
+
 -- USERS 
 INSERT INTO Users (FullName, Email, PasswordHash, AvatarUrl) VALUES
 (N'Dương Khánh Hòa', 'khanhhoakt2k4@gmail.com', 'hoa21022004', 'https://i.pinimg.com/originals/b5/9b/46/b59b46c2601ce837329a28695b7df40f.png'),
