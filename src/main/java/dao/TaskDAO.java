@@ -32,6 +32,33 @@ public class TaskDAO {
         }
         return list;
     }
+    
+    public List<Task> findAllByBoard(int boardId) throws Exception {
+    List<Task> list = new ArrayList<>();
+    String sql = "SELECT * FROM Tasks WHERE BoardId=?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, boardId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Task task = new Task(
+                    rs.getInt("TaskId"),
+                    rs.getInt("BoardId"),
+                    rs.getInt("ListId"),
+                    rs.getString("Title"),
+                    rs.getString("Description"),
+                    rs.getInt("StatusId"),
+                    rs.getTimestamp("DueDate"),
+                    rs.getTimestamp("CreatedAt"),
+                    rs.getInt("CreatedBy")
+                );
+                list.add(task);
+            }
+        }
+    }
+    return list;
+}
 
     public Task findById(int id) throws Exception {
         String sql = "SELECT * FROM Tasks WHERE TaskId = ?";
