@@ -254,6 +254,7 @@ CREATE TABLE SearchLogs (
 
 -- USERS 
 INSERT INTO Users (FullName, Email, PasswordHash, AvatarUrl) VALUES
+(N'Dương Khánh Hòa', 'khanhhoakt2k4@gmail.com', 'hoa21022004', 'https://i.pinimg.com/originals/b5/9b/46/b59b46c2601ce837329a28695b7df40f.png'),
 (N'Nguyễn Văn A', 'a@gmail.com', 'hash1', 'avatar1.png'),
 (N'Lê Thị B', 'b@gmail.com', 'hash2', 'avatar2.png'),
 (N'Trần Văn C', 'c@gmail.com', 'hash3', 'avatar3.png'),
@@ -323,7 +324,6 @@ INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (3, N'Coordination', N'Điều phối sự kiện'),
 (4, N'Research', N'Nghiên cứu sản phẩm'),
 (4, N'Development', N'Phát triển sản phẩm');
-
 
 -- TEMPLATE TASKS 
 INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
