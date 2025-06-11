@@ -292,3 +292,62 @@ document.addEventListener('click', function (e) {
         addTaskPopup.style.display = 'none';
     }
 });
+
+document.querySelector('#addTaskPopup .add-btn').addEventListener('click', function () {
+    const title = document.getElementById('task-name').value;
+    const description = document.getElementById('task-description').value;
+    const dueDate = document.getElementById('task-due-date').value;
+    const priority = document.getElementById('task-priority').value;
+
+    const task = {
+        title: title,
+        description: description,
+        dueDate: dueDate,
+        priority: priority,
+        boardId: 1,    // tạm thời hardcode, có thể lấy từ biến hiện tại
+        listId: 1,     // tương tự
+        createdBy: 1   // ID người dùng đăng nhập
+    };
+
+    fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task)
+    }).then(res => {
+        if (res.ok) {
+            alert("Task added!");
+            location.reload();
+        } else {
+            alert("Error adding task");
+        }
+    });
+
+    addTaskPopup.style.display = 'none';
+});
+
+function updateTask(task) {
+    fetch('/api/tasks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task)
+    }).then(res => {
+        if (res.ok) {
+            console.log("Task updated!");
+        } else {
+            console.error("Update failed.");
+        }
+    });
+}
+
+function deleteTask(taskId) {
+    fetch(`/api/tasks?id=${taskId}`, {
+        method: 'DELETE'
+    }).then(res => {
+        if (res.status === 204) {
+            alert("Task deleted!");
+            location.reload();
+        } else {
+            alert("Failed to delete task.");
+        }
+    });
+}
