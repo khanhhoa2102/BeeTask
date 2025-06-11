@@ -139,7 +139,6 @@
                 </div>
             </div>
         </footer>
-
         <script src="${pageContext.request.contextPath}/LandingPage.js"></script>
     </body>
 </html>
