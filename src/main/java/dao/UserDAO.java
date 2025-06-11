@@ -86,4 +86,28 @@ public class UserDAO {
             stmt.executeUpdate();
         }
     }
+
+    // ✅ Login kiểm tra trực tiếp email và mật khẩu
+    public User checkLogin(String email, String password) throws Exception {
+        String sql = "SELECT * FROM Users WHERE Email = ? AND PasswordHash = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                    rs.getInt("UserId"),
+                    rs.getString("FullName"),
+                    rs.getString("Email"),
+                    rs.getString("PasswordHash"),
+                    rs.getString("AvatarUrl"),
+                    rs.getBoolean("IsActive"),
+                    rs.getTimestamp("CreatedAt")
+                );
+            }
+        }
+        return null;
+    }
 }
