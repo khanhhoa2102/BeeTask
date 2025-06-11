@@ -253,6 +253,7 @@ CREATE TABLE SearchLogs (
 -- ========== DATA INSERTS  ==========
 -- USERS 
 INSERT INTO Users (FullName, Email, PasswordHash, AvatarUrl) VALUES
+(N'Dương Khánh Hòa', 'khanhhoakt2k4@gmail.com', 'hoa21022004', 'https://i.pinimg.com/originals/b5/9b/46/b59b46c2601ce837329a28695b7df40f.png'),
 (N'Nguyễn Văn A', 'a@gmail.com', 'hash1', 'avatar1.png'),
 (N'Lê Thị B', 'b@gmail.com', 'hash2', 'avatar2.png'),
 (N'Trần Văn C', 'c@gmail.com', 'hash3', 'avatar3.png'),
@@ -322,7 +323,6 @@ INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (4, N'Research', N'Nghiên cứu sản phẩm'),
 (4, N'Development', N'Phát triển sản phẩm');
 
-
 -- TEMPLATE TASKS 
 INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
 (1, N'Phân tích yêu cầu', N'Phân tích chi tiết yêu cầu dự án', 'To Do'),
@@ -344,7 +344,6 @@ INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
 (9, N'Competitor analysis', N'Phân tích đối thủ cạnh tranh', 'In Progress'),
 (10, N'Feature development', N'Phát triển tính năng sản phẩm', 'In Progress');
 
-
 -- BOARDS 
 INSERT INTO Boards (ProjectId, Name, Description) VALUES
 (1, N'Frontend Development', N'Phát triển giao diện người dùng'),
@@ -358,7 +357,6 @@ INSERT INTO Boards (ProjectId, Name, Description) VALUES
 (6, N'Vulnerability Assessment', N'Đánh giá lỗ hổng bảo mật'),
 (7, N'User Research', N'Nghiên cứu người dùng');
 
-
 -- BOARD MEMBERS 
 INSERT INTO BoardMembers (BoardId, UserId, Role) VALUES
 (1, 1, 'Leader'), (1, 2, 'Member'), (1, 3, 'Member'),
@@ -371,7 +369,6 @@ INSERT INTO BoardMembers (BoardId, UserId, Role) VALUES
 (8, 5, 'Leader'), (8, 2, 'Member'), (8, 3, 'Member'),
 (9, 6, 'Leader'), (9, 4, 'Member'), (9, 5, 'Member'),
 (10, 7, 'Leader'), (10, 6, 'Member'), (10, 8, 'Member');
-
 
 -- LISTS 
 INSERT INTO Lists (BoardId, Name) VALUES
@@ -421,7 +418,6 @@ INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, Creat
 (10, 30, N'User journey mapping', N'Lập bản đồ hành trình người dùng', 1, '2025-06-18', 1),
 (1, 2, N'Component library', N'Xây dựng thư viện component', 2, '2025-06-20', 9);
 
-
 -- TASK ASSIGNEES
 INSERT INTO TaskAssignees (TaskId, UserId) VALUES
 (1, 1), (1, 2), (2, 2), (2, 3), (3, 1), (3, 4),
@@ -435,7 +431,6 @@ INSERT INTO TaskAssignees (TaskId, UserId) VALUES
 (25, 3), (25, 7), (26, 5), (26, 8), (27, 4), (27, 9),
 (28, 6), (28, 10), (29, 7), (29, 11), (30, 14), (30, 12),
 (31, 1), (31, 13), (32, 9), (32, 14);
-
 
 -- TASK LABELS 
 INSERT INTO TaskLabels (TaskId, LabelId) VALUES
@@ -474,7 +469,6 @@ INSERT INTO TaskAttachments (TaskId, FileUrl, FileName, FileType, FileSize) VALU
 (3, 'https://example.com/files/login-test.js', 'login-test-cases.js', 'javascript', 32000),
 (6, 'https://example.com/files/auth-test.postman', 'auth-api-tests.postman_collection.json', 'json', 128000),
 (9, 'https://example.com/files/coredata-model.xcdatamodeld', 'coredata-model.xcdatamodeld', 'xcode', 64000);
-
 
 -- TASK COMMENTS 
 INSERT INTO TaskComments (TaskId, UserId, Content) VALUES
