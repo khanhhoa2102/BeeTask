@@ -81,9 +81,6 @@
                         </svg>
                         <span>Google</span>
                     </button>
-
-
-
                     <!-- Footer Links -->
                     <div class="footer-links">
                         <a href="${pageContext.request.contextPath}/ForgotPassword.jsp" class="forgot-link">Forgot Password</a>
