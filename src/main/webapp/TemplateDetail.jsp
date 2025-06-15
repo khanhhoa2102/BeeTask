@@ -61,27 +61,6 @@
 
         <main class="main-content">
             <%@include file="/HeaderContent.jsp" %>
-            <main class="main-content">
-                <div class="header">
-                    <div class="header-content-wrapper">
-                        <div class="header-left">
-                            <button class="icon-btn">
-                                <img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="Logo">
-                            </button>
-                        </div>
-                        <div class="header-center">
-                            <input type="text" class="search-box" placeholder="Search Tasks" />
-                            <button class="create-btn">Create Task</button>
-                        </div>
-                        <div class="header-right">
-                            <label class="switch">
-                                <input type="checkbox" id="darkModeToggle" checked />
-                                <span class="slider"></span>
-                            </label>
-                            <span class="dark-label">Dark Mode</span>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="project-header-bar">
                     <div class="project-header-name">Tên Project</div>
