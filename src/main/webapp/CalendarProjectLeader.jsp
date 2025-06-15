@@ -2,51 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%@ include file="/Header.jsp"%>
     <title>Project Calendar</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/CelendarProject.css">
-    <script>
-    window.addEventListener('DOMContentLoaded', () => {
-        // Áp dụng theme
-        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-        if (savedTheme === 'dark-mode') {
-            document.body.classList.add('dark-mode');
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle) toggle.checked = true;
-        } else {
-            document.body.classList.remove('dark-mode');
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle) toggle.checked = false;
-        }
-
-        // Áp dụng trạng thái sidebar
-        const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar) {
-            if (savedSidebarState === 'collapsed') {
-                sidebar.classList.add('collapsed');
-            } else {
-                sidebar.classList.remove('collapsed');
-            }
-        }
-
-        // Xử lý sự kiện thay đổi theme
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('change', () => {
-                const isDarkMode = darkModeToggle.checked;
-                document.body.classList.toggle('dark-mode', isDarkMode);
-                localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
-                console.log('Dark Mode:', isDarkMode);
-            });
-        } else {
-            console.warn('Phần tử #darkModeToggle không tồn tại.');
-        }
-    });
-</script>
 </head>
 <body>
     <div class="container">
@@ -96,24 +54,7 @@
             </ul>
         </aside>
         <main class="main-content">
-            <header class="header">
-                <div class="header-content-wrapper">
-                    <div class="header-left">
-                        <button class="icon-btn"><img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="Logo"></button>
-                    </div>
-                    <div class="header-center">
-                        <input type="text" class="search-box" placeholder="Search...">
-                        <button class="create-btn">Create Task</button>
-                    </div>
-                    <div class="header-right">
-                        <label class="switch">
-                            <input type="checkbox" id="darkModeToggle">
-                            <span class="slider"></span>
-                        </label>
-                        <span class="dark-label">Dark Mode</span>
-                    </div>
-                </div>
-            </header>
+            <%@include file="/HeaderContent.jsp" %>
             <div class="project-header-bar">
                 <div class="project-header-name">Tên Project</div>
                 <div class="project-header-actions">
