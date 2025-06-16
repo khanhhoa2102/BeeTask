@@ -37,8 +37,8 @@ if (searchInput) {
 document.querySelectorAll(".template-card").forEach((card) => {
   card.addEventListener("click", function () {
     const templateTitle = this.querySelector(".template-title").textContent
-    alert(`Bạn đã chọn template: ${templateTitle}`)
-    // Ở đây bạn có thể thêm logic để chuyển hướng đến trang template chi tiết
+    alert(`B?n ?� ch?n template: ${templateTitle}`)
+    // ? ?�y b?n c� th? th�m logic ?? chuy?n h??ng ??n trang template chi ti?t
   })
 })
 

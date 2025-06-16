@@ -1,4 +1,4 @@
-/* Đảm bảo body không có cuộn ngang */
+/* �?ảm bảo body không có cuộn ngang */
 body {
     overflow-x: hidden;
     background-color: #28A745;
@@ -17,6 +17,7 @@ body.dark-mode {
     justify-content: center;
     width: 80%;
     margin: 0 auto;
+    margin-top: 8px;
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -46,7 +47,6 @@ body.dark-mode .project-dashboard {
     box-sizing: border-box;
 }
 
-/* Tùy chỉnh thanh cuộn */
 .task-status-container::-webkit-scrollbar {
     height: 8px;
 }
@@ -94,7 +94,7 @@ body.dark-mode .task-column {
     display: flex;
 }
 
-/* Sửa tiêu đề h3 */
+/* Sửa tiêu đ�? h3 */
 .task-column h3 {
     margin: 0 0 10px;
     font-size: 16px;
@@ -135,7 +135,7 @@ body.dark-mode .board-title[contenteditable="true"] {
     border: 1px solid #1da1f2;
 }
 
-/* Nút thu gọn */
+/* Nút thu g�?n */
 .collapse-btn {
     background: none;
     border: none;
@@ -166,7 +166,7 @@ body.dark-mode .board-title[contenteditable="true"] {
     font-size: 16px;
 }
 
-/* Ẩn nội dung khi thu gọn */
+/* Ẩn nội dung khi thu g�?n */
 .task-column.collapsed .task-card {
     display: none;
 }
@@ -236,6 +236,28 @@ body:not(.dark-mode) .menu-dot {
 body:not(.dark-mode) .menu-dot:hover {
     color: #666666;
 }
+.template-action-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 20px 0;
+}
+
+.use-template-btn {
+    background-color: #FF0000;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.use-template-btn:hover {
+    background-color: #cc0000;
+}
+
 
 /* Nút Add Board */
 .add-board-btn {

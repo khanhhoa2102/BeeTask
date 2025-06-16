@@ -86,7 +86,7 @@
 
                     <!-- Footer Links -->
                     <div class="footer-links">
-                        <a href="${pageContext.request.contextPath}/forgot-password" class="forgot-link">Forgot Password</a>
+                        <a href="${pageContext.request.contextPath}/ForgotPassword.jsp" class="forgot-link">Forgot Password</a>
                         <a href="Register.jsp" class="register-link">Create new Account</a>
                     </div>
                 </form>

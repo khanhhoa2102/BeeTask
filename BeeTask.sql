@@ -3,11 +3,30 @@ CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY,
     FullName NVARCHAR(100) NOT NULL,
     Email NVARCHAR(100) UNIQUE NOT NULL,
-    PasswordHash NVARCHAR(255) NOT NULL,
+    PasswordHash NVARCHAR(255) NULL, 
     AvatarUrl NVARCHAR(255) NULL,
+    PhoneNumber NVARCHAR(20) NULL,
+    DateOfBirth DATE NULL,
+    Gender NVARCHAR(10) NULL, 
+    Address NVARCHAR(255) NULL,
+    LoginProvider NVARCHAR(50) NOT NULL DEFAULT 'Local',
+    GoogleId NVARCHAR(100) NULL, 
+    IsEmailVerified BIT DEFAULT 0, 
     IsActive BIT DEFAULT 1,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
+
+-- ========== FORGET PASSWORD ==========
+CREATE TABLE TokenForgetPassword (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Token NVARCHAR(255) NOT NULL,
+    ExpiryTime DATETIME NOT NULL,
+    IsUsed BIT NOT NULL DEFAULT 0,
+    UserId INT NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_TokenForgetPassword_Users FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE
+);
+
 
 -- ========== TASK STATUSES ==========
 CREATE TABLE TaskStatuses (
