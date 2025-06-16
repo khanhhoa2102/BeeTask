@@ -330,10 +330,6 @@ VALUES
 (N'Waterfall Template', N'Sequential project phases', N'Development', N'https://thumbs.dreamstime.com/b/textured-wood-terrace-beautiful-dusky-sky-free-copy-space-use-background-backdrop-to-display-goods-new-product-41480172.jpg', N'{"boards": ["Requirements", "Design", "Build", "Test", "Deploy"]}', 1),
 (N'Scrum Template', N'Sprint-based development', N'Development', N'https://img.freepik.com/free-photo/majestic-mountain-peak-tranquil-winter-landscape-generated-by-ai_188544-15662.jpg?semt=ais_items_boosted&w=740', N'{"boards": ["Sprint Backlog", "In Progress", "Done", "Retrospective"]}', 1);
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 3c14f43 (Revise LandingPage)
 -- TEMPLATE BOARDS
 INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (1, N'Planning', N'Lập kế hoạch dự án'),
@@ -347,10 +343,6 @@ INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (4, N'Research', N'Nghiên cứu sản phẩm'),
 (4, N'Development', N'Phát triển sản phẩm');
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 3c14f43 (Revise LandingPage)
 -- TEMPLATE TASKS 
 INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
 (1, N'Phân tích yêu cầu', N'Phân tích chi tiết yêu cầu dự án', 'To Do'),
