@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user); // lưu vào session
-                response.sendRedirect(request.getContextPath() + "/Home/TemplateHome.jsp");
+                response.sendRedirect(request.getContextPath() + "/Home/Home.jsp");
             } else {
                 request.setAttribute("errorMessage", "Sai email hoặc mật khẩu!");
                 request.getRequestDispatcher("Login.jsp").forward(request, response); // quay lại login.jsp
