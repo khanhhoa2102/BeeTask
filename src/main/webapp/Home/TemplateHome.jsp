@@ -3,7 +3,7 @@
 <%
     User user = (User) session.getAttribute("user");
     if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/Login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
 %>

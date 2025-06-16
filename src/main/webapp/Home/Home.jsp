@@ -13,10 +13,16 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="user-profile">
-                <div class="avatar"></div>
+                    <div class="avatar">
+                        <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
+                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+                        <% } else { %>
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ccc;"></div>
+                        <% } %>
+                    </div>
                 <div class="info">
-                    <span class="username">Nguyễn Hữu Sơn</span>
-                    <span class="email">nguyenhuusona6@gmail.com</span>
+                        <span class="username"><%= user.getFullName() %></span>
+                        <span class="email"><%= user.getEmail() %></span>
                 </div>
             </div>
             

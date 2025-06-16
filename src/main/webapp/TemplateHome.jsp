@@ -10,41 +10,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%@include file="../Header.jsp" %>
     <title>Template Selection Page</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/TemplateIndividual.css">
-    <script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-        if (savedTheme === 'dark-mode') {
-            document.body.classList.add('dark-mode');
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle) toggle.checked = true;
-        } else {
-            document.body.classList.remove('dark-mode');
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle) toggle.checked = false;
-        }
-
-        const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar) {
-            sidebar.classList.toggle('collapsed', savedSidebarState === 'collapsed');
-        }
-
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('change', () => {
-                const isDark = darkModeToggle.checked;
-                document.body.classList.toggle('dark-mode', isDark);
-                localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
-            });
-        }
-    });
-    </script>
 </head>
 <body>
 <div class="container">
@@ -64,68 +32,13 @@
             </div>
         </div>
 
-        <button class="toggle-btn"><i class="fas fa-bars"></i></button>
-
-        <ul class="menu">
-            <li>
-                <a href="${pageContext.request.contextPath}/Home/Home.jsp">
-                    <i class="fas fa-home"></i><span>Home</span>
-                </a>
-            </li>
-            <li class="active">
-                <a href="${pageContext.request.contextPath}/Home/TemplateHome.jsp">
-                    <i class="fas fa-copy"></i><span>Templates</span>
-                </a>
-            </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/Home/CalendarHome.jsp">
-                    <i class="fas fa-calendar-day"></i><span>Today</span>
-                </a>
-            </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/Home/Table.jsp">
-                    <i class="fas fa-calendar-alt"></i><span>Calendar</span>
-                </a>
-            </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/Home/Setting.jsp">
-                    <i class="fas fa-cog"></i><span>Setting</span>
-                </a>
-            </li>
-        </ul>
-
-        <ul class="help-menu">
-            <li class="help-item">
-                <a href="${pageContext.request.contextPath}/Help.jsp">
-                    <i class="fas fa-question-circle"></i><span>Help</span>
-                </a>
-            </li>
-        </ul>
-        <div class="drag-handle"></div>
+        <%@include file="../Sidebar.jsp"%>
+        <%@include file="../Help.jsp" %>
     </aside>
 
     <!-- Main Content -->
     <div class="main-content">
-        <header class="header">
-            <div class="header-content-wrapper">
-                <div class="header-left">
-                    <button class="icon-btn">
-                        <img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="Logo">
-                    </button>
-                </div>
-                <div class="header-center">
-                    <input type="text" class="search-box" placeholder="Search">
-                    <button class="create-btn">Create Project</button>
-                </div>
-                <div class="header-right">
-                    <label class="switch">
-                        <input type="checkbox" id="darkModeToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="dark-label">Dark Mode</span>
-                </div>
-            </div>
-        </header>
+        <%@include file="../HeaderContent.jsp" %>
 
         <!-- Content Area -->
         <div class="content">

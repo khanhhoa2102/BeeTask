@@ -1,4 +1,4 @@
-/* �?ảm bảo body không có cuộn ngang */
+/* �?ảm bảo body không có cuộn ngang */
 body {
     overflow-x: hidden;
     background-color: #28A745;
@@ -94,7 +94,7 @@ body.dark-mode .task-column {
     display: flex;
 }
 
-/* Sửa tiêu đ�? h3 */
+/* Sửa tiêu đ�? h3 */
 .task-column h3 {
     margin: 0 0 10px;
     font-size: 16px;
@@ -135,7 +135,7 @@ body.dark-mode .board-title[contenteditable="true"] {
     border: 1px solid #1da1f2;
 }
 
-/* Nút thu g�?n */
+/* Nút thu g�?n */
 .collapse-btn {
     background: none;
     border: none;
@@ -166,7 +166,7 @@ body.dark-mode .board-title[contenteditable="true"] {
     font-size: 16px;
 }
 
-/* Ẩn nội dung khi thu g�?n */
+/* Ẩn nội dung khi thu g�?n */
 .task-column.collapsed .task-card {
     display: none;
 }
@@ -257,7 +257,6 @@ body:not(.dark-mode) .menu-dot:hover {
 .use-template-btn:hover {
     background-color: #cc0000;
 }
-
 
 /* Nút Add Board */
 .add-board-btn {

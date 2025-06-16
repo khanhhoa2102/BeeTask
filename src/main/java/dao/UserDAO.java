@@ -104,7 +104,6 @@ public class UserDAO {
         }
         return null;
     }
-
     public static User getUserByEmail(String email) throws SQLException {
         String sql = "SELECT * FROM Users WHERE Email = ?";
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {

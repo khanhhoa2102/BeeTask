@@ -68,6 +68,7 @@ public class LoginGoogleServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             response.sendRedirect("Home/Home.jsp");
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException("OAuth error", e);
