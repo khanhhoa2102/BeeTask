@@ -10,6 +10,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<<<<<<< HEAD
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,6 +34,13 @@
                     if (toggle)
                         toggle.checked = false;
                 }
+=======
+<head>
+    <%@ include file="../Header.jsp"%>
+    <title>BeeTask Home</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Home/Home.css">
+</head>
+>>>>>>> d3949d6202a3b0a66c3b8227b6c5ede1f5835c7b
 
                 // Áp dụng trạng thái sidebar
                 const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
@@ -65,6 +73,7 @@
                         <span class="email"><%= user.getEmail() %></span>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <button class="toggle-btn"><i class="fas fa-bars"></i></button>
 
                 <ul class="menu">
@@ -102,6 +111,43 @@
                         <li>Dự án con Tem</li>
                         <li>Dự án Vua Game</li>
                     </ul>
+=======
+            </div>
+            
+            <%@include file="../Sidebar.jsp" %>
+
+            <div class="my-project">
+                <h4>My project</h4>
+                <ul class="project-list">
+                    <li>Dự án con bò</li>
+                    <li>Dự án con Tem</li>
+                    <li>Dự án Vua Game</li>
+                </ul>
+            </div>
+            
+            <%@include file="../Help.jsp" %>
+        </aside>
+
+        <!-- Main Header -->
+        <main class="main-content">
+            <%@include file="../HeaderContent.jsp" %>
+        </main>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="content-wrapper">
+        <div class="dashboard">
+            <!-- Cột trái -->
+            <div class="column">
+                <h3>Recently viewed</h3>
+
+                <div class="recent-item">
+                    <img src="${pageContext.request.contextPath}/Asset/image1.png" alt="Project Thumbnail">
+                    <div>
+                        <p class="project-title">Dự án con bò</p>
+                        <p class="start-date">Start: 10/4/2025</p>
+                    </div>
+>>>>>>> d3949d6202a3b0a66c3b8227b6c5ede1f5835c7b
                 </div>
 
                 <ul class="menu help-menu">

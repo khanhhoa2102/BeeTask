@@ -3,105 +3,64 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>BeeTask - Tasks</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/TemplateDetail.css">
-        <script>
-            window.addEventListener('DOMContentLoaded', () => {
-                // Áp dụng theme
-                const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-                if (savedTheme === 'dark-mode') {
-                    document.body.classList.add('dark-mode');
-                    const toggle = document.getElementById('darkModeToggle');
-                    if (toggle)
-                        toggle.checked = true;
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    const toggle = document.getElementById('darkModeToggle');
-                    if (toggle)
-                        toggle.checked = false;
-                }
 
-                // Áp dụng trạng thái sidebar
-                const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
-                const sidebar = document.querySelector('.sidebar');
-                if (sidebar) {
-                    if (savedSidebarState === 'collapsed') {
-                        sidebar.classList.add('collapsed');
-                    } else {
-                        sidebar.classList.remove('collapsed');
-                    }
-                }
+<head>
+    <%@ include file="/Header.jsp"%>
+    <title>BeeTask - Tasks</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/TemplateDetail.css">
+</head>
 
-                // Xử lý sự kiện thay đổi theme
-                const darkModeToggle = document.getElementById('darkModeToggle');
-                if (darkModeToggle) {
-                    darkModeToggle.addEventListener('change', () => {
-                        const isDarkMode = darkModeToggle.checked;
-                        document.body.classList.toggle('dark-mode', isDarkMode);
-                        localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
-                        console.log('Dark Mode:', isDarkMode);
-                    });
-                } else {
-                    console.warn('Phần tử #darkModeToggle không tồn tại.');
-                }
-            });
-        </script>
-    </head>
-
-    <body class="dark-mode">
-        <div class="container">
-            <aside class="sidebar">
-                <div class="user-profile">
-                    <div class="avatar"></div>
-                    <div class="info">
-                        <span class="username">Nguyễn Hữu Sơn</span>
-                        <span class="email">nguyenhuusona6@gmail.com</span>
-                    </div>
+<body class="dark-mode">
+    <div class="container">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar"></div>
+                <div class="info">
+                    <span class="username">Nguyễn Hữu Sơn</span>
+                    <span class="email">nguyenhuusona6@gmail.com</span>
                 </div>
-                <button class="toggle-btn"><i class="fas fa-bars"></i></button>
-                <ul class="menu">
-                    <li>
-                        <a href="${pageContext.request.contextPath}/DashboardProject.jsp">
-                            <i class="fas fa-tachometer-alt"></i><span>Dash Board</span>
-                        </a>
-                    </li>
-                    <li class="active">
-                        <a href="${pageContext.request.contextPath}/Task.jsp">
-                            <i class="fas fa-tasks"></i><span>Task</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/CalendarProject.jsp">
-                            <i class="fas fa-calendar-alt"></i><span>Calendar</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/Table.jsp">
-                            <i class="fas fa-table"></i><span>Table</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/Table.jsp">
-                            <i class="fas fa-table"></i><span>Statitics</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/Setting.jsp">
-                            <i class="fas fa-cog"></i><span>Setting</span>
-                        </a>
-                    </li>
-                </ul>
-                <ul class="menu help-menu">
-                    <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
-                </ul>
-                <div class="drag-handle"></div>
-            </aside>
+            </div>
+            <button class="toggle-btn"><i class="fas fa-bars"></i></button>
+            <ul class="menu">
+                <li>
+                    <a href="${pageContext.request.contextPath}/DashboardProject.jsp">
+                        <i class="fas fa-tachometer-alt"></i><span>Dash Board</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="${pageContext.request.contextPath}/Task.jsp">
+                        <i class="fas fa-tasks"></i><span>Task</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/CalendarProject.jsp">
+                        <i class="fas fa-calendar-alt"></i><span>Calendar</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/Table.jsp">
+                        <i class="fas fa-table"></i><span>Table</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/Table.jsp">
+                        <i class="fas fa-table"></i><span>Statitics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/Setting.jsp">
+                        <i class="fas fa-cog"></i><span>Setting</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="menu help-menu">
+                <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
+            </ul>
+            <div class="drag-handle"></div>
+        </aside>
 
+        <main class="main-content">
+            <%@include file="/HeaderContent.jsp" %>
             <main class="main-content">
                 <div class="header">
                     <div class="header-content-wrapper">
