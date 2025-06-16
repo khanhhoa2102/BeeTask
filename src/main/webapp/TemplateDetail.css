@@ -17,6 +17,7 @@ body.dark-mode {
     justify-content: center;
     width: 80%;
     margin: 0 auto;
+    margin-top: 8px;
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -235,6 +236,27 @@ body:not(.dark-mode) .menu-dot {
 
 body:not(.dark-mode) .menu-dot:hover {
     color: #666666;
+}
+.template-action-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 20px 0;
+}
+
+.use-template-btn {
+    background-color: #FF0000;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.use-template-btn:hover {
+    background-color: #cc0000;
 }
 
 /* Nút Add Board */
