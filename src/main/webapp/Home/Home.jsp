@@ -3,39 +3,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%@ include file="../Header.jsp"%>
     <title>BeeTask Home</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Home/Home.css">
-    <script>
-        // Áp dụng theme và trạng thái sidebar từ localStorage khi tải trang
-        window.addEventListener('DOMContentLoaded', () => {
-            // Áp dụng theme
-            const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-            if (savedTheme === 'dark-mode') {
-                document.body.classList.add('dark-mode');
-                const toggle = document.getElementById('darkModeToggle');
-                if (toggle) toggle.checked = true;
-            } else {
-                document.body.classList.remove('dark-mode');
-                const toggle = document.getElementById('darkModeToggle');
-                if (toggle) toggle.checked = false;
-            }
-
-            // Áp dụng trạng thái sidebar
-            const savedSidebarState = localStorage.getItem('sidebarState') || 'expanded';
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                if (savedSidebarState === 'collapsed') {
-                    sidebar.classList.add('collapsed');
-                } else {
-                    sidebar.classList.remove('collapsed');
-                }
-            }
-        });
-    </script>
 </head>
 
 <body class="dark-mode">
@@ -49,35 +19,8 @@
                     <span class="email">nguyenhuusona6@gmail.com</span>
                 </div>
             </div>
-            <button class="toggle-btn"><i class="fas fa-bars"></i></button>
-
-            <ul class="menu">
-                <li class="active">
-                    <a href="${pageContext.request.contextPath}/Home/Home.jsp">
-                        <i class="fas fa-home"></i><span>Home</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Home/TemplateHome.jsp">
-                        <i class="fas fa-copy"></i><span>Templates</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Home/CalendarHome.jsp">
-                        <i class="fas fa-calendar-day"></i><span>Today</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Home/Table.jsp">
-                        <i class="fas fa-calendar-alt"></i><span>Calendar</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Home/Setting.jsp">
-                        <i class="fas fa-cog"></i><span>Setting</span>
-                    </a>
-                </li>
-            </ul>
+            
+            <%@include file="../Sidebar.jsp" %>
 
             <div class="my-project">
                 <h4>My project</h4>
@@ -87,33 +30,13 @@
                     <li>Dự án Vua Game</li>
                 </ul>
             </div>
-
-            <ul class="menu help-menu">
-                <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
-            </ul>
-            <div class="drag-handle"></div>
+            
+            <%@include file="../Help.jsp" %>
         </aside>
 
         <!-- Main Header -->
         <main class="main-content">
-            <div class="header">
-                <div class="header-content-wrapper">
-                    <div class="header-left">
-                        <button class="icon-btn"><img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="Logo"></button>
-                    </div>
-                    <div class="header-center">
-                        <input type="text" class="search-box" placeholder="Search" />
-                        <button class="create-btn">Create Project</button>
-                    </div>
-                    <div class="header-right">
-                        <label class="switch">
-                            <input type="checkbox" id="darkModeToggle" />
-                            <span class="slider"></span>
-                        </label>
-                        <span class="dark-label">Dark Mode</span>
-                    </div>
-                </div>
-            </div>
+            <%@include file="../HeaderContent.jsp" %>
         </main>
     </div>
 
