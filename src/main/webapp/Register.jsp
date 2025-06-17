@@ -35,7 +35,7 @@
                         id="name" 
                         name="name" 
                         class="form-input" 
-                        placeholder="Enter your Name"
+                        placeholder="Enter Username"
                         required
                     >
                     <span class="error-message" id="nameError"></span>

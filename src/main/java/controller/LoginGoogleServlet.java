@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import model.GoogleUserDTO;
 import model.User;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 
@@ -33,36 +32,35 @@ public class LoginGoogleServlet extends HttpServlet {
             return;
         }
 
-        System.out.println("Received code: " + code);
-        System.out.println("GOOGLE_CLIENT_ID: " + Constants.GOOGLE_CLIENT_ID);
-        System.out.println("GOOGLE_CLIENT_SECRET: " + Constants.GOOGLE_CLIENT_SECRET);
-        System.out.println("GOOGLE_REDIRECT_URI: " + Constants.GOOGLE_REDIRECT_URI);
-
         try {
             String accessToken = getToken(code);
             GoogleUserDTO googleUser = getUserInfo(accessToken);
 
-            System.out.println("Google JSON: " + googleUser);
+            String googleId = googleUser.getId();
+            String email = googleUser.getEmail();
 
-            User user = new User(
-                0,
-                googleUser.getName(),
-                googleUser.getEmail(),
-                "GOOGLE_" + googleUser.getId(),
-                googleUser.getPicture(),
-                true,
-                new Timestamp(System.currentTimeMillis())
-            );
+            // Check nếu người dùng đã tồn tại bằng GoogleId
+            User existingUser = new UserDAO().findByGoogleId(googleId);
 
-            System.out.println("Checking if user exists...");
-            User existingUser = UserDAO.getUserByEmail(user.getEmail());
-
+            User user;
             if (existingUser == null) {
-                System.out.println("User not found. Inserting new user...");
-                UserDAO.insertUser(user);
+                // Nếu chưa tồn tại, tạo mới user với LoginProvider là Google
+                user = new User();
+                user.setUsername(googleUser.getName());
+                user.setEmail(email);
+                user.setAvatarUrl(googleUser.getPicture());
+                user.setPasswordHash("GOOGLE_" + googleId); // giả lập mã hash
+                user.setLoginProvider("Google");
+                user.setGoogleId(googleId);
+                user.setEmailVerified(true);
+                user.setActive(true);
+                user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+                new UserDAO().insert(user);
+                System.out.println("User inserted from Google: " + email);
             } else {
-                System.out.println("User already exists.");
                 user = existingUser;
+                System.out.println("User exists, logged in with Google: " + email);
             }
 
             HttpSession session = request.getSession();
@@ -75,7 +73,7 @@ public class LoginGoogleServlet extends HttpServlet {
         }
     }
 
-    public static String getToken(String code) throws ClientProtocolException, IOException {
+    public static String getToken(String code) throws IOException {
         String response = Request.Post(Constants.GOOGLE_LINK_GET_TOKEN)
                 .bodyForm(Form.form()
                         .add("client_id", Constants.GOOGLE_CLIENT_ID)
@@ -90,11 +88,9 @@ public class LoginGoogleServlet extends HttpServlet {
         return jobj.get("access_token").getAsString();
     }
 
-    public static GoogleUserDTO getUserInfo(final String accessToken) throws ClientProtocolException, IOException {
+    public static GoogleUserDTO getUserInfo(final String accessToken) throws IOException {
         String link = Constants.GOOGLE_LINK_GET_USER_INFO + accessToken;
         String response = Request.Get(link).execute().returnContent().asString();
-
-        System.out.println("Google raw JSON: " + response);
         return new Gson().fromJson(response, GoogleUserDTO.class);
     }
 

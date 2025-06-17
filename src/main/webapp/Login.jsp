@@ -3,6 +3,15 @@
     String googleClientId = System.getenv("GOOGLE_CLIENT_ID");
 %>
 
+<% 
+    String msg = request.getParameter("msg");
+    if ("reset_success".equals(msg)) {
+%>
+    <div class="success-message">✅ Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập.</div>
+<% 
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
