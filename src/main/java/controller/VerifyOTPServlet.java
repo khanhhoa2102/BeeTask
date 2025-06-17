@@ -1,11 +1,13 @@
 package controller;
 
+import context.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.UUID;
 
 @WebServlet(name = "VerifyOTPServlet", urlPatterns = {"/verify-code"})
 public class VerifyOTPServlet extends HttpServlet {
@@ -15,7 +17,6 @@ public class VerifyOTPServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String inputCode = request.getParameter("verificationCode");
-
         HttpSession session = request.getSession(false);
 
         if (session == null) {
@@ -26,10 +27,15 @@ public class VerifyOTPServlet extends HttpServlet {
 
         String sessionOTP = (String) session.getAttribute("otp");
         Timestamp otpExpiry = (Timestamp) session.getAttribute("otpExpiry");
+        String resetEmail = (String) session.getAttribute("resetEmail");
 
+        System.out.println(">>>> [POST] OTP nhập: " + inputCode);
+        System.out.println(">>>> [POST] OTP session: " + sessionOTP);
+        System.out.println(">>>> [POST] OTP hết hạn: " + otpExpiry);
+        System.out.println(">>>> [POST] Email session: " + resetEmail);
 
-        if (sessionOTP == null || otpExpiry == null || inputCode == null) {
-            request.setAttribute("message", "❌ Mã OTP không tồn tại hoặc phiên đã hết hạn.");
+        if (sessionOTP == null || otpExpiry == null || inputCode == null || resetEmail == null) {
+            request.setAttribute("message", "❌ Dữ liệu phiên không đầy đủ.");
             request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
             return;
         }
@@ -48,15 +54,44 @@ public class VerifyOTPServlet extends HttpServlet {
             return;
         }
 
-        // ✅ OTP hợp lệ → chuyển đến trang đổi mật khẩu
-        session.removeAttribute("otp");
-        session.removeAttribute("otpExpiry");
+        // ✅ OTP hợp lệ → sinh token và lưu vào DB
+        String token = UUID.randomUUID().toString();
 
-        // Giữ lại email để xác định người dùng khi đổi mật khẩu
-        String resetEmail = (String) session.getAttribute("resetEmail");
-        request.setAttribute("resetEmail", resetEmail);
+        try (Connection conn = DBConnection.getConnection()) {
+            PreparedStatement getUserStmt = conn.prepareStatement("SELECT UserId FROM Users WHERE Email = ?");
+            getUserStmt.setString(1, resetEmail);
+            ResultSet rs = getUserStmt.executeQuery();
 
-        request.setAttribute("message", "✅ Xác minh thành công, vui lòng đặt lại mật khẩu.");
-        request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+            if (!rs.next()) {
+                request.setAttribute("message", "❌ Người dùng không tồn tại.");
+                request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                return;
+            }
+
+            int userId = rs.getInt("UserId");
+
+            // Thêm token vào bảng TokenForgetPassword
+            PreparedStatement insertToken = conn.prepareStatement(
+                    "INSERT INTO TokenForgetPassword (Token, ExpiryTime, IsUsed, UserId) VALUES (?, ?, 0, ?)");
+            Timestamp expiry = new Timestamp(System.currentTimeMillis() + 10 * 60 * 1000); // +10 phút
+            insertToken.setString(1, token);
+            insertToken.setTimestamp(2, expiry);
+            insertToken.setInt(3, userId);
+            insertToken.executeUpdate();
+
+            // Gán token vào session để chuyển sang ResetPasswordServlet xử lý
+            session.removeAttribute("otp");
+            session.removeAttribute("otpExpiry");
+            session.setAttribute("resetToken", token);
+
+            System.out.println(">>>>> ✅ OTP xác minh thành công. Token reset = " + token);
+
+            response.sendRedirect("reset-password");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("message", "❌ Lỗi hệ thống. Vui lòng thử lại.");
+            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+        }
     }
 }

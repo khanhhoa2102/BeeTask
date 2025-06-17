@@ -14,7 +14,7 @@
         <div class="shape"></div>
         <div class="shape"></div>
     </div>
-    
+
     <div class="container">
         <div class="change-card">
             <!-- Logo Section -->
@@ -26,19 +26,18 @@
             </div>
 
             <!-- Change Password Form -->
-            <form class="change-form" id="changeForm" action="${pageContext.request.contextPath}/change-password" method="post">
-                <!-- New Password Field -->
+            <form class="change-form" id="changeForm"
+                  action="${pageContext.request.contextPath}/reset-password"
+                  method="post">
+
+                <!-- Hidden Token Field -->
+                <input type="hidden" name="token" value="${token}" />
+
+                <!-- New Password -->
                 <div class="form-group">
                     <label for="newPassword" class="form-label">New Password</label>
                     <div class="password-container">
-                        <input 
-                            type="password" 
-                            id="newPassword" 
-                            name="newPassword" 
-                            class="form-input" 
-                            placeholder="Enter new Password"
-                            required
-                        >
+                        <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="Enter new Password" required>
                         <button type="button" class="toggle-password" id="toggleNew">
                             <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -47,26 +46,13 @@
                         </button>
                     </div>
                     <span class="error-message" id="newPasswordError"></span>
-                    <div class="password-strength" id="passwordStrength">
-                        <div class="strength-bar">
-                            <div class="strength-fill" id="strengthFill"></div>
-                        </div>
-                        <span class="strength-text" id="strengthText"></span>
-                    </div>
                 </div>
 
-                <!-- Confirm Password Field -->
+                <!-- Confirm Password -->
                 <div class="form-group">
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
                     <div class="password-container">
-                        <input 
-                            type="password" 
-                            id="confirmPassword" 
-                            name="confirmPassword" 
-                            class="form-input" 
-                            placeholder="Enter Confirm Password"
-                            required
-                        >
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Enter Confirm Password" required>
                         <button type="button" class="toggle-password" id="toggleConfirm">
                             <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -77,7 +63,7 @@
                     <span class="error-message" id="confirmPasswordError"></span>
                 </div>
 
-                <!-- Change Password Button -->
+                <!-- Submit -->
                 <button type="submit" class="change-btn" id="changeBtn">
                     <span class="btn-text">Change Password</span>
                     <span class="loading-spinner" id="loadingSpinner" style="display: none;">
@@ -90,11 +76,6 @@
                     <div class="success-icon">✓</div>
                     <p>Password changed successfully!</p>
                     <small>You will be redirected to login page</small>
-                </div>
-
-                <!-- Back to Login -->
-                <div class="back-link">
-                    <a href="${pageContext.request.contextPath}/login" class="login-link">← Back to Login</a>
                 </div>
             </form>
         </div>
