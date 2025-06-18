@@ -3,7 +3,7 @@
 <%
     User user = (User) session.getAttribute("user");
     if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/Login.jsp");
         return;
     }
 %>
@@ -27,7 +27,7 @@
                 <% } %>
             </div>
             <div class="info">
-                <span class="username"><%= user.getFullName() %></span>
+                <span class="username"><%= user.getUsername() %></span>
                 <span class="email"><%= user.getEmail() %></span>
             </div>
         </div>

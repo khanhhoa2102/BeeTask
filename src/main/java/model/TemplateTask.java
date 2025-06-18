@@ -1,27 +1,34 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author ASUS
- */
+import java.util.Date;
+import java.util.List;
+
+
 public class TemplateTask {
     private int templateTaskId;
     private int templateBoardId;
     private String title;
     private String description;
     private String status;
+    private Date dueDate; 
+    private List<Label> labels; 
+    private List<User> assignees; 
 
-    public TemplateTask(int templateTaskId, int templateBoardId, String title, String description, String status) {
+    public TemplateTask() {
+    }
+
+    public TemplateTask(int templateTaskId, int templateBoardId, String title, String description, String status, Date dueDate, List<Label> labels, List<User> assignees) {
         this.templateTaskId = templateTaskId;
         this.templateBoardId = templateBoardId;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.dueDate = dueDate;
+        this.labels = labels;
+        this.assignees = assignees;
     }
+
+   
 
     public int getTemplateTaskId() {
         return templateTaskId;
@@ -62,5 +69,28 @@ public class TemplateTask {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public List<Label> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<Label> labels) {
+        this.labels = labels;
+    }
+
+    public List<User> getAssignees() {
+        return assignees;
+    }
+
+    public void setAssignees(List<User> assignees) {
+        this.assignees = assignees;
+    }
 }

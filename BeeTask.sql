@@ -1,4 +1,8 @@
-﻿-- ========== USERS ==========
+﻿create database BeeTask
+go 
+use BeeTask
+
+-- ========== USERS ==========
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY,
     Username NVARCHAR(100) NOT NULL,
@@ -99,8 +103,27 @@ CREATE TABLE TemplateTasks (
     Title NVARCHAR(100) NOT NULL,
     Description NVARCHAR(MAX) NULL,
     Status NVARCHAR(20) NOT NULL,
+	DueDate DATETIME NULL,
     CONSTRAINT FK_TemplateTasks_TemplateBoards FOREIGN KEY (TemplateBoardId) REFERENCES TemplateBoards(TemplateBoardId),
     CONSTRAINT CHK_TemplateTasks_Status CHECK (Status IN ('To Do', 'In Progress', 'Done', 'Pending', 'Review'))
+);
+
+-- ========== TEMPLATE TASKS LABELS ==========
+CREATE TABLE TemplateTaskLabels (
+    TemplateTaskId INT NOT NULL,
+    LabelId INT NOT NULL,
+    CONSTRAINT PK_TemplateTaskLabels PRIMARY KEY (TemplateTaskId, LabelId),
+    CONSTRAINT FK_TemplateTaskLabels_TemplateTasks FOREIGN KEY (TemplateTaskId) REFERENCES TemplateTasks(TemplateTaskId),
+    CONSTRAINT FK_TemplateTaskLabels_Labels FOREIGN KEY (LabelId) REFERENCES Labels(LabelId)
+);
+
+-- ========== TEMPLATE TASKS ASSIGNEES ==========
+CREATE TABLE TemplateTaskAssignees (
+    TemplateTaskId INT NOT NULL,
+    UserId INT NOT NULL,
+    CONSTRAINT PK_TemplateTaskAssignees PRIMARY KEY (TemplateTaskId, UserId),
+    CONSTRAINT FK_TemplateTaskAssignees_TemplateTasks FOREIGN KEY (TemplateTaskId) REFERENCES TemplateTasks(TemplateTaskId),
+    CONSTRAINT FK_TemplateTaskAssignees_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 
 -- ========== BOARDS ==========
@@ -695,3 +718,44 @@ VALUES
 (4, 1, 'Rejected', N'Yêu cầu thêm demo prototype và hướng dẫn triển khai.'),
 (5, 4, 'Approved', N'Task này được thực hiện xuất sắc. Không có điểm cần chỉnh.');
 
+-- Gán nhãn cho các Template Task
+INSERT INTO TemplateTaskLabels (TemplateTaskId, LabelId) VALUES
+(1, 2),  -- Phân tích yêu cầu → Important
+(2, 4),  -- Thiết kế architecture → High
+(3, 7),  -- Coding backend → Feature
+(4, 7),  -- Coding frontend → Feature
+(5, 8),  -- Unit testing → Testing
+(6, 8),  -- Integration testing → Testing
+(7, 3),  -- Khảo sát khách hàng → Low
+(8, 1),  -- Phân tích đối thủ → Medium
+(9, 5),  -- Lập kế hoạch content → Urgent
+(10, 4), -- Thiết kế creative → High
+(11, 2), -- Chạy quảng cáo → Important
+(12, 1), -- Theo dõi metrics → Medium
+(13, 3), -- Chọn địa điểm → Low
+(14, 2), -- Liên hệ vendors → Important
+(15, 6), -- Phân công nhiệm vụ → Bug
+(16, 1), -- Market research → Medium
+(17, 2), -- Competitor analysis → Important
+(18, 7); -- Feature development → Feature
+
+-- Gán người phụ trách cho Template Tasks
+INSERT INTO TemplateTaskAssignees (TemplateTaskId, UserId) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+(8, 8),
+(9, 9),
+(10, 10),
+(11, 11),
+(12, 12),
+(13, 13),
+(14, 14),
+(15, 1),
+(16, 2),
+(17, 3),
+(18, 4);

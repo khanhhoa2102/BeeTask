@@ -12,9 +12,7 @@ public class UserDAO {
     public List<User> findAll() throws Exception {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM Users";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 list.add(extractUser(rs));
             }
@@ -24,11 +22,12 @@ public class UserDAO {
 
     public User findById(int id) throws Exception {
         String sql = "SELECT * FROM Users WHERE UserId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return extractUser(rs);
+                if (rs.next()) {
+                    return extractUser(rs);
+                }
             }
         }
         return null;
@@ -36,21 +35,21 @@ public class UserDAO {
 
     public User findByEmail(String email) throws Exception {
         String sql = "SELECT * FROM Users WHERE Email = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return extractUser(rs);
+                if (rs.next()) {
+                    return extractUser(rs);
+                }
             }
         }
         return null;
     }
 
     public void insert(User user) throws Exception {
-        String sql = "INSERT INTO Users (Username, Email, PasswordHash, AvatarUrl, PhoneNumber, DateOfBirth, Gender, Address, LoginProvider, GoogleId, IsEmailVerified, IsActive) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "INSERT INTO Users (Username, Email, PasswordHash, AvatarUrl, PhoneNumber, DateOfBirth, Gender, Address, LoginProvider, GoogleId, IsEmailVerified, IsActive) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPasswordHash());
@@ -69,8 +68,7 @@ public class UserDAO {
 
     public void update(User user) throws Exception {
         String sql = "UPDATE Users SET Username=?, Email=?, PasswordHash=?, AvatarUrl=?, PhoneNumber=?, DateOfBirth=?, Gender=?, Address=?, LoginProvider=?, GoogleId=?, IsEmailVerified=?, IsActive=? WHERE UserId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPasswordHash());
@@ -90,8 +88,7 @@ public class UserDAO {
 
     public void delete(int userId) throws Exception {
         String sql = "DELETE FROM Users WHERE UserId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
         }
@@ -100,12 +97,13 @@ public class UserDAO {
     // Đăng nhập qua email và password
     public User login(String email, String passwordHash) throws Exception {
         String sql = "SELECT * FROM Users WHERE Email = ? AND PasswordHash = ? AND IsActive = 1";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setString(2, passwordHash);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return extractUser(rs);
+                if (rs.next()) {
+                    return extractUser(rs);
+                }
             }
         }
         return null;
@@ -114,11 +112,12 @@ public class UserDAO {
     // Đăng nhập bằng GoogleId
     public User findByGoogleId(String googleId) throws Exception {
         String sql = "SELECT * FROM Users WHERE GoogleId = ? AND LoginProvider = 'Google'";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, googleId);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return extractUser(rs);
+                if (rs.next()) {
+                    return extractUser(rs);
+                }
             }
         }
         return null;
@@ -142,6 +141,16 @@ public class UserDAO {
         user.setCreatedAt(rs.getTimestamp("CreatedAt"));
         return user;
     }
-    
-    
+
+    public boolean isEmailExist(String email) throws Exception {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Email = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1) > 0;
+        }
+    }
+
+
 }

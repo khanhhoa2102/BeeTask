@@ -83,7 +83,7 @@
                                     ? template.getThumbnailUrl()
                                     : "https://via.placeholder.com/300x200";
                 %>
-                <div class="template-card">
+                <a href="TemplateDetail.jsp?templateId=<%= template.getTemplateId() %>" class="template-card">
                     <div class="template-image">
                         <img src="<%= thumb %>" alt="<%= template.getName() %>">
                     </div>
@@ -92,7 +92,7 @@
                         <h3 class="template-title"><%= template.getName() %></h3>
                         <p class="template-description"><%= template.getDescription() %></p>
                     </div>
-                </div>
+                </a>
                 <%
                         }
                     }
@@ -146,5 +146,4 @@
 
     <script src="${pageContext.request.contextPath}/LandingPage.js"></script>
 </body>
-
 </html>

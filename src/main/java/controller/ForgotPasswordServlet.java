@@ -26,48 +26,49 @@ public class ForgotPasswordServlet extends HttpServlet {
         String email = request.getParameter("email");
 
         if (email == null || email.trim().isEmpty()) {
-            request.setAttribute("message", "❌ Vui lòng nhập email!");
+            request.setAttribute("message", "❌ Please enter your email address.");
             request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
             return;
         }
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement checkStmt = conn.prepareStatement("SELECT UserId FROM Users WHERE Email = ?")) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement checkStmt = conn.prepareStatement("SELECT UserId FROM Users WHERE Email = ?")) {
 
             checkStmt.setString(1, email.trim());
             try (ResultSet rs = checkStmt.executeQuery()) {
                 if (rs.next()) {
                     int userId = rs.getInt("UserId");
 
-                    // Sinh mã OTP và thời gian hết hạn
-                    EmailSender sender = new EmailSender();
-                    String otp = sender.getRandom();
+                    // Generate OTP and expiry
+                    String otp = EmailSender.getRandom();
                     Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
-                    // Lưu OTP vào session
+                    // Store in session
                     HttpSession session = request.getSession();
                     session.setAttribute("otp", otp);
                     session.setAttribute("otpExpiry", expiryTime);
                     session.setAttribute("resetEmail", email);
+                    session.setAttribute("otpPurpose", "forgot-password");
 
-                    // Gửi mã OTP đến email
+                    // Send OTP email
                     boolean emailSent = EmailSender.sendOTP(email, otp);
 
                     if (emailSent) {
-                        request.setAttribute("message", "✅ Mã OTP đã được gửi đến email của bạn!");
+                        request.setAttribute("message", "✅ OTP has been sent to your email address.");
                         request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
                     } else {
-                        request.setAttribute("message", "❌ Gửi email thất bại. Vui lòng thử lại!");
+                        request.setAttribute("message", "❌ Failed to send OTP. Please try again.");
                         request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("message", "❌ Email không tồn tại trong hệ thống!");
+                    request.setAttribute("message", "❌ The email address does not exist in our system.");
                     request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("message", "❌ Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.");
+            request.setAttribute("message", "❌ A system error occurred. Please try again later.");
             request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
         }
     }
