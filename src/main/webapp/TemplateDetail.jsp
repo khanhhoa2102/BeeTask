@@ -13,109 +13,201 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <%@ include file="/Header.jsp"%>
-    <title>BeeTask - Tasks</title>
-    <link rel="stylesheet" href="TemplateDetail.css">
-</head>
+    <head>
+        <%@ include file="/Header.jsp"%>
+        <title>BeeTask - <%= template.getName() %></title>
+        <link rel="stylesheet" href="TemplateDetail.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body class="theme-light dark-mode"> 
+        <div class="container">
+            <aside class="sidebar">
+                <%@include file="../Sidebar.jsp"%>
+                <%@include file="../Help.jsp" %>
+            </aside>
 
-<body class="dark-mode">
-    <div class="container">
-        <aside class="sidebar">
-            <%@include file="../Sidebar.jsp"%>
-            <%@include file="../Help.jsp" %>
-        </aside>
+            <main class="main-content">
+                <%@include file="/HeaderContent.jsp" %>
 
-        <main class="main-content">
-            <%@include file="/HeaderContent.jsp" %>
-
-            <div class="project-header-bar">
-                <div class="project-header-name"><%= template.getName() %></div>
-                <div class="project-header-actions">
-                    <div class="project-user-avatar"></div>
-                    <button class="project-action-btn project-filter-btn"><i class="fas fa-filter"></i></button>
-                    <button class="project-action-btn project-pin-btn"><i class="fas fa-thumbtack"></i></button>
-                    <button class="project-action-btn project-visibility-btn">Change visibility</button>
-                    <button class="project-action-btn project-share-btn">Share</button>
-                    <button class="project-action-btn project-more-btn"><i class="fas fa-ellipsis-v"></i></button>
-                </div>
-            </div>
-
-            <div class="template-action-bar">
-                <button class="use-template-btn">Use Template</button>
-            </div>
-
-            <div class="project-dashboard">
-                <div class="task-status-container">
-                    <% for (TemplateBoard board : boards) {
-                        List<TemplateTask> tasks = tasksMap.get(board.getTemplateBoardId());
-                    %>
-                    <div class="task-column">
-                        <h3>
-                            <div class="board-detail">
-                                <span class="board-title" contenteditable="false"><%= board.getName() %></span>
-                                <span class="task-count">(<%= tasks != null ? tasks.size() : 0 %>)</span>
+                <!-- Template Header -->
+                <div class="template-header">
+                    <div class="header-content">
+                        <div class="template-info">
+                            <div class="template-title-section">
+                                <h2 class="template-title"><%= template.getName() %></h2>
                             </div>
-                            <span>
-                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
-                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-                            </span>
-                        </h3>
-
-                        <% if (tasks != null) {
-                            for (TemplateTask task : tasks) { %>
-                        <div class="task-card"
-                             data-description="<%= task.getDescription() %>"
-                             data-priority="Low"
-                             data-deadline="<%= task.getDueDate() %>"
-                             data-assignee="Unassigned"
-                             data-labels="#1E90FF">
-                            <p class="task-title" contenteditable="false"><%= task.getTitle() %></p>
-                            <p class="task-date" contenteditable="false"><%= task.getDueDate() %></p>
                         </div>
-                        <% } } %>
+
+                        <div class="header-actions">
+                            <!-- Use Template Button -->
+                            <a href="<%= request.getContextPath() %>/Login.jsp" class="use-template-btn">
+                                <span>Use Template</span>
+                            </a>
+                        </div>
                     </div>
-                    <% } %>
                 </div>
 
-                <!-- Nút Add Board -->
-                <button id="addBoardBtn" class="add-board-btn">Add Board</button>
-
-                <!-- Các popup vẫn giữ nguyên -->
-                <div class="popup" id="taskPopup">...</div>
-                <div class="add-task-popup" id="addTaskPopup">...</div>
-                <div class="task-detail-popup" id="taskDetailPopup">...</div>
-
-                <div class="tasks-overview">
-                    <h3>Tasks</h3>
-                    <div class="task-list">
-                        <div class="task-row" style="font-weight: bold; background-color: #1E2333; color: white;">
-                            <div class="task-cell">Tasks</div>
-                            <div class="task-cell">Deadline</div>
-                            <div class="task-cell">Priority</div>
-                            <div class="task-cell">Suggested Time</div>
+                <!-- Template Dashboard -->
+                <div class="template-dashboard">
+                    <!-- Stats Overview -->
+                    <div class="stats-section">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" id="totalTasks">0</h3>
+                                <p class="stat-label">Total Tasks</p>
+                            </div>
                         </div>
-                        <% for (TemplateBoard board : boards) {
-                            List<TemplateTask> tasks = tasksMap.get(board.getTemplateBoardId());
-                            if (tasks != null) {
-                                for (TemplateTask task : tasks) { %>
-                        <div class="task-row">
-                            <div class="task-cell"><%= task.getTitle() %></div>
-                            <div class="task-cell"><%= task.getDueDate() %></div>
-                            <div class="task-cell">
-                                <div class="priority-container">
-                                    <div class="task-cell priority low">Low</div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-columns"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number"><%= boards.size() %></h3>
+                                <p class="stat-label">Boards</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" id="pendingTasks">0</h3>
+                                <p class="stat-label">Pending</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number">0</h3>
+                                <p class="stat-label">Completed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boards Section -->
+                    <div class="boards-section">
+                        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="left-section">
+                                <h2><%= boards.size() %> Boards</h2>
+                            </div>
+                            <div class="right-section">
+                                <button class="add-board-btn">
+                                    <i class="fas fa-plus"></i> Add Board
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="boards-container">
+                            <% for (TemplateBoard board : boards) {
+                                List<TemplateTask> tasks = tasksMap.get(board.getTemplateBoardId());
+                            %>
+                            <div class="board-card" data-board-id="<%= board.getTemplateBoardId() %>">
+                                <div class="board-header">
+                                    <h3 class="board-title"><%= board.getName() %></h3>
+                                    <span class="task-count"><%= tasks != null ? tasks.size() : 0 %></span>
+                                </div>
+
+                                <div class="board-tasks">
+                                    <% if (tasks != null) {
+                                    for (TemplateTask task : tasks) { %>
+                                    <div class="task-card" data-task-id="<%= task.getTemplateTaskId() %>">
+                                        <div class="task-header">
+                                            <div class="task-priority medium"></div>
+                                        </div>
+
+                                        <div class="task-content">
+                                            <h4 class="task-title"><%= task.getTitle() %></h4>
+                                            <p class="task-description"><%= task.getDescription() %></p>
+                                        </div>
+
+                                        <div class="task-footer">
+                                            <span class="task-date">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <%= task.getDueDate() %>
+                                            </span>
+                                            <div class="task-assignee">
+                                                <div class="avatar">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } } %>
                                 </div>
                             </div>
-                            <div class="task-cell">Thu 8:00 - 10PM</div>
+                            <% } %>
                         </div>
-                        <% } } } %>
+                    </div>
+
+                    <!-- Task Overview -->
+                    <div class="overview-section">
+                        <div class="section-header">
+                            <h2>Task Overview</h2>
+                            <div class="view-filters">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="todo">To Do</button>
+                                <button class="filter-btn" data-filter="progress">In Progress</button>
+                                <button class="filter-btn" data-filter="done">Done</button>
+                            </div>
+                        </div>
+
+                        <div class="overview-table">
+                            <div class="table-header">
+                                <div class="col-header">Task</div>
+                                <div class="col-header">Board</div>
+                                <div class="col-header">Due Date</div>
+                                <div class="col-header">Priority</div>
+                                <div class="col-header">Status</div>
+                            </div>
+
+                            <div class="table-body">
+                                <% for (TemplateBoard board : boards) {
+                                    List<TemplateTask> tasks = tasksMap.get(board.getTemplateBoardId());
+                                    if (tasks != null) {
+                                        for (TemplateTask task : tasks) { %>
+                                <div class="table-row" data-status="todo">
+                                    <div class="task-info">
+                                        <div class="task-indicator"></div>
+                                        <div class="task-details">
+                                            <h4><%= task.getTitle() %></h4>
+                                            <p><%= task.getDescription() %></p>
+                                        </div>
+                                    </div>
+                                    <div class="board-info">
+                                        <span class="board-name"><%= board.getName() %></span>
+                                    </div>
+                                    <div class="date-info">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span><%= task.getDueDate() %></span>
+                                    </div>
+                                    <div class="priority-info">
+                                        <span class="priority-badge medium">
+                                            <i class="fas fa-flag"></i>
+                                            Medium
+                                        </span>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-badge todo">
+                                            <i class="fas fa-circle"></i>
+                                            To Do
+                                        </span>
+                                    </div>
+                                </div>
+                                <% } } } %>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
+            </main>
+        </div>
 
-    <script src="${pageContext.request.contextPath}/TemplateDetail.js"></script>
-</body>
+        <script src="${pageContext.request.contextPath}/TemplateDetail.js"></script>
+    </body>
 </html>
