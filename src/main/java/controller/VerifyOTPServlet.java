@@ -1,9 +1,11 @@
 package controller;
 
 import context.DBConnection;
+import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.User;
 
 import java.io.IOException;
 import java.sql.*;
@@ -27,24 +29,17 @@ public class VerifyOTPServlet extends HttpServlet {
 
         String sessionOTP = (String) session.getAttribute("otp");
         Timestamp otpExpiry = (Timestamp) session.getAttribute("otpExpiry");
-        String resetEmail = (String) session.getAttribute("resetEmail");
+        String purpose = (String) session.getAttribute("otpPurpose");
 
-        System.out.println(">>>> [POST] OTP nhập: " + inputCode);
-        System.out.println(">>>> [POST] OTP session: " + sessionOTP);
-        System.out.println(">>>> [POST] OTP hết hạn: " + otpExpiry);
-        System.out.println(">>>> [POST] Email session: " + resetEmail);
-
-        if (sessionOTP == null || otpExpiry == null || inputCode == null || resetEmail == null) {
-            request.setAttribute("message", "❌ Dữ liệu phiên không đầy đủ.");
+        if (sessionOTP == null || otpExpiry == null || inputCode == null || purpose == null) {
+            request.setAttribute("message", "❌ Thiếu dữ liệu để xác minh.");
             request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
             return;
         }
 
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-
-        if (now.after(otpExpiry)) {
-            request.setAttribute("message", "❌ Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.");
-            request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
+        if (new Timestamp(System.currentTimeMillis()).after(otpExpiry)) {
+            request.setAttribute("message", "❌ Mã OTP đã hết hạn.");
+            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
             return;
         }
 
@@ -54,43 +49,92 @@ public class VerifyOTPServlet extends HttpServlet {
             return;
         }
 
-        // ✅ OTP hợp lệ → sinh token và lưu vào DB
-        String token = UUID.randomUUID().toString();
+        if ("register".equals(purpose)) {
+            // ✅ Luồng đăng ký
+            try {
+                String name = (String) session.getAttribute("name");
+                String email = (String) session.getAttribute("email");
+                String password = (String) session.getAttribute("password");
 
-        try (Connection conn = DBConnection.getConnection()) {
-            PreparedStatement getUserStmt = conn.prepareStatement("SELECT UserId FROM Users WHERE Email = ?");
-            getUserStmt.setString(1, resetEmail);
-            ResultSet rs = getUserStmt.executeQuery();
+                if (name == null || email == null || password == null) {
+                    request.setAttribute("message", "❌ Thiếu thông tin người dùng.");
+                    request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                    return;
+                }
 
-            if (!rs.next()) {
-                request.setAttribute("message", "❌ Người dùng không tồn tại.");
+                User user = new User();
+                user.setUsername(name);
+                user.setEmail(email);
+                user.setPasswordHash(password); // nếu đã hash sẵn từ trước
+                user.setLoginProvider("Local");
+                user.setEmailVerified(true);
+                user.setActive(true);
+
+                UserDAO dao = new UserDAO();
+                dao.insert(user);
+
+                // 🟢 Dọn dẹp session nhưng vẫn giữ lại để set thông báo
+                session.removeAttribute("otp");
+                session.removeAttribute("otpExpiry");
+                session.removeAttribute("otpPurpose");
+                session.removeAttribute("name");
+                session.removeAttribute("email");
+                session.removeAttribute("password");
+
+                // 🟢 Đặt thông báo đăng ký thành công vào session và redirect
+                session.setAttribute("successMessage", "🎉 Login successfull!");
+                response.sendRedirect("Login.jsp");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("message", "❌ Lỗi khi đăng ký người dùng.");
+                request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            }
+        } else if ("forgot-password".equals(purpose)) {
+            // ✅ Luồng quên mật khẩu
+            String resetEmail = (String) session.getAttribute("resetEmail");
+            if (resetEmail == null) {
+                request.setAttribute("message", "❌ Can't not find email.");
                 request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
                 return;
             }
 
-            int userId = rs.getInt("UserId");
+            try (Connection conn = DBConnection.getConnection()) {
+                PreparedStatement getUserStmt = conn.prepareStatement("SELECT UserId FROM Users WHERE Email = ?");
+                getUserStmt.setString(1, resetEmail);
+                ResultSet rs = getUserStmt.executeQuery();
 
-            // Thêm token vào bảng TokenForgetPassword
-            PreparedStatement insertToken = conn.prepareStatement(
-                    "INSERT INTO TokenForgetPassword (Token, ExpiryTime, IsUsed, UserId) VALUES (?, ?, 0, ?)");
-            Timestamp expiry = new Timestamp(System.currentTimeMillis() + 10 * 60 * 1000); // +10 phút
-            insertToken.setString(1, token);
-            insertToken.setTimestamp(2, expiry);
-            insertToken.setInt(3, userId);
-            insertToken.executeUpdate();
+                if (!rs.next()) {
+                    request.setAttribute("message", "❌ Người dùng không tồn tại.");
+                    request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                    return;
+                }
 
-            // Gán token vào session để chuyển sang ResetPasswordServlet xử lý
-            session.removeAttribute("otp");
-            session.removeAttribute("otpExpiry");
-            session.setAttribute("resetToken", token);
+                int userId = rs.getInt("UserId");
+                String token = UUID.randomUUID().toString();
+                Timestamp expiry = new Timestamp(System.currentTimeMillis() + 10 * 60 * 1000);
 
-            System.out.println(">>>>> ✅ OTP xác minh thành công. Token reset = " + token);
+                PreparedStatement insertToken = conn.prepareStatement(
+                        "INSERT INTO TokenForgetPassword (Token, ExpiryTime, IsUsed, UserId) VALUES (?, ?, 0, ?)");
+                insertToken.setString(1, token);
+                insertToken.setTimestamp(2, expiry);
+                insertToken.setInt(3, userId);
+                insertToken.executeUpdate();
 
-            response.sendRedirect("reset-password");
+                session.removeAttribute("otp");
+                session.removeAttribute("otpExpiry");
+                session.setAttribute("resetToken", token);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("message", "❌ Lỗi hệ thống. Vui lòng thử lại.");
+                response.sendRedirect("reset-password");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("message", "❌ Lỗi hệ thống.");
+                request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            }
+
+        } else {
+            request.setAttribute("message", "❌ Mục đích OTP không hợp lệ.");
             request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
         }
     }

@@ -370,6 +370,16 @@ body::before {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.error-message {
+    color: #d93025;
+    background-color: #fdecea;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    border-left: 5px solid #d93025;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
 .google-icon {
   width: 1.5rem;
   height: 1.5rem;

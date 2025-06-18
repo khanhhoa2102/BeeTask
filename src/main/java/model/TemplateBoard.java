@@ -7,6 +7,10 @@ public class TemplateBoard {
     private String name;
     private String description;
 
+    
+    public TemplateBoard() {
+    }
+
     public TemplateBoard(int templateBoardId, int templateId, String name, String description) {
         this.templateBoardId = templateBoardId;
         this.templateId = templateId;

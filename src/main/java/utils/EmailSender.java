@@ -10,7 +10,7 @@ public class EmailSender {
     private static final String FROM_EMAIL = "khanhhoakt2k4@gmail.com"; // Email gửi đi
     private static final String PASSWORD = "srgf geef utea aita"; // App password
 
-    public String getRandom() {
+    public static String getRandom() {
         Random rnd = new Random();
         int number = rnd.nextInt(999999);
         return String.format("%06d", number);
@@ -58,20 +58,20 @@ public class EmailSender {
         }
     }
     public static void main(String[] args) {
-    // Nhập email người nhận để test
-    String toEmail = "nguyenhuusona6@gmail.com";  // ⚠️ Thay đổi thành email thật để test
+        // Nhập email người nhận để test
+        String toEmail = "nguyenhuusona6@gmail.com";  // ⚠️ Thay đổi thành email thật để test
 
-    // Tạo và gửi OTP
-    EmailSender sender = new EmailSender();
-    String otp = sender.getRandom();
+        // Tạo và gửi OTP
+        EmailSender sender = new EmailSender();
+        String otp = sender.getRandom();
 
-    boolean result = sendOTP(toEmail, otp);
+        boolean result = sendOTP(toEmail, otp);
 
-    if (result) {
-        System.out.println("✅ Gửi mã OTP thành công tới " + toEmail + ": " + otp);
-    } else {
-        System.out.println("❌ Gửi OTP thất bại.");
+        if (result) {
+            System.out.println("✅ Gửi mã OTP thành công tới " + toEmail + ": " + otp);
+        } else {
+            System.out.println("❌ Gửi OTP thất bại.");
+        }
     }
-}
 
 }

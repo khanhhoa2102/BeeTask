@@ -1,6 +1,6 @@
 package model;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 public class Task {
     private int taskId;
@@ -9,11 +9,15 @@ public class Task {
     private String title;
     private String description;
     private int statusId;
-    private Timestamp dueDate;
-    private Timestamp createdAt;
+    private Date dueDate;
+    private Date createdAt;
     private int createdBy;
 
-    public Task(int taskId, int boardId, int listId, String title, String description, int statusId, Timestamp dueDate, Timestamp createdAt, int createdBy) {
+    public Task() {
+    }
+
+    public Task(int taskId, int boardId, int listId, String title, String description,
+                int statusId, Date dueDate, Date createdAt, int createdBy) {
         this.taskId = taskId;
         this.boardId = boardId;
         this.listId = listId;
@@ -73,19 +77,19 @@ public class Task {
         this.statusId = statusId;
     }
 
-    public Timestamp getDueDate() {
+    public Date getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Timestamp dueDate) {
+    public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
 
-    public Timestamp getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -99,8 +103,16 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" + "taskId=" + taskId + ", boardId=" + boardId + ", listId=" + listId + ", title=" + title + ", description=" + description + ", statusId=" + statusId + ", dueDate=" + dueDate + ", createdAt=" + createdAt + ", createdBy=" + createdBy + '}';
+        return "Task{" +
+                "taskId=" + taskId +
+                ", boardId=" + boardId +
+                ", listId=" + listId +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", statusId=" + statusId +
+                ", dueDate=" + dueDate +
+                ", createdAt=" + createdAt +
+                ", createdBy=" + createdBy +
+                '}';
     }
-
-    
 }

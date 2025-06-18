@@ -14,10 +14,14 @@
         <div class="shape"></div>
         <div class="shape"></div>
     </div>
-    
+
     <div class="container">
         <div class="register-card">
-            <!-- Logo Section -->
+
+            <% if (request.getAttribute("message") != null) { %>
+                <div class="error-message"><%= request.getAttribute("message") %></div>
+            <% } %>
+
             <div class="logo-section">
                 <div class="logo-container">
                     <img src="Asset/Longlogo.png" alt="BeeTask Logo" class="logo">
@@ -25,9 +29,9 @@
                 <h2 class="register-title">Sign up</h2>
             </div>
 
-            <!-- Register Form -->
-            <form class="register-form" id="registerForm" action="${pageContext.request.contextPath}/register" method="post">
-                <!-- Name Field -->
+            <form class="register-form" id="registerForm" action="register" method="post">
+
+                <!-- Name -->
                 <div class="form-group">
                     <label for="name" class="form-label">Name</label>
                     <input 
@@ -36,26 +40,28 @@
                         name="name" 
                         class="form-input" 
                         placeholder="Enter Username"
-                        required
-                    >
+                        value="<%= request.getAttribute("name") != null ? request.getAttribute("name") : "" %>"
+                        required>
                     <span class="error-message" id="nameError"></span>
                 </div>
 
-                <!-- Email Field -->
+                <!-- Email -->
                 <div class="form-group">
                     <label for="email" class="form-label">Email</label>
                     <input 
                         type="email" 
                         id="email" 
                         name="email" 
-                        class="form-input" 
+                        class="form-input <%= request.getAttribute("emailError") != null ? "input-error" : "" %>" 
                         placeholder="Enter your Email"
-                        required
-                    >
-                    <span class="error-message" id="emailError"></span>
+                        value="<%= request.getAttribute("email") != null ? request.getAttribute("email") : "" %>"
+                        required>
+                    <span class="error-message" id="emailError">
+                        <%= request.getAttribute("emailError") != null ? request.getAttribute("emailError") : "" %>
+                    </span>
                 </div>
 
-                <!-- Password Field -->
+                <!-- Password -->
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
                     <input 
@@ -64,8 +70,7 @@
                         name="password" 
                         class="form-input" 
                         placeholder="Enter your Password"
-                        required
-                    >
+                        required>
                     <span class="error-message" id="passwordError"></span>
                     <div class="password-strength" id="passwordStrength">
                         <div class="strength-bar">
@@ -75,7 +80,7 @@
                     </div>
                 </div>
 
-                <!-- Sign Up Button -->
+                <!-- Submit -->
                 <button type="submit" class="register-btn" id="registerBtn">
                     <span class="btn-text">Sign up</span>
                     <span class="loading-spinner" id="loadingSpinner" style="display: none;">
@@ -86,7 +91,7 @@
                 <!-- Divider -->
                 <div class="divider">Or Continue With:</div>
 
-                <!-- Google Sign In -->
+                <!-- Google -->
                 <button type="button" class="google-btn" id="googleBtn">
                     <svg class="google-icon" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -97,9 +102,9 @@
                     <span>Google</span>
                 </button>
 
-                <!-- Footer Link -->
+                <!-- Footer -->
                 <div class="footer-link">
-                    <a href="Login.jsp" class="login-link">Login Account</a>
+                    <a href="Login.jsp" class="login-link">Already have an account? Log in</a>
                 </div>
             </form>
         </div>
