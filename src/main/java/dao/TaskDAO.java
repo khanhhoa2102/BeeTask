@@ -4,12 +4,53 @@ import context.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import model.Task;
 
 public class TaskDAO {
+    private Connection connection;
+
+    public TaskDAO() {
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Task> findByStatus(int statusId) {
+        List<Task> tasks = new ArrayList<>();
+        String sql = "SELECT * FROM Tasks WHERE statusId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, statusId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                tasks.add(mapResultSetToTask(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tasks;
+    }
+
+    // ✔️ Hàm mapping từ ResultSet sang Task
+    private Task mapResultSetToTask(ResultSet rs) throws SQLException {
+        int taskId = rs.getInt("taskId");
+        int boardId = rs.getInt("boardId");
+        int listId = rs.getInt("listId");
+        String title = rs.getString("title");
+        String description = rs.getString("description");
+        int statusId = rs.getInt("statusId");
+        java.util.Date dueDate = rs.getDate("dueDate");
+        java.util.Date createdAt = rs.getTimestamp("createdAt");
+        int createdBy = rs.getInt("createdBy");
+
+        return new Task(taskId, boardId, listId, title, description, statusId, dueDate, createdAt, createdBy);
+    }
+    
     public List<Task> findAll() throws Exception {
         List<Task> list = new ArrayList<>();
         String sql = "SELECT * FROM Tasks";

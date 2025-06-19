@@ -1,319 +1,107 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <%@ include file="/Header.jsp"%>
-    <title>BeeTask - Tasks</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Task.css">
+    <title>BeeTask - Task</title>
+    <link rel="stylesheet" href="css/task.css">
 </head>
+<body>
 
-<body class="dark-mode">
-    <div class="container">
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar"></div>
-                <div class="info">
-                    <span class="username">Nguyễn Hữu Sơn</span>
-                    <span class="email">nguyenhuusona6@gmail.com</span>
+<h2 style="color: white; text-align: center; margin-top: 20px;">Tên Project</h2>
+
+<!-- ========== Kanban Board ========== -->
+<div class="project-dashboard">
+    <div class="task-status-container">
+
+        <!-- To Do -->
+        <div class="task-column">
+            <h3>To Do (<c:out value="${fn:length(toDoList)}" />)</h3>
+            <c:forEach var="task" items="${toDoList}">
+                <div class="task-card">
+                    <div class="title-menu-wrapper">
+                        <p class="task-title">${task.title}</p>
+                        <button class="menu-dot">⋮</button>
+                    </div>
+                    <p class="task-date">${task.dueDate}</p>
+                    <c:if test="${not empty task.imageUrl}">
+                        <img src="${task.imageUrl}" alt="task image">
+                    </c:if>
                 </div>
-            </div>
-            <button class="toggle-btn"><i class="fas fa-bars"></i></button>
-            <ul class="menu">
-                <li>
-                    <a href="${pageContext.request.contextPath}/DashboardProject.jsp">
-                        <i class="fas fa-tachometer-alt"></i><span>Dash Board</span>
-                    </a>
-                </li>
-                <li class="active">
-                    <a href="${pageContext.request.contextPath}/Task.jsp">
-                        <i class="fas fa-tasks"></i><span>Task</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/CalendarProject.jsp">
-                        <i class="fas fa-calendar-alt"></i><span>Calendar</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Table.jsp">
-                        <i class="fas fa-table"></i><span>Table</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Table.jsp">
-                        <i class="fas fa-table"></i><span>Statitics</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/Setting.jsp">
-                        <i class="fas fa-cog"></i><span>Setting</span>
-                    </a>
-                </li>
-            </ul>
-            <ul class="menu help-menu">
-                <li class="help-item"><i class="fas fa-question-circle"></i> <span>Help</span></li>
-            </ul>
-            <div class="drag-handle"></div>
-        </aside>
+            </c:forEach>
+        </div>
 
-        <main class="main-content">
-            <%@include file="/HeaderContent.jsp" %>
-
-            <div class="project-header-bar">
-                <div class="project-header-name">Tên Project</div>
-                <div class="project-header-actions">
-                    <div class="project-user-avatar"></div>
-                    <button class="project-action-btn project-filter-btn"><i class="fas fa-filter"></i></button>
-                    <button class="project-action-btn project-pin-btn"><i class="fas fa-thumbtack"></i></button>
-                    <button class="project-action-btn project-visibility-btn">Change visibility</button>
-                    <button class="project-action-btn project-share-btn">Share</button>
-                    <button class="project-action-btn project-more-btn"><i class="fas fa-ellipsis-v"></i></button>
+        <!-- In Progress -->
+        <div class="task-column">
+            <h3>In Progress (<c:out value="${fn:length(inProgressList)}" />)</h3>
+            <c:forEach var="task" items="${inProgressList}">
+                <div class="task-card">
+                    <div class="title-menu-wrapper">
+                        <p class="task-title">${task.title}</p>
+                        <button class="menu-dot">⋮</button>
+                    </div>
+                    <p class="task-date">${task.dueDate}</p>
                 </div>
-            </div>
+            </c:forEach>
+        </div>
 
-            <div class="project-dashboard">
-                <div class="task-status-container">
-                    <div class="task-column">
-                        <h3>
-                            <div class="board-detail">
-                                <span class="board-title" contenteditable="false">To Do</span>
-                                <span class="task-count">(2)</span>
-                            </div>
-                            <span>
-                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
-                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-                            </span>
-                        </h3>
-                        <div class="task-card">
-                            <img src="${pageContext.request.contextPath}/Asset/image5.png" alt="Logo">
-                            <p class="task-title" contenteditable="false">Write a Document</p>
-                            <p class="task-date" contenteditable="false">May 16</p>
-                        </div>
-                        <div class="task-card">
-                            <p class="task-title" contenteditable="false">Write a Document</p>
-                            <p class="task-date" contenteditable="false">May 17</p>
-                        </div>
+        <!-- Done -->
+        <div class="task-column">
+            <h3>Done (<c:out value="${fn:length(doneList)}" />)</h3>
+            <c:forEach var="task" items="${doneList}">
+                <div class="task-card">
+                    <div class="title-menu-wrapper">
+                        <p class="task-title">${task.title}</p>
+                        <button class="menu-dot">⋮</button>
                     </div>
-                    <div class="task-column">
-                        <h3>
-                            <div class="board-detail">
-                                <span class="board-title" contenteditable="false">In Progress</span>
-                                <span class="task-count">(2)</span>
-                            </div>
-                            <span>
-                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
-                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-                            </span>
-                        </h3>
-                        <div class="task-card">
-                            <p class="task-title" contenteditable="false">Write a Document</p>
-                            <p class="task-date" contenteditable="false">May 19</p>
-                        </div>
-                        <div class="task-card">
-                            <p class="task-title" contenteditable="false">Write a Document</p>
-                            <p class="task-date" contenteditable="false">May 17</p>
-                        </div>
-                    </div>
-                    <div class="task-column">
-                        <h3>
-                            <div class="board-detail">
-                                <span class="board-title" contenteditable="false">Done</span>
-                                <span class="task-count">(2)</span>
-                            </div>
-                            <span>
-                                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
-                                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-                            </span>
-                        </h3>
-                        <div class="task-card">
-                            <p class="task-title" contenteditable="false">Write a Document</p>
-                            <p class="task-date" contenteditable="false">May 18</p>
-                        </div>
-                        <div class="task-card">
-                            <img src="${pageContext.request.contextPath}/Asset/image4.png" alt="Logo">
-                            <p class="task-title" contenteditable="false">Write a Document</p>
-                            <p class="task-date" contenteditable="false">May 17</p>
-                        </div>
-                    </div>
+                    <p class="task-date">${task.dueDate}</p>
+                    <c:if test="${not empty task.imageUrl}">
+                        <img src="${task.imageUrl}" alt="task image">
+                    </c:if>
                 </div>
-                <!-- Nút Add Board -->
-                <button id="addBoardBtn" class="add-board-btn">Add Board</button>
+            </c:forEach>
+        </div>
 
-                <!-- Popup List Actions -->
-                <div class="popup" id="taskPopup">
-                    <div class="popup-content dropdown-menu">
-                        <div class="dropdown-header">List actions<span class="popup-close">×</span></div>
-                        <button class="dropdown-item" data-action="add-tasks">Add Tasks</button>
-                        <button class="dropdown-item">Copy List</button>
-                        <button class="dropdown-item">Move all task</button>
-                        <button class="dropdown-item">Sort by</button>
-                        <button class="dropdown-item delete-option">Delete Board</button>
-                    </div>
-                </div>
-
-                <!-- Popup Add Task -->
-                <div class="add-task-popup" id="addTaskPopup">
-                    <div class="add-task-header">Add Task<span class="popup-close">×</span></div>
-                    <div class="add-task-content">
-                        <label for="task-name">Task Name</label>
-                        <input type="text" id="task-name" placeholder="Enter task name">
-
-                        <label for="task-description">Description</label>
-                        <textarea id="task-description" placeholder="Enter description"></textarea>
-
-                        <label for="task-priority">Priority</label>
-                        <select id="task-priority">
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-
-                        <label for="task-due-date">Due Date</label>
-                        <input type="date" id="task-due-date">
-                    </div>
-                    <div class="add-task-actions">
-                        <button class="cancel-btn">Cancel</button>
-                        <button class="add-btn">Add Task</button>
-                    </div>
-                </div>
-
-                <!-- Popup Task Detail (sử dụng chung) -->
-                <div class="task-detail-popup" id="taskDetailPopup">
-                    <div class="task-detail-header">Task Details<span class="popup-close">×</span></div>
-                    <div class="task-detail-content">
-                        <div class="task-detail-fields">
-                            <label>Task title</label>
-                            <input type="text" class="task-title-input" value="Task title" readonly>
-                            <label>Description</label>
-                            <textarea class="task-description-input"
-                                placeholder="Add detailed description ...">Add detailed description ...</textarea>
-                        </div>
-                        <div class="task-detail-actions">
-                            <div class="action-btn-container">
-                                <button class="action-btn labels-btn">Labels</button>
-                                <div class="labels-dropdown" style="display: none;">
-                                    <div class="dropdown-header">Select Labels<span class="dropdown-close">×</span>
-                                    </div>
-                                    <div class="dropdown-content">
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#FF4500">
-                                            <span class="color-box" style="background-color: #FF4500;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#228B22">
-                                            <span class="color-box" style="background-color: #228B22;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#6A5ACD">
-                                            <span class="color-box" style="background-color: #6A5ACD;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#20B2AA">
-                                            <span class="color-box" style="background-color: #20B2AA;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#FFA07A">
-                                            <span class="color-box" style="background-color: #FFA07A;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#FF69B4">
-                                            <span class="color-box" style="background-color: #FF69B4;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#1E90FF">
-                                            <span class="color-box" style="background-color: #1E90FF;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#87CEEB">
-                                            <span class="color-box" style="background-color: #87CEEB;"></span>
-                                        </label>
-                                        <label class="dropdown-item">
-                                            <input type="checkbox" class="label-checkbox" data-color="#FFD700">
-                                            <span class="color-box" style="background-color: #FFD700;"></span>
-                                        </label>
-                                        <div class="add-label">
-                                            <input type="color" class="add-label-input" value="#FF4500">
-                                            <button class="add-label-btn">+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="action-btn">Deadline</button>
-                            <button class="action-btn">Check List</button>
-                            <button class="action-btn">Assignee</button>
-                            <button class="action-btn">Attachments</button>
-                            <button class="action-btn">Priority</button>
-                        </div>
-                        <div class="task-detail-values">
-                            <div class="value-box" data-type="labels">
-                                <span class="value"></span>
-                            </div>
-                            <div class="value-box" data-type="deadline">
-                                <span class="value"></span>
-                            </div>
-                            <div class="value-box" data-type="assignee">
-                                <span class="value"></span>
-                            </div>
-                            <div class="value-box" data-type="priority">
-                                <span class="value"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="task-detail-actions-bottom">
-                        <button class="suggestion-btn">AI Suggestion</button>
-                        <button class="save-btn">Save</button>
-                    </div>
-                </div>
-
-
-                <div class="tasks-overview">
-                    <h3>Tasks</h3>
-                    <div class="task-list">
-                        <div class="task-row" style="font-weight: bold; background-color: #1E2333; color: white;">
-                            <div class="task-cell">Tasks</div>
-                            <div class="task-cell">Deadline</div>
-                            <div class="task-cell">Priority</div>
-                            <div class="task-cell">Suggested Time</div>
-                        </div>
-                        <div class="task-row">
-                            <div class="task-cell">Write a Document</div>
-                            <div class="task-cell">May 17</div>
-                            <div class="task-cell">
-                                <div class="priority-container">
-                                    <div class="task-cell priority hight">Hight</div>
-                                </div>
-                            </div>
-                            <div class="task-cell">Thu 8:00 - 10PM</div>
-                        </div>
-                        <div class="task-row">
-                            <div class="task-cell">Write a Document</div>
-                            <div class="task-cell">May 17</div>
-                            <div class="task-cell">
-                                <div class="priority-container">
-                                    <div class="task-cell priority medium">Medium</div>
-                                </div>
-                            </div>
-                            <div class="task-cell">Thu 8:00 - 10PM</div>
-                        </div>
-                        <div class="task-row">
-                            <div class="task-cell">Write a Document</div>
-                            <div class="task-cell">May 17</div>
-                            <div class="task-cell">
-                                <div class="priority-container">
-                                    <div class="task-cell priority low">Low</div>
-                                </div>
-                            </div>
-                            <div class="task-cell">Thu 8:00 - 10PM</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
     </div>
 
-    <script src="${pageContext.request.contextPath}/TaskScript.js"></script>
-</body>
+    <!-- ========== Task Table ========== -->
+    <div class="tasks-overview">
+        <h2 style="color: white; margin-left: 10px;">Tasks</h2>
+        <table class="task-list">
+            <thead>
+                <tr class="task-row">
+                    <th class="task-cell">Tasks</th>
+                    <th class="task-cell">Deadline</th>
+                    <th class="task-cell">Priority</th>
+                    <th class="task-cell">Suggested Time</th>
+                </tr>
+            </thead>
+            <tbody>
+            <c:forEach var="task" items="${taskList}">
+                <tr class="task-row">
+                    <td class="task-cell">${task.title}</td>
+                    <td class="task-cell">${task.dueDate}</td>
+                    <td class="task-cell priority">
+                        <c:choose>
+                            <c:when test="${task.priority eq 'High'}">
+                                <span class="priority hight">High</span>
+                            </c:when>
+                            <c:when test="${task.priority eq 'Medium'}">
+                                <span class="priority medium">Medium</span>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="priority low">Low</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td class="task-cell">Thu 8:00 - 10PM</td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+</div>
 
+</body>
 </html>
