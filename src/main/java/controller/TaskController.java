@@ -1,11 +1,9 @@
 package controller;
-
 import dao.TaskDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Task;
-
 import java.io.IOException;
 import java.util.List;
 
