@@ -91,20 +91,42 @@
                             </div>
                         </div>
 
+                        <!-- Updated Timer Card with Real Time Clock -->
                         <div class="timer-card">
                             <div class="timer-header">
-                                <h4>Timer</h4>
+                                <h4>Current Time</h4>
                                 <div class="timer-controls">
-                                    <button class="timer-btn pause">
-                                        <i class="fas fa-pause"></i>
-                                    </button>
-                                    <button class="timer-btn play">
-                                        <i class="fas fa-play"></i>
+                                    <button class="timer-btn refresh" onclick="updateCurrentTime()">
+                                        <i class="fas fa-sync-alt"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="timer-display">
-                                <span class="time">02:36:19</span>
+                            <div class="clock-container">
+                                <div class="analog-clock">
+                                    <div class="clock-face">
+                                        <div class="hour-hand" id="hourHand"></div>
+                                        <div class="minute-hand" id="minuteHand"></div>
+                                        <div class="second-hand" id="secondHand"></div>
+                                        <div class="center-dot"></div>
+                                        <!-- Hour markers -->
+                                        <div class="hour-marker" style="transform: rotate(0deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(30deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(60deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(90deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(120deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(150deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(180deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(210deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(240deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(270deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(300deg)"></div>
+                                        <div class="hour-marker" style="transform: rotate(330deg)"></div>
+                                    </div>
+                                </div>
+                                <div class="digital-time">
+                                    <div class="current-time" id="currentTime">00:00:00</div>
+                                    <div class="current-date" id="currentDate">Monday, January 1, 2024</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -254,41 +276,7 @@
                                         <span>Sat</span>
                                     </div>
                                     <div class="calendar-dates">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                        <span>1</span>
-                                        <span>2</span>
-                                        <span>3</span>
-                                        <span>4</span>
-                                        <span>5</span>
-                                        <span>6</span>
-                                        <span>7</span>
-                                        <span>8</span>
-                                        <span>9</span>
-                                        <span>10</span>
-                                        <span>11</span>
-                                        <span>12</span>
-                                        <span>13</span>
-                                        <span>14</span>
-                                        <span class="today">15</span>
-                                        <span>16</span>
-                                        <span>17</span>
-                                        <span>18</span>
-                                        <span>19</span>
-                                        <span>20</span>
-                                        <span>21</span>
-                                        <span>22</span>
-                                        <span>23</span>
-                                        <span>24</span>
-                                        <span>25</span>
-                                        <span>26</span>
-                                        <span>27</span>
-                                        <span>28</span>
-                                        <span>29</span>
-                                        <span>30</span>
+                                        <!-- Calendar dates will be generated by JavaScript -->
                                     </div>
                                 </div>
                             </div>
@@ -346,6 +334,6 @@
             </main>
         </div>
 
-        <script src="HomeScript.js"></script>
+        <script src="Home.js"></script>
     </body>
 </html>

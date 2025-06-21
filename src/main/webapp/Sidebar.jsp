@@ -6,8 +6,8 @@
             <i class="fas fa-home"></i><span>Home</span>
         </a>
     </li>
-    <li <% if (uri.endsWith("/TemplateHome.jsp")) { %> class ="active" <% } %>>
-        <a href="${pageContext.request.contextPath}/Home/TemplateHome.jsp">
+    <li <% if (uri.endsWith("/Templates.jsp")) { %> class ="active" <% } %>>
+        <a href="${pageContext.request.contextPath}/Home/Templates.jsp">
             <i class="fas fa-copy"></i><span>Templates</span>
         </a>
     </li>

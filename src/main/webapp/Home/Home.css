@@ -2,12 +2,12 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  /*  box-sizing: border-box;*/
 }
 
 body.dashboard-body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /*  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
   min-height: 100vh;
   color: #333;
 }
@@ -20,7 +20,7 @@ body.dashboard-body {
 /* Main Content */
 .main-content {
   flex: 1;
-  margin-left: 280px;
+  /*  margin-left: 280px;*/
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
 }
@@ -277,12 +277,14 @@ body.dashboard-body {
   font-size: 0.9rem;
 }
 
+/* Updated Timer Card Styles */
 .timer-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 248, 255, 0.95));
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 1.5rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .timer-header {
@@ -320,6 +322,127 @@ body.dashboard-body {
 .timer-btn:hover {
   background: #5a67d8;
   transform: scale(1.1);
+}
+
+.timer-btn.refresh {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  transition: all 0.3s ease;
+}
+
+.timer-btn.refresh:hover {
+  transform: scale(1.1) rotate(180deg);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.clock-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* Analog Clock */
+.analog-clock {
+  flex-shrink: 0;
+}
+
+.clock-face {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #667eea;
+  border-radius: 50%;
+  position: relative;
+  background: linear-gradient(135deg, #f8faff, #e8f2ff);
+  box-shadow: 
+    inset 0 2px 10px rgba(102, 126, 234, 0.1),
+    0 5px 20px rgba(102, 126, 234, 0.2);
+}
+
+.hour-marker {
+  position: absolute;
+  width: 2px;
+  height: 8px;
+  background: #667eea;
+  top: 2px;
+  left: 50%;
+  transform-origin: 50% 37px;
+  margin-left: -1px;
+}
+
+.hour-marker:nth-child(n+5):nth-child(-n+16):not(:nth-child(8)):not(:nth-child(11)):not(:nth-child(14)):not(:nth-child(17)) {
+  height: 4px;
+  background: #999;
+}
+
+.hour-hand, .minute-hand, .second-hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: 50% 100%;
+  border-radius: 2px;
+}
+
+.hour-hand {
+  width: 3px;
+  height: 20px;
+  background: #333;
+  margin-left: -1.5px;
+}
+
+.minute-hand {
+  width: 2px;
+  height: 28px;
+  background: #555;
+  margin-left: -1px;
+}
+
+.second-hand {
+  width: 1px;
+  height: 32px;
+  background: #ff6b6b;
+  margin-left: -0.5px;
+}
+
+.center-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #333;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+/* Digital Time */
+.digital-time {
+  flex: 1;
+  text-align: left;
+}
+
+.current-time {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.current-date {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Animation for smooth transitions */
+.hour-hand, .minute-hand {
+  transition: transform 0.5s ease-in-out;
+}
+
+.second-hand {
+  transition: transform 0.1s ease-in-out;
 }
 
 .timer-display .time {
@@ -722,6 +845,30 @@ body.dashboard-body {
   white-space: nowrap;
 }
 
+/* Dark Theme Support */
+.dashboard-body.dark-theme {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #e0e0e0;
+}
+
+.dark-theme .timer-card {
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 25, 45, 0.95));
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.dark-theme .current-time {
+  color: #e0e0e0;
+}
+
+.dark-theme .current-date {
+  color: #a0a0a0;
+}
+
+.dark-theme .clock-face {
+  background: linear-gradient(135deg, #2a2a3e, #1e1e32);
+  border-color: #667eea;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .stats-row {
@@ -730,6 +877,16 @@ body.dashboard-body {
 
   .task-grid {
     grid-template-columns: 1fr;
+  }
+
+  .clock-container {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .current-time {
+    font-size: 1.5rem;
   }
 }
 
@@ -769,4 +926,45 @@ body.dashboard-body {
   .task-grid {
     grid-template-columns: 1fr;
   }
+
+  .clock-container {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .current-time {
+    font-size: 1.5rem;
+  }
+
+  .analog-clock {
+    align-self: center;
+  }
+}
+
+/* Additional animations and effects */
+@keyframes clockTick {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(6deg); }
+}
+
+.second-hand {
+  animation: clockTick 1s linear infinite;
+}
+
+/* Notification styles */
+.notification {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Mobile toggle button styles */
+.mobile-toggle:hover {
+  background: #5a67d8 !important;
+  transform: scale(1.05) !important;
 }

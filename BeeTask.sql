@@ -1,6 +1,4 @@
-﻿create database BeeTask
-go 
-use BeeTask
+﻿use BeeTask
 
 -- ========== USERS ==========
 CREATE TABLE Users (
@@ -351,7 +349,10 @@ VALUES
 (N'V Model Template', N'Software development lifecycle', N'Development', N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT61lS44nkvxUYAnK2yFxVjJOHjCu0-o9Uzsw&s', N'{"boards": ["Requirements", "Design", "Implementation", "Testing"]}', 1),
 (N'Agile Template', N'Agile project methodology', N'Development', N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQ4RS5OsphIEbQkrANKyulho5dIxIc7pCBSw&s', N'{"boards": ["Backlog", "Sprint", "Review"]}', 1),
 (N'Waterfall Template', N'Sequential project phases', N'Development', N'https://thumbs.dreamstime.com/b/textured-wood-terrace-beautiful-dusky-sky-free-copy-space-use-background-backdrop-to-display-goods-new-product-41480172.jpg', N'{"boards": ["Requirements", "Design", "Build", "Test", "Deploy"]}', 1),
-(N'Scrum Template', N'Sprint-based development', N'Development', N'https://img.freepik.com/free-photo/majestic-mountain-peak-tranquil-winter-landscape-generated-by-ai_188544-15662.jpg?semt=ais_items_boosted&w=740', N'{"boards": ["Sprint Backlog", "In Progress", "Done", "Retrospective"]}', 1);
+(N'Scrum Template', N'Sprint-based development', N'Development', N'https://img.freepik.com/free-photo/majestic-mountain-peak-tranquil-winter-landscape-generated-by-ai_188544-15662.jpg?semt=ais_items_boosted&w=740', N'{"boards": ["Sprint Backlog", "In Progress", "Done", "Retrospective"]}', 1),
+(N'Startup Launch Plan', N'Template cho startup mới bắt đầu', N'Business', N'https://example.com/startup-thumbnail.jpg', N'{"boards": ["Idea", "Validation", "MVP", "Launch"]}', 2),
+(N'School Project Organizer', N'Tổ chức đồ án nhóm cho sinh viên', N'Education', N'https://example.com/school-template.png', N'{"boards": ["Topic Selection", "Research", "Implementation", "Presentation"]}', 3),
+(N'Event Planning', N'Template cho việc tổ chức sự kiện', N'Event', N'https://example.com/event.png', N'{"boards": ["Pre-Event", "During Event", "Post-Event"]}', 4);
 
 -- TEMPLATE BOARDS
 INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
@@ -364,7 +365,16 @@ INSERT INTO TemplateBoards (TemplateId, Name, Description) VALUES
 (3, N'Preparation', N'Chuẩn bị sự kiện'),
 (3, N'Coordination', N'Điều phối sự kiện'),
 (4, N'Research', N'Nghiên cứu sản phẩm'),
-(4, N'Development', N'Phát triển sản phẩm');
+(4, N'Development', N'Phát triển sản phẩm'),
+(7, N'Idea', N'Idea phase for Startup Launch Plan'),
+(7, N'Validation', N'Validation phase for Startup Launch Plan'),
+(7, N'MVP', N'MVP phase for Startup Launch Plan'),
+(8, N'Topic Selection', N'Topic Selection phase for School Project Organizer'),
+(8, N'Research', N'Research phase for School Project Organizer'),
+(8, N'Implementation', N'Implementation phase for School Project Organizer'),
+(9, N'Pre-Event', N'Pre-Event phase for Event Planning'),
+(9, N'During Event', N'During Event phase for Event Planning'),
+(9, N'Post-Event', N'Post-Event phase for Event Planning');
 
 -- TEMPLATE TASKS 
 INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
@@ -386,6 +396,62 @@ INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
 (9, N'Market research', N'Nghiên cứu thị trường cho sản phẩm', 'Done'),
 (9, N'Competitor analysis', N'Phân tích đối thủ cạnh tranh', 'In Progress'),
 (10, N'Feature development', N'Phát triển tính năng sản phẩm', 'In Progress');
+
+-- LẤY ID TỪ TÊN BOARD THUỘC TEMPLATE 'Startup Launch Plan'
+DECLARE @Idea INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Idea' AND TemplateId = 7);
+DECLARE @Validation INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Validation' AND TemplateId = 7);
+DECLARE @MVP INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'MVP' AND TemplateId = 7);
+
+-- TÊN RÕ RÀNG VÀ TIẾNG VIỆT
+INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
+(@Idea, N'Lập danh sách ý tưởng', N'Ghi lại các ý tưởng khởi nghiệp tiềm năng', 'To Do'),
+(@Idea, N'Ước lượng chi phí ban đầu', N'Tính toán chi phí cần thiết để bắt đầu', 'In Progress'),
+(@Idea, N'Chọn ý tưởng khả thi nhất', N'Đánh giá và lựa chọn ý tưởng có tiềm năng', 'Done'),
+
+(@Validation, N'Tạo bảng khảo sát người dùng', N'Thiết kế form khảo sát nhu cầu', 'To Do'),
+(@Validation, N'Tiến hành khảo sát', N'Phỏng vấn hoặc gửi khảo sát đến nhóm đối tượng', 'In Progress'),
+(@Validation, N'Phân tích kết quả khảo sát', N'Đưa ra nhận định từ dữ liệu thu được', 'Done'),
+
+(@MVP, N'Xác định tính năng cốt lõi', N'Lựa chọn tính năng quan trọng cho phiên bản đầu', 'To Do'),
+(@MVP, N'Thiết kế giao diện MVP', N'Phác thảo wireframe cơ bản', 'In Progress'),
+(@MVP, N'Hoàn thiện MVP và kiểm thử', N'Code và test phiên bản thử nghiệm', 'Done');
+
+-- TEMPLATE: School Project Organizer
+DECLARE @Topic INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Topic Selection' AND TemplateId = 8);
+DECLARE @Research INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Research' AND TemplateId = 8);
+DECLARE @Implementation INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Implementation' AND TemplateId = 8);
+
+INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
+(@Topic, N'Trao đổi chủ đề với nhóm', N'Thảo luận để chọn đề tài phù hợp', 'To Do'),
+(@Topic, N'Gửi đề xuất đề tài', N'Gửi chủ đề đến giảng viên hướng dẫn duyệt', 'In Progress'),
+(@Topic, N'Xác nhận đề tài', N'Được giảng viên duyệt đề tài', 'Done'),
+
+(@Research, N'Tìm tài liệu tham khảo', N'Tìm các bài nghiên cứu liên quan', 'To Do'),
+(@Research, N'Phân tích yêu cầu hệ thống', N'Ghi lại chức năng cần có', 'In Progress'),
+(@Research, N'Tổng hợp dữ liệu đầu vào', N'Tạo file dữ liệu cho triển khai', 'Done'),
+
+(@Implementation, N'Lập trình chức năng chính', N'Xây dựng phần xử lý nghiệp vụ chính', 'To Do'),
+(@Implementation, N'Thiết kế giao diện', N'Xây dựng giao diện người dùng', 'In Progress'),
+(@Implementation, N'Kiểm thử toàn bộ hệ thống', N'Test chạy chương trình và sửa lỗi', 'Done');
+
+-- TEMPLATE: Event Planning
+DECLARE @Pre INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Pre-Event' AND TemplateId = 9);
+DECLARE @During INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'During Event' AND TemplateId = 9);
+DECLARE @Post INT = (SELECT TemplateBoardId FROM TemplateBoards WHERE Name = N'Post-Event' AND TemplateId = 9);
+
+INSERT INTO TemplateTasks (TemplateBoardId, Title, Description, Status) VALUES
+(@Pre, N'Lên danh sách khách mời', N'Mời khách, xác nhận tham gia', 'To Do'),
+(@Pre, N'Đặt địa điểm tổ chức', N'Chọn và thuê hội trường sự kiện', 'In Progress'),
+(@Pre, N'Chuẩn bị tài liệu & quà tặng', N'In tờ rơi, chuẩn bị quà, banner', 'Done'),
+
+(@During, N'Điều phối chương trình', N'Theo dõi timeline sự kiện', 'To Do'),
+(@During, N'Chụp hình và ghi hình sự kiện', N'Ghi lại khoảnh khắc đáng nhớ', 'In Progress'),
+(@During, N'Tương tác với khách mời', N'Hướng dẫn, giải đáp, giao lưu', 'Done'),
+
+(@Post, N'Tổng hợp phản hồi', N'Gửi khảo sát và thu thập đánh giá', 'To Do'),
+(@Post, N'Viết báo cáo tổng kết', N'Báo cáo về chi phí, hiệu quả tổ chức', 'In Progress'),
+(@Post, N'Gửi thư cảm ơn', N'Gửi email cảm ơn đến khách mời & đối tác', 'Done');
+
 
 -- BOARDS 
 INSERT INTO Boards (ProjectId, Name, Description) VALUES

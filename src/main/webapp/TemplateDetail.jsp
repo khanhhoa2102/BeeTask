@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="model.Template, model.TemplateBoard, model.TemplateTask" %>
+<%@ page import="model.Template, model.TemplateBoard, model.TemplateTask, model.User" %>
 <%@ page import="dao.TemplateDAO" %>
 <%@ page import="java.util.*" %>
 
@@ -9,6 +9,7 @@
     Template template = dao.getTemplateById(templateId);
     List<TemplateBoard> boards = dao.getTemplateBoards(templateId);
     Map<Integer, List<TemplateTask>> tasksMap = dao.getTemplateTasksByTemplateId(templateId);
+    User user = (User) session.getAttribute("user");
 %>
 
 <!DOCTYPE html>
@@ -23,6 +24,23 @@
     <body class="theme-light dark-mode"> 
         <div class="container">
             <aside class="sidebar">
+                <% if (user != null) { %>
+                <div class="user-profile">
+                    <div class="avatar">
+                        <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
+                            <img src="<%= user.getAvatarUrl() %>" alt="Avatar">
+                        <% } else { %>
+                            <div class="avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="info">
+                        <span class="username"><%= user.getUsername() %></span>
+                        <span class="email"><%= user.getEmail() %></span>
+                    </div>
+                </div>
+                <% } %>
                 <%@include file="../Sidebar.jsp"%>
                 <%@include file="../Help.jsp" %>
             </aside>
@@ -41,7 +59,15 @@
 
                         <div class="header-actions">
                             <!-- Use Template Button -->
-                            <a href="<%= request.getContextPath() %>/Login.jsp" class="use-template-btn">
+                            <%
+                                String useTemplateLink;
+                                if (user != null) {
+                                    useTemplateLink = request.getContextPath() + "/CreateProject.jsp?templateId=" + templateId;
+                                } else {
+                                    useTemplateLink = request.getContextPath() + "/Login.jsp";
+                                }
+                            %>
+                            <a href="<%= useTemplateLink %>" class="use-template-btn">
                                 <span>Use Template</span>
                             </a>
                         </div>
@@ -103,7 +129,6 @@
                             </div>
                         </div>
 
-
                         <div class="boards-container">
                             <% for (TemplateBoard board : boards) {
                                 List<TemplateTask> tasks = tasksMap.get(board.getTemplateBoardId());
@@ -116,7 +141,7 @@
 
                                 <div class="board-tasks">
                                     <% if (tasks != null) {
-                                    for (TemplateTask task : tasks) { %>
+                                        for (TemplateTask task : tasks) { %>
                                     <div class="task-card" data-task-id="<%= task.getTemplateTaskId() %>">
                                         <div class="task-header">
                                             <div class="task-priority medium"></div>
