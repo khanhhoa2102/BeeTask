@@ -31,14 +31,12 @@
 
         <!-- Tìm kiếm người dùng -->
         <div class="search-box">
-           <form action="UserManagementServlet" method="get">
-               <%
-    String keyword = (String) request.getAttribute("keyword");
-    if (keyword == null) keyword = "";
-%>
-<input type="text" name="keyword" placeholder="Tìm theo ID, tên, email..." value="<%= keyword %>">
-
-
+            <form action="UserManagementServlet" method="get">
+                <%
+                    String keyword = (String) request.getAttribute("keyword");
+                    if (keyword == null) keyword = "";
+                %>
+                <input type="text" name="keyword" placeholder="Tìm theo ID, tên, email..." value="<%= keyword %>">
                 <button type="submit">Tìm kiếm</button>
             </form>
         </div>
@@ -76,7 +74,7 @@
                     %>
                     <tr>
                         <td><%= user.getUserId() %></td>
-                        <td><%= user.getFullName() %></td>
+                        <td><%= user.getUsername() %></td>
                         <td><%= user.getEmail() %></td>
                         <td><%= user.getCreatedAt() %></td>
                     </tr>
@@ -109,7 +107,7 @@
                     %>
                     <tr>
                         <td><%= user.getUserId() %></td>
-                        <td><%= user.getFullName() %></td>
+                        <td><%= user.getUsername() %></td>
                         <td><%= user.getEmail() %></td>
                         <td><%= user.getCreatedAt() %></td>
                         <td>

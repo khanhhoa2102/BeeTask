@@ -5,7 +5,6 @@ import java.sql.*;
 import java.util.*;
 import context.DBConnection;
 
-
 public class UserManagementDao {
 
     public List<User> getAllUsers() {
@@ -57,20 +56,25 @@ public class UserManagementDao {
     private User mapRow(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("UserId"),
-                rs.getString("FullName"),
+                rs.getString("Username"),
                 rs.getString("Email"),
                 rs.getString("PasswordHash"),
                 rs.getString("AvatarUrl"),
+                rs.getString("PhoneNumber"),
+                rs.getDate("DateOfBirth"),
+                rs.getString("Gender"),
+                rs.getString("Address"),
+                rs.getString("LoginProvider"),
+                rs.getString("GoogleId"),
+                rs.getBoolean("IsEmailVerified"),
                 rs.getBoolean("IsActive"),
                 rs.getTimestamp("CreatedAt")
         );
     }
-    
-    
-    
+
     public List<User> searchUsers(String keyword) {
     List<User> list = new ArrayList<>();
-    String sql = "SELECT * FROM Users WHERE UserId LIKE ? OR FullName LIKE ? OR Email LIKE ?";
+    String sql = "SELECT * FROM Users WHERE CAST(UserId AS NVARCHAR) LIKE ? OR Username LIKE ? OR Email LIKE ?";
 
     try (Connection conn = DBConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -91,37 +95,32 @@ public class UserManagementDao {
 
     return list;
 }
-    
-    
-    
+
     public int countAllUsers() {
-    int count = 0;
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users")) {
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            count = rs.getInt(1);
+        int count = 0;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users")) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return count;
     }
-    return count;
-}
 
-public int countLockedUsers() {
-    int count = 0;
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE status = 0")) {
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            count = rs.getInt(1);
+    public int countLockedUsers() {
+        int count = 0;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE IsActive = 0")) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return count;
     }
-    return count;
-}
-
-
-    
 }
