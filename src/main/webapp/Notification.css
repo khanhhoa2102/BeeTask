@@ -1,0 +1,91 @@
+.notification-container {
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+}
+
+.notification-bell {
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 5px;
+    border-radius: 50%;
+    display: none;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    width: 300px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.notification-dropdown.show {
+    display: block;
+}
+
+.notification-dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-dropdown li {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.notification-dropdown li.read {
+    background-color: white;
+    font-weight: normal;
+    color: black;
+}
+
+.notification-dropdown li.unread {
+    background-color: yellow;
+    font-weight: bold;
+    color: black;
+}
+
+.notification-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+.notification-actions button {
+    flex: 1;
+    margin: 0 4px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.notification-actions button:hover {
+    background-color: #e0e0e0;
+}
