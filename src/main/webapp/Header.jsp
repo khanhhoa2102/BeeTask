@@ -1,6 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ include file="session-check.jspf" %>
-
+<% session.setAttribute("userId", (Integer)user.getUserId());%>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Notification.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Header.css">
 
 <div class="header">
@@ -47,7 +52,7 @@
                     <div class="user-dropdown" id="userDropdown">
                         <!-- Header Info -->
                         <div class="dropdown-header">
-                            <div class="dropdown-section-title">TÀI KHOẢN</div>
+                            <div class="dropdown-section-title">ACCOUNT</div>
                             <div class="dropdown-user-info">
                                 <div class="dropdown-avatar">
                                     <%= user.getUsername().substring(0, 2).toUpperCase() %>
@@ -62,10 +67,10 @@
                         <!-- Account Section -->
                         <div class="dropdown-section">
                             <a href="#" class="dropdown-item">
-                                <span>Chuyển đổi Tài khoản</span>
+                                <span>Switch Account</span>
                             </a>
                             <a href="#" class="dropdown-item has-arrow">
-                                <span>Quản lý tài khoản</span>
+                                <span>Account Settings</span>
                             </a>
                         </div>
 
@@ -73,19 +78,19 @@
                         <div class="dropdown-section">
                             <div class="dropdown-section-title">TRELLO</div>
                             <a href="#" class="dropdown-item">
-                                <span>Hồ sơ và Hiển thị</span>
+                                <span>Profile & Display</span>
                             </a>
                             <a href="#" class="dropdown-item">
-                                <span>Hoạt động</span>
+                                <span>Activity</span>
                             </a>
                             <a href="#" class="dropdown-item">
-                                <span>Thẻ</span>
+                                <span>Cards</span>
                             </a>
                             <a href="#" class="dropdown-item">
-                                <span>Cài đặt</span>
+                                <span>Settings</span>
                             </a>
                             <a href="#" class="dropdown-item has-arrow">
-                                <span>Chủ đề</span>
+                                <span>Theme</span>
                             </a>
                         </div>
 
@@ -93,20 +98,20 @@
                         <div class="dropdown-section">
                             <a href="#" class="dropdown-item workspace-item">
                                 <i class="fas fa-users"></i>
-                                <span>Tạo Không gian làm việc</span>
+                                <span>Create Workspace</span>
                             </a>
                         </div>
 
                         <!-- Help & Logout -->
                         <div class="dropdown-section">
                             <a href="#" class="dropdown-item">
-                                <span>Trợ giúp</span>
+                                <span>Help</span>
                             </a>
                             <a href="#" class="dropdown-item">
-                                <span>Phím tắt</span>
+                                <span>Keyboard Shortcuts</span>
                             </a>
                             <a href="${pageContext.request.contextPath}/logout" class="dropdown-item">
-                                <span>Đăng xuất</span>
+                                <span>Logout</span>
                             </a>
                         </div>
                     </div>
@@ -116,4 +121,77 @@
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/Header.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+        if (savedTheme === 'dark-mode') {
+            document.body.classList.add('dark-mode');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = true;
+        } else {
+            document.body.classList.remove('dark-mode');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = false;
+        }
+
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('change', () => {
+                const isDarkMode = darkModeToggle.checked;
+                document.body.classList.toggle('dark-mode', isDarkMode);
+                localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
+                console.log('Dark Mode:', isDarkMode);
+            });
+        } else {
+            console.warn('#darkModeToggle element not found.');
+        }
+    });
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById("notificationDropdown");
+        dropdown.classList.toggle("show");
+        if (dropdown.classList.contains("show")) {
+            loadNotifications();
+        }
+    }
+
+    function loadNotifications() {
+        fetch('${pageContext.request.contextPath}/notifications?action=view')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById("notificationList");
+                const countEl = document.getElementById("notificationCount");
+                list.innerHTML = "";
+
+                let unreadCount = 0;
+                data.forEach(notification => {
+                    const li = document.createElement("li");
+                    li.textContent = notification.message;
+                    if (!notification.isRead) {
+                        li.classList.add("unread");
+                        unreadCount++;
+                    } else li.classList.add("read");
+                    list.appendChild(li);
+                });
+
+                if (unreadCount > 0) {
+                    countEl.style.display = "inline-block";
+                    countEl.textContent = unreadCount;
+                } else {
+                    countEl.style.display = "none";
+                }
+            });
+    }
+
+    function markAllRead(event) {
+        event.stopPropagation();
+        fetch('${pageContext.request.contextPath}/notifications?action=markAllRead')
+            .then(() => loadNotifications());
+    }
+
+    function markAllUnread(event) {
+        event.stopPropagation();
+        fetch('${pageContext.request.contextPath}/notifications?action=markAllUnread')
+            .then(() => loadNotifications());
+    }
+</script>
