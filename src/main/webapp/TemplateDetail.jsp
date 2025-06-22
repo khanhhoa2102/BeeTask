@@ -9,7 +9,6 @@
     Template template = dao.getTemplateById(templateId);
     List<TemplateBoard> boards = dao.getTemplateBoards(templateId);
     Map<Integer, List<TemplateTask>> tasksMap = dao.getTemplateTasksByTemplateId(templateId);
-    User user = (User) session.getAttribute("user");
 %>
 
 <!DOCTYPE html>
@@ -46,8 +45,6 @@
             </aside>
 
             <main class="main-content">
-                <%@include file="/HeaderContent.jsp" %>
-
                 <!-- Template Header -->
                 <div class="template-header">
                     <div class="header-content">

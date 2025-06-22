@@ -491,3 +491,48 @@ style.textContent = `
   }
 `
 document.head.appendChild(style)
+
+function initializeSidebarToggle() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggleButtons = document.querySelectorAll('.toggle-btn, .sidebar-toggle');
+
+  if (!sidebar) return;
+
+  const savedState = localStorage.getItem('sidebarState') || 'expanded';
+  sidebar.classList.toggle('collapsed', savedState === 'collapsed');
+
+  toggleButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
+    });
+  });
+}
+
+
+
+ document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo dark mode từ localStorage
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            if (savedTheme === 'dark-mode') {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) darkModeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (darkModeToggle) darkModeToggle.checked = false;
+            }
+
+            // Toggle dark mode
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', function () {
+                    const isDark = darkModeToggle.checked;
+                    document.body.classList.toggle('dark-mode', isDark);
+                    localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
+                });
+            }
+
+            console.log("✅ Dark mode initialized in Home.jsp");
+        });

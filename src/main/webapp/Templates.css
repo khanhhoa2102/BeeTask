@@ -15,6 +15,12 @@ body {
   line-height: 1.6;
 }
 
+/* Light Mode Base Styles */
+body:not(.dark-mode) {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
 /* Avatar Styles */
 .avatar-placeholder {
   width: 40px;
@@ -35,7 +41,7 @@ body {
   object-fit: cover;
 }
 
-/* Page Header */
+/* Page Header - Dark Mode (Default) */
 .page-header {
   border-bottom: 1px solid #2c333a;
   background-color: #1d2125;
@@ -50,11 +56,26 @@ body {
   margin: 0 auto;
 }
 
+/* Page Header - Light Mode */
+body:not(.dark-mode) .page-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+body:not(.dark-mode) .header-container {
+  background-color: #ffffff;
+}
+
 .page-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0;
+}
+
+/* Page Title - Light Mode */
+body:not(.dark-mode) .page-title {
+  color: #1e293b;
 }
 
 .search-container {
@@ -70,6 +91,23 @@ body {
   color: #ffffff;
   font-size: 0.875rem;
   transition: all 0.3s ease;
+}
+
+/* Search Input - Light Mode */
+body:not(.dark-mode) .search-input {
+  background: #f8fafc;
+  border: 1px solid #d1d5db;
+  color: #1e293b;
+}
+
+body:not(.dark-mode) .search-input:focus {
+  outline: none;
+  border-color: #579dff;
+  background: #ffffff;
+}
+
+body:not(.dark-mode) .search-input::placeholder {
+  color: #6b7280;
 }
 
 .search-input:focus {
@@ -91,6 +129,11 @@ body {
   font-size: 0.875rem;
 }
 
+/* Search Icon - Light Mode */
+body:not(.dark-mode) .search-icon {
+  color: #6b7280;
+}
+
 /* Content Area - Enhanced */
 .content {
   position: relative;
@@ -103,6 +146,15 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
+}
+
+/* Content - Light Mode */
+body:not(.dark-mode) .content {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .content::before {
@@ -150,11 +202,17 @@ body {
 }
 
 .content .categories-section {
-  margin-bottom: 3.5rem;
-  padding: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Categories Section - Light Mode */
+body:not(.dark-mode) .content .categories-section {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .content .featured-section,
@@ -167,9 +225,23 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Featured/Business Section - Light Mode */
+body:not(.dark-mode) .content .featured-section,
+body:not(.dark-mode) .content .business-section {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .content .featured-section:hover,
 .content .business-section:hover {
   background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(87, 157, 255, 0.2);
+}
+
+/* Featured/Business Section Hover - Light Mode */
+body:not(.dark-mode) .content .featured-section:hover,
+body:not(.dark-mode) .content .business-section:hover {
+  background: rgba(0, 0, 0, 0.03);
   border-color: rgba(87, 157, 255, 0.2);
 }
 
@@ -292,7 +364,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 1rem;
@@ -304,13 +376,24 @@ body {
   transform: translateY(-2px);
 }
 
+/* Category Item Hover - Light Mode */
+body:not(.dark-mode) .category-item:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+}
+
 .category-item.active {
   background: #2c333a;
 }
 
+/* Category Item Active - Light Mode */
+body:not(.dark-mode) .category-item.active {
+  background: #f1f5f9;
+}
+
 .category-icon {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 1rem;
   display: flex;
   align-items: center;
@@ -361,6 +444,11 @@ body {
   text-align: center;
 }
 
+/* Category Name - Light Mode */
+body:not(.dark-mode) .category-name {
+  color: #4b5563;
+}
+
 /* Section Headers */
 .section-header {
   display: flex;
@@ -398,6 +486,11 @@ body {
   flex: 1;
 }
 
+/* Section Title - Light Mode */
+body:not(.dark-mode) .section-title {
+  color: #1e293b;
+}
+
 .view-more-btn {
   background: transparent;
   border: 1px solid #3c4149;
@@ -407,6 +500,12 @@ body {
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+/* View More Button - Light Mode */
+body:not(.dark-mode) .view-more-btn {
+  border: 1px solid #d1d5db;
+  color: #4b5563;
 }
 
 .view-more-btn:hover {
@@ -435,10 +534,22 @@ body {
   cursor: pointer;
 }
 
+/* Featured Card - Light Mode */
+body:not(.dark-mode) .featured-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
 .featured-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   background: #33393f;
+}
+
+/* Featured Card Hover - Light Mode */
+body:not(.dark-mode) .featured-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  background: #f9fafb;
 }
 
 .card-image {
@@ -526,10 +637,20 @@ body {
   margin: 0 0 0.5rem 0;
 }
 
+/* Card Title - Light Mode */
+body:not(.dark-mode) .card-title {
+  color: #1e293b;
+}
+
 .card-author {
   font-size: 0.875rem;
   color: #9ca3af;
   margin: 0 0 0.75rem 0;
+}
+
+/* Card Author - Light Mode */
+body:not(.dark-mode) .card-author {
+  color: #6b7280;
 }
 
 .card-description {
@@ -543,6 +664,11 @@ body {
   overflow: hidden;
 }
 
+/* Card Description - Light Mode */
+body:not(.dark-mode) .card-description {
+  color: #4b5563;
+}
+
 .card-stats {
   display: flex;
   gap: 1rem;
@@ -554,6 +680,11 @@ body {
   gap: 0.25rem;
   font-size: 0.75rem;
   color: #9ca3af;
+}
+
+/* Stat Item - Light Mode */
+body:not(.dark-mode) .stat-item {
+  color: #6b7280;
 }
 
 /* Business Section */
@@ -578,10 +709,22 @@ body {
   position: relative;
 }
 
+/* Business Card - Light Mode */
+body:not(.dark-mode) .business-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
 .business-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   background: #33393f;
+}
+
+/* Business Card Hover - Light Mode */
+body:not(.dark-mode) .business-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: #f9fafb;
 }
 
 .large-card {
@@ -682,6 +825,13 @@ body {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
+/* Modal Container - Light Mode */
+body:not(.dark-mode) .modal-container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
 .modal-header {
   padding: 1.5rem 2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -734,6 +884,11 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* Form Group Label - Light Mode */
+body:not(.dark-mode) .form-group label {
+  color: #1e293b;
+}
+
 .form-input,
 .form-textarea,
 .form-select {
@@ -747,6 +902,15 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Form Inputs - Light Mode */
+body:not(.dark-mode) .form-input,
+body:not(.dark-mode) .form-textarea,
+body:not(.dark-mode) .form-select {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1e293b;
+}
+
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
@@ -755,9 +919,22 @@ body {
   background: #33393f;
 }
 
+/* Form Inputs Focus - Light Mode */
+body:not(.dark-mode) .form-input:focus,
+body:not(.dark-mode) .form-textarea:focus,
+body:not(.dark-mode) .form-select:focus {
+  background: #f9fafb;
+}
+
 .form-input::placeholder,
 .form-textarea::placeholder {
   color: #9ca3af;
+}
+
+/* Form Placeholders - Light Mode */
+body:not(.dark-mode) .form-input::placeholder,
+body:not(.dark-mode) .form-textarea::placeholder {
+  color: #6b7280;
 }
 
 .form-textarea {
@@ -772,6 +949,12 @@ body {
   justify-content: flex-end;
   gap: 1rem;
   border-top: 1px solid #3c4149;
+}
+
+/* Modal Footer - Light Mode */
+body:not(.dark-mode) .modal-footer {
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
 }
 
 .btn {
@@ -793,9 +976,21 @@ body {
   border: 1px solid #3c4149;
 }
 
+/* Secondary Button - Light Mode */
+body:not(.dark-mode) .btn.secondary {
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
 .btn.secondary:hover {
   background: #3c4149;
   color: #ffffff;
+}
+
+/* Secondary Button Hover - Light Mode */
+body:not(.dark-mode) .btn.secondary:hover {
+  background: #f3f4f6;
+  color: #1e293b;
 }
 
 .btn.primary {
@@ -949,6 +1144,11 @@ body {
 
 ::-webkit-scrollbar-track {
   background: #2c333a;
+}
+
+/* Scrollbar Track - Light Mode */
+body:not(.dark-mode) ::-webkit-scrollbar-track {
+  background: #f3f4f6;
 }
 
 ::-webkit-scrollbar-thumb {

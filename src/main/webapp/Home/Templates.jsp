@@ -1,15 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="model.User" %>
 <%@ page import="dao.TemplateDAO" %>
 <%@ page import="model.Template" %>
 <%@ page import="java.util.*" %>
 <%
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/Login.jsp");
-        return;
-    }
-
     TemplateDAO templateDAO = new TemplateDAO();
     List<Template> templates = templateDAO.getAllTemplates();
 %>
@@ -45,7 +38,6 @@
     </aside>
 
     <div class="main-content">
-        <%@include file="../HeaderContent.jsp" %>
         <div class="page-header">
             <div class="header-container">
                 <h1 class="page-title">Các tính năng nổi bật</h1>
