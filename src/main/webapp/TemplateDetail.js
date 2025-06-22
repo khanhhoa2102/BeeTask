@@ -127,3 +127,29 @@ class TemplateDetailManager {
 document.addEventListener("DOMContentLoaded", () => {
     new TemplateDetailManager()
 })
+
+ document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo dark mode từ localStorage
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            if (savedTheme === 'dark-mode') {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) darkModeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (darkModeToggle) darkModeToggle.checked = false;
+            }
+
+            // Toggle dark mode
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', function () {
+                    const isDark = darkModeToggle.checked;
+                    document.body.classList.toggle('dark-mode', isDark);
+                    localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
+                });
+            }
+
+            console.log("✅ Dark mode initialized in Home.jsp");
+        });
+

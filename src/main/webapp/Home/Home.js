@@ -1,475 +1,404 @@
-document.addEventListener("DOMContentLoaded", () => {
-  initializeTimer()
-  initializeCalendar()
-  initializeInteractions()
-  initializeResponsive()
-})
+// Minimalist Dashboard JavaScript
+document.addEventListener('DOMContentLoaded', () => {
+    initializeClock();
+    initializeCalendar();
+    initializeInteractions();
+    initializeAnimations();
+});
 
-// Updated Timer functionality - Now shows current time with analog clock
-function initializeTimer() {
-  updateCurrentTime();
-  updateAnalogClock();
-  
-  // Update every second
-  setInterval(() => {
-    updateCurrentTime();
-    updateAnalogClock();
-  }, 1000);
+// Clock functionality
+function initializeClock() {
+    updateClock();
+    setInterval(updateClock, 1000);
 }
 
-function updateCurrentTime() {
-  const now = new Date();
-  
-  // Format time (24-hour format)
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  
-  // Format date in Vietnamese
-  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-  const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
-                 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-  
-  const dayName = days[now.getDay()];
-  const day = now.getDate();
-  const month = months[now.getMonth()];
-  const year = now.getFullYear();
-  
-  const dateString = `${dayName}, ${day} ${month} ${year}`;
-  
-  // Update display
-  const timeElement = document.getElementById('currentTime');
-  const dateElement = document.getElementById('currentDate');
-  
-  if (timeElement) {
-    timeElement.textContent = `${hours}:${minutes}:${seconds}`;
-  }
-  
-  if (dateElement) {
-    dateElement.textContent = dateString;
-  }
+function updateClock() {
+    const now = new Date();
+    
+    // Update digital time
+    const timeString = now.toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    const dateString = now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+    
+    const timeElement = document.getElementById('currentTime');
+    const dateElement = document.getElementById('currentDate');
+    
+    if (timeElement) timeElement.textContent = timeString;
+    if (dateElement) dateElement.textContent = dateString;
+    
+    // Update analog clock
+    updateAnalogClock(now);
 }
 
-function updateAnalogClock() {
-  const now = new Date();
-  const hours = now.getHours() % 12;
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-  
-  // Calculate angles
-  const hourAngle = (hours * 30) + (minutes * 0.5); // 30 degrees per hour + minute adjustment
-  const minuteAngle = minutes * 6; // 6 degrees per minute
-  const secondAngle = seconds * 6; // 6 degrees per second
-  
-  // Update clock hands
-  const hourHand = document.getElementById('hourHand');
-  const minuteHand = document.getElementById('minuteHand');
-  const secondHand = document.getElementById('secondHand');
-  
-  if (hourHand) {
-    hourHand.style.transform = `rotate(${hourAngle}deg)`;
-  }
-  
-  if (minuteHand) {
-    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
-  }
-  
-  if (secondHand) {
-    secondHand.style.transform = `rotate(${secondAngle}deg)`;
-  }
+function updateAnalogClock(now) {
+    const hours = now.getHours() % 12;
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    
+    const hourAngle = (hours * 30) + (minutes * 0.5);
+    const minuteAngle = minutes * 6;
+    const secondAngle = seconds * 6;
+    
+    const hourHand = document.getElementById('miniHourHand');
+    const minuteHand = document.getElementById('miniMinuteHand');
+    const secondHand = document.getElementById('miniSecondHand');
+    
+    if (hourHand) hourHand.style.transform = `rotate(${hourAngle}deg)`;
+    if (minuteHand) minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+    if (secondHand) secondHand.style.transform = `rotate(${secondAngle}deg)`;
 }
 
 // Calendar functionality
 function initializeCalendar() {
-  const prevBtn = document.querySelector(".calendar-nav.prev")
-  const nextBtn = document.querySelector(".calendar-nav.next")
-  const monthYear = document.querySelector(".calendar-header h4")
-
-  let currentMonth = new Date().getMonth(); // Current month (0-indexed)
-  let currentYear = new Date().getFullYear(); // Current year
-
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-  function updateCalendar() {
-    monthYear.textContent = `${months[currentMonth]} ${currentYear}`;
-    generateCalendarDates();
-  }
-
-  function generateCalendarDates() {
-    const calendarDates = document.querySelector('.calendar-dates');
-    if (!calendarDates) return;
-
-    // Clear existing dates
-    calendarDates.innerHTML = '';
-
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const today = new Date();
-    const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
-    const todayDate = today.getDate();
-
-    // Add empty cells for days before the first day of the month
-    for (let i = 0; i < firstDay; i++) {
-      const emptyCell = document.createElement('span');
-      calendarDates.appendChild(emptyCell);
+    const prevBtn = document.getElementById('prevMonth');
+    const nextBtn = document.getElementById('nextMonth');
+    const monthYearSpan = document.getElementById('monthYear');
+    
+    let currentDate = new Date();
+    
+    function updateCalendar() {
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        
+        if (monthYearSpan) {
+            monthYearSpan.textContent = `${months[currentDate.getMonth()]}, ${currentDate.getFullYear()}`;
+        }
+        
+        generateCalendarDates();
     }
-
-    // Add days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateCell = document.createElement('span');
-      dateCell.textContent = day;
-      
-      if (isCurrentMonth && day === todayDate) {
-        dateCell.classList.add('today');
-      }
-
-      dateCell.addEventListener('click', () => {
-        // Remove today class from all dates
-        document.querySelectorAll('.calendar-dates span').forEach(d => d.classList.remove('today'));
-        // Add today class to clicked date
-        dateCell.classList.add('today');
-        console.log(`Selected date: ${day}/${currentMonth + 1}/${currentYear}`);
-      });
-
-      calendarDates.appendChild(dateCell);
+    
+    function generateCalendarDates() {
+        const calendarDates = document.getElementById('calendarDates');
+        if (!calendarDates) return;
+        
+        calendarDates.innerHTML = '';
+        
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        
+        // Previous month's trailing days
+        const prevMonth = new Date(year, month - 1, 0);
+        const prevMonthDays = prevMonth.getDate();
+        
+        for (let i = firstDay - 1; i >= 0; i--) {
+            const dateSpan = createDateSpan(prevMonthDays - i, 'other-month');
+            calendarDates.appendChild(dateSpan);
+        }
+        
+        // Current month days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateSpan = createDateSpan(day);
+            
+            // Mark today
+            if (year === today.getFullYear() && 
+                month === today.getMonth() && 
+                day === today.getDate()) {
+                dateSpan.classList.add('today');
+            }
+            
+            calendarDates.appendChild(dateSpan);
+        }
+        
+        // Next month's leading days
+        const totalCells = calendarDates.children.length;
+        const remainingCells = 42 - totalCells; // 6 rows × 7 days
+        
+        for (let day = 1; day <= remainingCells && remainingCells < 7; day++) {
+            const dateSpan = createDateSpan(day, 'other-month');
+            calendarDates.appendChild(dateSpan);
+        }
     }
-  }
-
-  if (prevBtn) {
-    prevBtn.addEventListener("click", () => {
-      currentMonth--
-      if (currentMonth < 0) {
-        currentMonth = 11
-        currentYear--
-      }
-      updateCalendar()
-    })
-  }
-
-  if (nextBtn) {
-    nextBtn.addEventListener("click", () => {
-      currentMonth++
-      if (currentMonth > 11) {
-        currentMonth = 0
-        currentYear++
-      }
-      updateCalendar()
-    })
-  }
-
-  // Initialize calendar
-  updateCalendar();
+    
+    function createDateSpan(day, className = '') {
+        const span = document.createElement('span');
+        span.textContent = day;
+        if (className) span.classList.add(className);
+        
+        span.addEventListener('click', () => {
+            // Remove previous selection
+            document.querySelectorAll('.calendar-dates span.selected').forEach(s => {
+                s.classList.remove('selected');
+            });
+            
+            // Add selection to clicked date
+            if (!span.classList.contains('other-month')) {
+                span.classList.add('selected');
+                showNotification(`Selected date ${day}`, 'info');
+            }
+        });
+        
+        return span;
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        });
+    }
+    
+    // Initialize calendar
+    updateCalendar();
 }
 
 // Interactive elements
 function initializeInteractions() {
-  // Task cards hover effects
-  const taskCards = document.querySelectorAll(".task-card")
-  taskCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      const taskTitle = card.querySelector(".task-title");
-      if (taskTitle) {
-        console.log("Navigate to task:", taskTitle.textContent)
-        showNotification(`Opened task: ${taskTitle.textContent}`, "success");
-      }
-    })
-  })
-
-  // Project items in sidebar
-  const projectItems = document.querySelectorAll(".project-item")
-  projectItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      // Remove active class from all items
-      projectItems.forEach((p) => p.classList.remove("active"))
-      // Add active class to clicked item
-      item.classList.add("active")
-      const projectName = item.querySelector("span");
-      if (projectName) {
-        console.log("Navigate to project:", projectName.textContent)
-        showNotification(`Switched to project: ${projectName.textContent}`, "info");
-      }
-    })
-  })
-
-  // Message items
-  const messageItems = document.querySelectorAll(".message-item")
-  messageItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      const senderName = item.querySelector(".sender-name");
-      if (senderName) {
-        console.log("Open message from:", senderName.textContent)
-        showNotification(`Opening message from ${senderName.textContent}`, "info");
-      }
-    })
-  })
-
-  // Search functionality
-  const searchInput = document.querySelector(".search-input")
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      const searchTerm = e.target.value.toLowerCase()
-      console.log("Searching for:", searchTerm)
-      
-      if (searchTerm.length > 2) {
-        // Simulate search results
-        setTimeout(() => {
-          showNotification(`Found results for "${searchTerm}"`, "success");
-        }, 500);
-      }
-    })
-  }
-
-  // User menu dropdown
-  const userMenu = document.querySelector(".user-menu")
-  if (userMenu) {
-    userMenu.addEventListener("click", () => {
-      console.log("Toggle user menu")
-      showNotification("User menu opened", "info");
-    })
-  }
-
-  // Notification button
-  const notificationBtn = document.querySelector(".notification-btn")
-  if (notificationBtn) {
-    notificationBtn.addEventListener("click", () => {
-      console.log("Show notifications")
-      showNotification("You have 3 new notifications", "info");
-    })
-  }
-
-  // Stats cards interactions
-  const statCards = document.querySelectorAll(".stat-card")
-  statCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      const statInfo = card.querySelector(".stat-info p");
-      if (statInfo) {
-        showNotification(`Viewing ${statInfo.textContent} details`, "info");
-      }
-    })
-  })
-
-  // View all buttons
-  const viewAllBtns = document.querySelectorAll(".view-all-btn")
-  viewAllBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      showNotification("Loading all items...", "info");
-    })
-  })
+    // Primary button
+    const primaryBtn = document.querySelector('.primary-btn');
+    if (primaryBtn) {
+        primaryBtn.addEventListener('click', () => {
+            showNotification('Create new project feature is coming soon!', 'info');
+        });
+    }
+    
+    // Secondary button
+    const secondaryBtn = document.querySelector('.secondary-btn');
+    if (secondaryBtn) {
+        secondaryBtn.addEventListener('click', () => {
+            showNotification('Opening tutorial...', 'info');
+        });
+    }
+    
+    // Stat items
+    const statItems = document.querySelectorAll('.stat-item');
+    statItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const label = item.querySelector('.stat-label').textContent;
+            showNotification(`View details: ${label}`, 'info');
+        });
+    });
+    
+    // Activity items
+    const activityItems = document.querySelectorAll('.activity-item');
+    activityItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const text = item.querySelector('.activity-text').textContent;
+            showNotification(`Details: ${text}`, 'info');
+        });
+    });
 }
 
-// Responsive functionality
-function initializeResponsive() {
-  const sidebar = document.querySelector(".sidebar")
-  let sidebarToggle
-
-  // Create mobile menu button if screen is small
-  function createMobileToggle() {
-    if (window.innerWidth <= 768 && !sidebarToggle) {
-      sidebarToggle = document.createElement("button")
-      sidebarToggle.className = "mobile-toggle"
-      sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>'
-      sidebarToggle.style.cssText = `
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        z-index: 1001;
-        background: #667eea;
-        color: white;
-        border: none;
-        padding: 0.75rem;
-        border-radius: 10px;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
-      `
-
-      document.body.appendChild(sidebarToggle)
-
-      sidebarToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("open")
-        sidebarToggle.innerHTML = sidebar.classList.contains("open") 
-          ? '<i class="fas fa-times"></i>' 
-          : '<i class="fas fa-bars"></i>';
-      })
-
-      // Close sidebar when clicking outside
-      document.addEventListener("click", (e) => {
-        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && sidebar.classList.contains("open")) {
-          sidebar.classList.remove("open")
-          sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-      })
-    } else if (window.innerWidth > 768 && sidebarToggle) {
-      sidebarToggle.remove()
-      sidebarToggle = null
-      sidebar.classList.remove("open")
-    }
-  }
-
-  // Initialize on load
-  createMobileToggle()
-
-  // Handle window resize
-  window.addEventListener("resize", createMobileToggle)
+// Animations
+function initializeAnimations() {
+    // Animate floating shapes
+    const shapes = document.querySelectorAll('.shape');
+    shapes.forEach((shape, index) => {
+        shape.style.animationDelay = `${index * 0.5}s`;
+    });
+    
+    // Animate stats on load
+    setTimeout(() => {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            const finalValue = parseInt(stat.textContent);
+            animateNumber(stat, 0, finalValue, 1000);
+        });
+    }, 500);
 }
 
 // Utility functions
-function showNotification(message, type = "success") {
-  const notification = document.createElement("div")
-  notification.className = `notification ${type}`
-  
-  const iconMap = {
-    success: "check-circle",
-    info: "info-circle",
-    warning: "exclamation-triangle",
-    error: "times-circle"
-  };
-
-  const colorMap = {
-    success: "#10b981",
-    info: "#667eea",
-    warning: "#f59e0b",
-    error: "#ef4444"
-  };
-
-  notification.innerHTML = `
-    <div class="notification-content">
-      <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
-      <span>${message}</span>
-    </div>
-  `
-
-  notification.style.cssText = `
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    background: ${colorMap[type] || '#667eea'};
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 10000;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    max-width: 300px;
-    font-size: 0.9rem;
-  `
-
-  document.body.appendChild(notification)
-
-  setTimeout(() => {
-    notification.style.transform = "translateX(0)"
-  }, 100)
-
-  setTimeout(() => {
-    notification.style.transform = "translateX(100%)"
-    setTimeout(() => {
-      if (document.body.contains(notification)) {
-        document.body.removeChild(notification)
-      }
-    }, 300)
-  }, 3000)
+function animateNumber(element, start, end, duration) {
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const current = Math.floor(start + (end - start) * easeOutCubic(progress));
+        element.textContent = current;
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
 }
 
-// Add smooth animations for task progress bars
-function animateProgressBars() {
-  const progressBars = document.querySelectorAll(".progress-fill")
-  progressBars.forEach((bar, index) => {
-    const width = bar.style.width
-    bar.style.width = "0%"
-    bar.style.transition = "width 1s ease-in-out"
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const iconMap = {
+        success: 'check-circle',
+        info: 'info-circle',
+        warning: 'exclamation-triangle',
+        error: 'times-circle'
+    };
+    
+    const colorMap = {
+        success: '#10b981',
+        info: '#667eea',
+        warning: '#f59e0b',
+        error: '#ef4444'
+    };
+    
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: ${colorMap[type] || '#667eea'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 10000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        max-width: 300px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    `;
+    
+    document.body.appendChild(notification);
     
     setTimeout(() => {
-      bar.style.width = width
-    }, 500 + (index * 200)) // Stagger the animations
-  })
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 
-// Initialize progress bar animations when page loads
-setTimeout(animateProgressBars, 1000)
-
-// Additional utility functions for enhanced functionality
-
-// Format time for different locales
-function formatTimeForLocale(date, locale = 'vi-VN') {
-  return date.toLocaleTimeString(locale, {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  });
+// Dark mode toggle (if needed)
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    showNotification(isDark ? 'Switched to dark mode' : 'Switched to light mode', 'info');
 }
 
-// Format date for different locales
-function formatDateForLocale(date, locale = 'vi-VN') {
-  return date.toLocaleDateString(locale, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+// Load saved dark mode preference
+function loadDarkModePreference() {
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+        document.body.classList.add('dark-mode');
+    }
 }
 
-// Smooth scroll to element
-function smoothScrollTo(element) {
-  if (element) {
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-}
+// Initialize dark mode on load
+document.addEventListener('DOMContentLoaded', loadDarkModePreference);
 
-// Debounce function for search
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-// Enhanced search with debouncing
-const debouncedSearch = debounce((searchTerm) => {
-  console.log("Performing search for:", searchTerm);
-  // Add actual search logic here
-}, 300);
-
-// Theme toggle functionality (if needed)
-function toggleTheme() {
-  const body = document.body;
-  const isDark = body.classList.contains('dark-theme');
-  
-  if (isDark) {
-    body.classList.remove('dark-theme');
-    localStorage.setItem('theme', 'light');
-    showNotification("Switched to light theme", "info");
-  } else {
-    body.classList.add('dark-theme');
-    localStorage.setItem('theme', 'dark');
-    showNotification("Switched to dark theme", "info");
-  }
-}
-
-// Load saved theme on page load
-function loadSavedTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
-  }
-}
-
-// Initialize theme on page load
-document.addEventListener('DOMContentLoaded', loadSavedTheme);
-
-// Export functions for global access (if needed)
-window.updateCurrentTime = updateCurrentTime;
+// Export functions for global access
 window.showNotification = showNotification;
-window.toggleTheme = toggleTheme;
+window.toggleDarkMode = toggleDarkMode;
+
+
+// Optimized dark mode toggle
+function initializeDarkMode() {
+    if (!cachedElements.darkModeToggle) {
+        console.warn('Dark mode toggle not found');
+        return;
+    }
+
+    // Apply saved theme immediately
+    const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+    const isDarkMode = savedTheme === 'dark-mode';
+    
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    cachedElements.darkModeToggle.checked = isDarkMode;
+
+    // Debounced theme change
+    const debouncedThemeChange = debounce(() => {
+        const isDark = cachedElements.darkModeToggle.checked;
+        
+        // Use CSS transition for smooth change
+        document.body.style.transition = 'all 0.3s ease';
+        document.body.classList.toggle('dark-mode', isDark);
+        
+        requestAnimationFrame(() => {
+            localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
+            setTimeout(() => {
+                document.body.style.transition = '';
+            }, 300);
+        });
+    }, 150);
+
+    cachedElements.darkModeToggle.addEventListener('change', debouncedThemeChange, { passive: true });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.querySelector(".sidebar");
+    const toggleButtons = document.querySelectorAll(".toggle-btn, .sidebar-toggle");
+
+    if (!sidebar) return;
+
+    // Apply saved state
+    const savedState = localStorage.getItem('sidebarState') || 'expanded';
+    sidebar.classList.toggle('collapsed', savedState === 'collapsed');
+
+    toggleButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            const isCollapsed = sidebar.classList.contains("collapsed");
+            localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
+        });
+    });
+});
+
+ document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo dark mode từ localStorage
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            if (savedTheme === 'dark-mode') {
+                document.body.classList.add('dark-mode');
+                if (darkModeToggle) darkModeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (darkModeToggle) darkModeToggle.checked = false;
+            }
+
+            // Toggle dark mode
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', function () {
+                    const isDark = darkModeToggle.checked;
+                    document.body.classList.toggle('dark-mode', isDark);
+                    localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
+                });
+            }
+
+            console.log("✅ Dark mode initialized in Home.jsp");
+        });
