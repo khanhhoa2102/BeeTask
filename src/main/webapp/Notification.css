@@ -21,6 +21,10 @@ body.dark-mode .notification-dropdown {
     color: #ffffff;
 }
 
+.notification-dropdown.show {
+    display: block;
+}
+
 /* Notification List Styling */
 .notification-dropdown ul {
     list-style: none;
