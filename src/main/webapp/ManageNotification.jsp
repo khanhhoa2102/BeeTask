@@ -1,11 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-    model.User user = (model.User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/Login.jsp");
-        return;
-    }
-%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -36,7 +29,6 @@
             </aside>
             
             <main class="main-content">
-                <%@include file="./HeaderContent.jsp" %>
                 
                 <h2>All Notifications</h2>
 

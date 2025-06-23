@@ -36,9 +36,19 @@
                 <button class="header-icon-btn" id="bookmarkBtn" title="Bookmarks">
                     <i class="far fa-bookmark"></i>
                 </button>
-                <button class="header-icon-btn" id="notificationBtn" title="Notifications">
+                <button class="header-icon-btn" id="notificationBtn" title="Notifications" onclick="toggleDropdown()">
                     <i class="far fa-bell"></i>
                 </button>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <ul id="notificationList">
+                        <!-- JS will populate list here -->
+                    </ul>
+                    <div class="notification-actions">
+                        <button onclick="markAllRead(event)">Mark all read</button>
+                        <button onclick="markAllUnread(event)">Mark all unread</button>
+                        <button onclick="window.location.href='${pageContext.request.contextPath}/ManageNotification.jsp'">Manage</button>
+                    </div>
+                </div>
                 <button class="header-icon-btn" id="helpBtn" title="Help">
                     <i class="far fa-question-circle"></i>
                 </button>
