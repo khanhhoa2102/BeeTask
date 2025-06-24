@@ -25,7 +25,7 @@ public class LoginServlet extends HttpServlet {
 
         try {
             UserDAO dao = new UserDAO();
-            User user = dao.login(email, password); 
+            User user = dao.login(email, password);
 
             if (user != null) {
                 if (!user.isActive()) {
@@ -42,6 +42,7 @@ public class LoginServlet extends HttpServlet {
 
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
+                session.setAttribute("loginPassword", password); 
                 response.sendRedirect(request.getContextPath() + "/Home/Home.jsp");
 
             } else {

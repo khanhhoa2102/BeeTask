@@ -4,9 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/header-sidebar.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/Notification.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Header.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Notification.css">
 
 <div class="header">
     <div class="header-content-wrapper">
@@ -68,7 +67,7 @@
                                     <%= user.getUsername().substring(0, 2).toUpperCase() %>
                                 </div>
                                 <div class="dropdown-user-details">
-                                    <h4><%= user.getUsername() %></h4>
+                                    <h6><%= user.getUsername() %></h6>
                                     <p><%= user.getEmail() %></p>
                                 </div>
                             </div>
@@ -76,7 +75,7 @@
 
                         <!-- Account Section -->
                         <div class="dropdown-section">
-                            <a href="#" class="dropdown-item">
+                            <a href="../SwitchAccount.jsp" class="dropdown-item">
                                 <span>Switch Account</span>
                             </a>
                             <a href="#" class="dropdown-item has-arrow">
@@ -84,7 +83,7 @@
                             </a>
                         </div>
 
-                        <!-- Trello Section -->
+<!--                         Trello Section 
                         <div class="dropdown-section">
                             <div class="dropdown-section-title">TRELLO</div>
                             <a href="#" class="dropdown-item">
@@ -94,15 +93,9 @@
                                 <span>Activity</span>
                             </a>
                             <a href="#" class="dropdown-item">
-                                <span>Cards</span>
-                            </a>
-                            <a href="#" class="dropdown-item">
                                 <span>Settings</span>
                             </a>
-                            <a href="#" class="dropdown-item has-arrow">
-                                <span>Theme</span>
-                            </a>
-                        </div>
+                        </div>-->
 
                         <!-- Workspace -->
                         <div class="dropdown-section">
@@ -117,9 +110,6 @@
                             <a href="#" class="dropdown-item">
                                 <span>Help</span>
                             </a>
-                            <a href="#" class="dropdown-item">
-                                <span>Keyboard Shortcuts</span>
-                            </a>
                             <a href="${pageContext.request.contextPath}/logout" class="dropdown-item">
                                 <span>Logout</span>
                             </a>
@@ -130,78 +120,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'dark-mode';
-        if (savedTheme === 'dark-mode') {
-            document.body.classList.add('dark-mode');
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle) toggle.checked = true;
-        } else {
-            document.body.classList.remove('dark-mode');
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle) toggle.checked = false;
-        }
-
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('change', () => {
-                const isDarkMode = darkModeToggle.checked;
-                document.body.classList.toggle('dark-mode', isDarkMode);
-                localStorage.setItem('theme', isDarkMode ? 'dark-mode' : 'light-mode');
-                console.log('Dark Mode:', isDarkMode);
-            });
-        } else {
-            console.warn('#darkModeToggle element not found.');
-        }
-    });
-
-    function toggleDropdown() {
-        const dropdown = document.getElementById("notificationDropdown");
-        dropdown.classList.toggle("show");
-        if (dropdown.classList.contains("show")) {
-            loadNotifications();
-        }
-    }
-
-    function loadNotifications() {
-        fetch('${pageContext.request.contextPath}/notifications?action=view')
-            .then(res => res.json())
-            .then(data => {
-                const list = document.getElementById("notificationList");
-                const countEl = document.getElementById("notificationCount");
-                list.innerHTML = "";
-
-                let unreadCount = 0;
-                data.forEach(notification => {
-                    const li = document.createElement("li");
-                    li.textContent = notification.message;
-                    if (!notification.isRead) {
-                        li.classList.add("unread");
-                        unreadCount++;
-                    } else li.classList.add("read");
-                    list.appendChild(li);
-                });
-
-                if (unreadCount > 0) {
-                    countEl.style.display = "inline-block";
-                    countEl.textContent = unreadCount;
-                } else {
-                    countEl.style.display = "none";
-                }
-            });
-    }
-
-    function markAllRead(event) {
-        event.stopPropagation();
-        fetch('${pageContext.request.contextPath}/notifications?action=markAllRead')
-            .then(() => loadNotifications());
-    }
-
-    function markAllUnread(event) {
-        event.stopPropagation();
-        fetch('${pageContext.request.contextPath}/notifications?action=markAllUnread')
-            .then(() => loadNotifications());
-    }
-</script>
+<script src="${pageContext.request.contextPath}/Header.js"></script>
