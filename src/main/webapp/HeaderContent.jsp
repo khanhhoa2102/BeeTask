@@ -1,4 +1,4 @@
-<div class="header">
+<!--<div class="header">
     <div class="header-content-wrapper">
         <div class="header-left">
             <button class="icon-btn">
@@ -11,7 +11,7 @@
             <button class="create-btn">Create</button>
         </div>
         <div>
-            <a href="${pageContext.request.contextPath}/ManageNotification.jsp">
+            <a href="${pageContext.request.contextPath}/Ma  nageNotification.jsp">
                 <i class="fas fa-pen"></i><span>Manage Notifications</span>
             </a>
         </div>
@@ -19,7 +19,7 @@
             <i class="fas fa-bell notification-bell" onclick="toggleDropdown()"></i>
             <div class="notification-dropdown" id="notificationDropdown">
                 <ul id="notificationList">
-                    <!-- JS will populate list here -->
+                     JS will populate list here 
                 </ul>
                 <div class="notification-actions">
                     <button onclick="markAllRead(event)">Mark all read</button>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="header-right">
-            <!-- Dark Mode Toggle -->
+             Dark Mode Toggle 
             <div class="dark-mode-section">
                 <span class="dark-label">Dark</span>
                 <label class="switch">
@@ -37,7 +37,7 @@
                 </label>
             </div>
 
-            <!-- Header Icons -->
+             Header Icons 
             <div class="header-icons">
                 <button class="header-icon-btn" id="bookmarkBtn" title="Bookmarks">
                     <i class="far fa-bookmark"></i>
@@ -49,14 +49,14 @@
                     <i class="far fa-question-circle"></i>
                 </button>
 
-                <!-- User Avatar & Dropdown -->
+                 User Avatar & Dropdown 
                 <div style="position: relative;">
                     <button class="user-avatar-btn" id="userAvatarBtn" title="Account menu">
                         <%= user.getUsername().substring(0, 2).toUpperCase() %>
                     </button>
 
                     <div class="user-dropdown" id="userDropdown">
-                        <!-- Header Info -->
+                         Header Info 
                         <div class="dropdown-header">
                             <div class="dropdown-user-info">
                                 <div class="dropdown-avatar">
@@ -69,7 +69,7 @@
                             </div>
                         </div>
 
-                        <!-- Account Section -->
+                         Account Section 
                         <div class="dropdown-section">
                             <div class="dropdown-section-title">ACCOUNT</div>
                             <a href="#" class="dropdown-item">
@@ -82,7 +82,7 @@
                             </a>
                         </div>
 
-                        <!-- Trello Section -->
+                         Trello Section 
                         <div class="dropdown-section">
                             <div class="dropdown-section-title">TRELLO</div>
                             <a href="#" class="dropdown-item">
@@ -107,7 +107,7 @@
                             </a>
                         </div>
 
-                        <!-- Workspace -->
+                         Workspace 
                         <div class="dropdown-section">
                             <a href="#" class="dropdown-item workspace-item">
                                 <i class="fas fa-users"></i>
@@ -115,7 +115,7 @@
                             </a>
                         </div>
 
-                        <!-- Help & Logout -->
+                         Help & Logout 
                         <div class="dropdown-section">
                             <a href="#" class="dropdown-item">
                                 <i class="fas fa-question-circle"></i>
@@ -135,4 +135,4 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->
