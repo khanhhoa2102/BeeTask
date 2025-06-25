@@ -1,6 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ include file="session-check.jspf" %>
-<% session.setAttribute("userId", (Integer)user.getUserId());%>
+<%@ page import="model.User" %>
+<%
+    User headerUser = (User) session.getAttribute("user");
+%>
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -52,10 +55,11 @@
                     <i class="far fa-question-circle"></i>
                 </button>
 
+                <% if (headerUser != null) { %>
                 <!-- User Avatar & Dropdown -->
                 <div class="user-avatar-container" style="position: relative;">
                     <button class="user-avatar-btn" id="userAvatarBtn" title="Account menu">
-                        <%= user.getUsername().substring(0, 2).toUpperCase() %>
+                        <%= headerUser.getUsername().substring(0, 2).toUpperCase() %>
                     </button>
 
                     <div class="user-dropdown" id="userDropdown">
@@ -64,11 +68,11 @@
                             <div class="dropdown-section-title">ACCOUNT</div>
                             <div class="dropdown-user-info">
                                 <div class="dropdown-avatar">
-                                    <%= user.getUsername().substring(0, 2).toUpperCase() %>
+                                    <%= headerUser.getUsername().substring(0, 2).toUpperCase() %>
                                 </div>
                                 <div class="dropdown-user-details">
-                                    <h6><%= user.getUsername() %></h6>
-                                    <p><%= user.getEmail() %></p>
+                                    <h6><%= headerUser.getUsername() %></h6>
+                                    <p><%= headerUser.getEmail() %></p>
                                 </div>
                             </div>
                         </div>
@@ -82,20 +86,6 @@
                                 <span>Account Settings</span>
                             </a>
                         </div>
-
-<!--                         Trello Section 
-                        <div class="dropdown-section">
-                            <div class="dropdown-section-title">TRELLO</div>
-                            <a href="#" class="dropdown-item">
-                                <span>Profile & Display</span>
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <span>Activity</span>
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <span>Settings</span>
-                            </a>
-                        </div>-->
 
                         <!-- Workspace -->
                         <div class="dropdown-section">
@@ -116,8 +106,10 @@
                         </div>
                     </div>
                 </div>
+                <% } %>
             </div>
         </div>
     </div>
 </div>
+
 <script src="${pageContext.request.contextPath}/Header.js"></script>

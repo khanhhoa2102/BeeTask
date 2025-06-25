@@ -247,19 +247,19 @@ body::before {
 
 /* Error Message */
 .error-message {
-  text-align: center;
-  color: #ef4444;
-  font-size: 0.875rem;
+  background-color: #fdecea;
+  border-left: 4px solid #d93025;
+  padding: 10px 16px;
+  margin-top: 16px;
+  border-radius: 4px;
+  color: #d93025;
   font-weight: 500;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 8px;
+  text-align: center;
+  display: none;
 }
 
 .error-message.show {
-  display: block !important;
+  display: block;
 }
 
 /* Verify Button */

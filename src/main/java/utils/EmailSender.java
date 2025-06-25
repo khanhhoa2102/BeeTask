@@ -18,7 +18,13 @@ public class EmailSender {
 
     public static boolean sendOTP(String toEmail, String otp) {
         try {
-            // Cấu hình SMTP
+            // Validate email format
+            if (toEmail == null || !toEmail.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+                System.err.println("❌ Invalid email address: " + toEmail);
+                return false;
+            }
+
+            // SMTP configuration
             Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
@@ -32,19 +38,19 @@ public class EmailSender {
                 }
             });
 
-            session.setDebug(true); // Bật log gửi mail
+            session.setDebug(true); // Enable SMTP debug logging
 
-            // Soạn nội dung email
+            // Compose email content
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(FROM_EMAIL, "BeeTask Support"));
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            msg.setSubject("Mã OTP xác thực BeeTask");
+            msg.setSubject("Your BeeTask OTP Verification Code");
 
-            String htmlContent = "<p>Xin chào,</p>"
-                    + "<p>Bạn vừa yêu cầu đặt lại mật khẩu tài khoản BeeTask.</p>"
-                    + "<p><b>Mã OTP của bạn là: <span style='font-size:18px; color:#2e6da4;'>" + otp + "</span></b></p>"
-                    + "<p><i>Lưu ý: Mã OTP chỉ có hiệu lực trong 10 phút.</i></p>"
-                    + "<p>Trân trọng,<br>Đội ngũ BeeTask</p>";
+            String htmlContent = "<p>Hello,</p>"
+                    + "<p>You have just requested to register a BeeTask account.</p>"
+                    + "<p><b>Your OTP code is: <span style='font-size:18px; color:#2e6da4;'>" + otp + "</span></b></p>"
+                    + "<p><i>Note: This OTP is valid for 10 minutes only.</i></p>"
+                    + "<p>Best regards,<br>The BeeTask Team</p>";
 
             msg.setContent(htmlContent, "text/html; charset=UTF-8");
 
@@ -52,14 +58,15 @@ public class EmailSender {
             return true;
 
         } catch (Exception e) {
-            System.err.println("❌ Lỗi gửi email: " + e.getMessage());
+            System.err.println("❌ Failed to send email: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
+
     public static void main(String[] args) {
         // Nhập email người nhận để test
-        String toEmail = "nguyenhuusona6@gmail.com";  // ⚠️ Thay đổi thành email thật để test
+        String toEmail = "nguyenhuusona6@gmail.com";
 
         // Tạo và gửi OTP
         EmailSender sender = new EmailSender();

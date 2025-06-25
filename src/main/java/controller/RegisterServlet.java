@@ -11,9 +11,10 @@ import java.io.IOException;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         String name = request.getParameter("name");
         String email = request.getParameter("email");
@@ -22,6 +23,8 @@ public class RegisterServlet extends HttpServlet {
         try {
             UserDAO userDAO = new UserDAO();
             if (userDAO.isEmailExist(email)) {
+                System.out.println("⚠️ [RegisterServlet] Email already exists: " + email + " → forwarding back to Register.jsp");
+
                 request.setAttribute("emailError", "This email is already registered.");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);
@@ -34,6 +37,7 @@ public class RegisterServlet extends HttpServlet {
             boolean mailSent = EmailSender.sendOTP(email, otp);
 
             if (!mailSent) {
+                  System.out.println("❌ [RegisterServlet] Failed to send OTP to: " + email);
                 request.setAttribute("emailError", "Failed to send OTP. Please try again.");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);

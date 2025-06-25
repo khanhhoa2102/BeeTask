@@ -2,6 +2,7 @@
 <%@ page import="dao.TemplateDAO" %>
 <%@ page import="model.Template" %>
 <%@ page import="java.util.*" %>
+<%@ include file="../session-check.jspf" %>
 <%
     TemplateDAO templateDAO = new TemplateDAO();
     List<Template> templates = templateDAO.getAllTemplates();

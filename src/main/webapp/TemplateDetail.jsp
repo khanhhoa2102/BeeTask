@@ -4,6 +4,7 @@
 <%@ page import="java.util.*" %>
 
 <%
+    User user = (User) session.getAttribute("user");
     int templateId = Integer.parseInt(request.getParameter("templateId"));
     TemplateDAO dao = new TemplateDAO();
     Template template = dao.getTemplateById(templateId);
