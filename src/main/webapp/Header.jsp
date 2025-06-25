@@ -3,6 +3,7 @@
 <%
     User headerUser = (User) session.getAttribute("user");
 %>
+<% session.setAttribute("userId", (Integer)headerUser.getUserId());%>
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -111,5 +112,7 @@
         </div>
     </div>
 </div>
-
+<script>
+    const contextPath = "${pageContext.request.contextPath}";
+</script>
 <script src="${pageContext.request.contextPath}/Header.js"></script>

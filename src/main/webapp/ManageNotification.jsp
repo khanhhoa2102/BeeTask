@@ -12,15 +12,15 @@
             <aside class="sidebar">
                 <div class="user-profile">
                     <div class="avatar">
-                        <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
-                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+                        <% if (headerUser.getAvatarUrl() != null && !headerUser.getAvatarUrl().isEmpty()) { %>
+                        <img src="<%= headerUser.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
                         <% } else { %>
                         <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ccc;"></div>
                         <% } %>
                     </div>
                     <div class="info">
-                        <span class="username"><%= user.getUsername() %></span>
-                        <span class="email"><%= user.getEmail() %></span>
+                        <span class="username"><%= headerUser.getUsername() %></span>
+                        <span class="email"><%= headerUser.getEmail() %></span>
                     </div>
                 </div>
 
@@ -60,5 +60,6 @@
             const contextPath = "${pageContext.request.contextPath}";
         </script>
         <script src="${pageContext.request.contextPath}/ManageNotification.js"></script>
+        
     </body>
 </html>

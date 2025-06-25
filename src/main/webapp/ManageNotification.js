@@ -1,6 +1,6 @@
 const userId = '<%= session.getAttribute("userId") %>';
 
-function loadNotifications() {
+function loadAllNotifications() {
     fetch(`${contextPath}/notifications?action=viewall`)
         .then(res => res.json())
         .then(data => {
@@ -64,4 +64,4 @@ function deleteNotification(id) {
 }
 
 // Initial load
-loadNotifications();
+loadAllNotifications();
