@@ -1,87 +1,94 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import context.DBConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 import model.Project;
+import model.Board;
+import model.Task;
+
+import java.sql.*;
+import java.util.*;
 
 public class ProjectDAO {
-    public List<Project> findAll() throws Exception {
-        List<Project> list = new ArrayList<>();
-        String sql = "SELECT * FROM Projects";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Project project = new Project(
-                    rs.getInt("ProjectId"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getInt("CreatedBy"),
-                    rs.getTimestamp("CreatedAt")
-                );
-                list.add(project);
-            }
+    private Connection connection;
+
+    public ProjectDAO() {
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return list;
     }
 
-    public Project findById(int id) throws Exception {
-        String sql = "SELECT * FROM Projects WHERE ProjectId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Project(
-                        rs.getInt("ProjectId"),
-                        rs.getString("Name"),
-                        rs.getString("Description"),
-                        rs.getInt("CreatedBy"),
-                        rs.getTimestamp("CreatedAt")
-                    );
-                }
+    // Lấy thông tin một project theo ID
+    public Project getProjectById(int projectId) throws SQLException {
+        String sql = "SELECT * FROM Project WHERE projectId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Project(
+                    rs.getInt("projectId"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("createdBy"),
+                    rs.getTimestamp("createdAt")
+                );
             }
         }
         return null;
     }
 
-    public void insert(Project p) throws Exception {
-        String sql = "INSERT INTO Projects (Name, Description, CreatedBy) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, p.getName());
-            stmt.setString(2, p.getDescription());
-            stmt.setInt(3, p.getCreatedBy());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void update(Project p) throws Exception {
-        String sql = "UPDATE Projects SET Name=?, Description=?, CreatedBy=? WHERE ProjectId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, p.getName());
-            stmt.setString(2, p.getDescription());
-            stmt.setInt(3, p.getCreatedBy());
-            stmt.setInt(4, p.getProjectId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void delete(int projectId) throws Exception {
-        String sql = "DELETE FROM Projects WHERE ProjectId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    // Lấy danh sách Board theo projectId
+    public List<Board> getBoardsByProjectId(int projectId) throws SQLException {
+        List<Board> boards = new ArrayList<>();
+        String sql = "SELECT * FROM Board WHERE projectId = ? ORDER BY position ASC";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
-            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Board board = new Board(
+                    rs.getInt("boardId"),
+                    rs.getInt("projectId"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getTimestamp("createdAt")
+                );
+                board.setPosition(rs.getInt("position"));
+                boards.add(board);
+            }
         }
+        return boards;
+    }
+
+    // Lấy danh sách Task theo projectId (dạng Map<boardId, List<Task>>)
+    public Map<Integer, List<Task>> getTasksByProjectId(int projectId) throws SQLException {
+        Map<Integer, List<Task>> taskMap = new HashMap<>();
+        String sql = "SELECT t.* FROM Task t JOIN Board b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY t.position ASC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Task task = new Task();
+                task.setTaskId(rs.getInt("taskId"));
+                task.setBoardId(rs.getInt("boardId"));
+                task.setTitle(rs.getString("title"));
+                task.setDescription(rs.getString("description"));
+                task.setStatus(rs.getString("status"));
+                task.setPriority(rs.getString("priority"));
+                task.setDueDate(rs.getDate("dueDate"));
+                task.setCreatedAt(rs.getTimestamp("createdAt"));
+                task.setCreatedBy(rs.getString("createdBy"));
+                task.setPosition(rs.getInt("position"));
+
+                int boardId = task.getBoardId();
+                if (!taskMap.containsKey(boardId)) {
+                    taskMap.put(boardId, new ArrayList<>());
+                }
+                taskMap.get(boardId).add(task);
+            }
+        }
+
+        return taskMap;
     }
 }
