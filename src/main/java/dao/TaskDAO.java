@@ -1,105 +1,176 @@
 package dao;
 
 import context.DBConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import model.Task;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskDAO {
-    public List<Task> findAll() throws Exception {
+    private Connection connection;
+
+    public TaskDAO() {
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Insert new task
+    public void insert(Task task) {
+        String sql = "INSERT INTO Task (boardId, listId, title, description, statusId, dueDate, createdAt, createdBy, position, priority) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, task.getBoardId());
+            stmt.setInt(2, task.getListId());
+            stmt.setString(3, task.getTitle());
+            stmt.setString(4, task.getDescription());
+            stmt.setString(5, task.getStatus()); // statusId is now a String status
+            stmt.setDate(6, task.getDueDate());
+            stmt.setString(7, task.getCreatedBy());
+            stmt.setInt(8, task.getPosition());
+            stmt.setString(9, task.getPriority());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Update task
+    public void update(Task task) {
+        String sql = "UPDATE Task SET title = ?, description = ?, statusId = ?, dueDate = ?, priority = ? WHERE taskId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, task.getTitle());
+            stmt.setString(2, task.getDescription());
+            stmt.setString(3, task.getStatus());
+            stmt.setDate(4, task.getDueDate());
+            stmt.setString(5, task.getPriority());
+            stmt.setInt(6, task.getTaskId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Delete task
+    public void delete(int taskId) {
+        String sql = "DELETE FROM Task WHERE taskId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, taskId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Move task to another board and update position
+    public void moveTask(int taskId, int newBoardId, int newPosition) {
+        String sql = "UPDATE Task SET boardId = ?, position = ? WHERE taskId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, newBoardId);
+            stmt.setInt(2, newPosition);
+            stmt.setInt(3, taskId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Update task position (within same board)
+    public void updateTaskPosition(int taskId, int position) {
+        String sql = "UPDATE Task SET position = ? WHERE taskId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, position);
+            stmt.setInt(2, taskId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Get tasks by board ID
+    public List<Task> getTasksByBoardId(int boardId) {
         List<Task> list = new ArrayList<>();
-        String sql = "SELECT * FROM Tasks";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        String sql = "SELECT * FROM Task WHERE boardId = ? ORDER BY position ASC";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, boardId);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Task task = new Task(
-                    rs.getInt("TaskId"),
-                    rs.getInt("BoardId"),
-                    rs.getInt("ListId"),
-                    rs.getString("Title"),
-                    rs.getString("Description"),
-                    rs.getInt("StatusId"),
-                    toUtilDate(rs.getTimestamp("DueDate")),
-                    toUtilDate(rs.getTimestamp("CreatedAt")),
-                    rs.getInt("CreatedBy")
-                );
-                list.add(task);
+                list.add(mapResultSetToTask(rs));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return list;
     }
 
-    public Task findById(int id) throws Exception {
-        String sql = "SELECT * FROM Tasks WHERE TaskId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Task(
-                        rs.getInt("TaskId"),
-                        rs.getInt("BoardId"),
-                        rs.getInt("ListId"),
-                        rs.getString("Title"),
-                        rs.getString("Description"),
-                        rs.getInt("StatusId"),
-                        toUtilDate(rs.getTimestamp("DueDate")),
-                        toUtilDate(rs.getTimestamp("CreatedAt")),
-                        rs.getInt("CreatedBy")
-                    );
-                }
+    // Get tasks by project ID (used for overview)
+    public List<Task> getTasksByProjectId(int projectId) {
+        List<Task> list = new ArrayList<>();
+        String sql = "SELECT t.* FROM Task t JOIN Board b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY b.position, t.position";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToTask(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Helper to map ResultSet to Task
+    private Task mapResultSetToTask(ResultSet rs) throws SQLException {
+        Task task = new Task();
+        task.setTaskId(rs.getInt("taskId"));
+        task.setBoardId(rs.getInt("boardId"));
+        task.setListId(rs.getInt("listId"));
+        task.setTitle(rs.getString("title"));
+        task.setDescription(rs.getString("description"));
+        task.setStatus(rs.getString("statusId"));
+        task.setDueDate(rs.getDate("dueDate"));
+        task.setCreatedAt(rs.getTimestamp("createdAt"));
+        task.setCreatedBy(rs.getString("createdBy"));
+        task.setPosition(rs.getInt("position"));
+        task.setPriority(rs.getString("priority"));
+        return task;
+    }
+    // ✅ Move task to new board + position (for drag & drop)
+    public void moveTaskToBoard(int taskId, int newBoardId, int newIndex) throws SQLException {
+        String updateBoardSQL = "UPDATE Tasks SET BoardId = ?, Position = 9999 WHERE TaskId = ?";
+        String shiftTasksSQL = "UPDATE Tasks SET Position = Position + 1 WHERE BoardId = ? AND Position >= ?";
+        String updatePositionSQL = "UPDATE Tasks SET Position = ? WHERE TaskId = ?";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps1 = conn.prepareStatement(updateBoardSQL);
+                 PreparedStatement ps2 = conn.prepareStatement(shiftTasksSQL);
+                 PreparedStatement ps3 = conn.prepareStatement(updatePositionSQL)) {
+
+                // Step 1: Move task to new board with temporary position
+                ps1.setInt(1, newBoardId);
+                ps1.setInt(2, taskId);
+                ps1.executeUpdate();
+
+                // Step 2: Shift other tasks down to make space
+                ps2.setInt(1, newBoardId);
+                ps2.setInt(2, newIndex);
+                ps2.executeUpdate();
+
+                // Step 3: Set correct final position
+                ps3.setInt(1, newIndex);
+                ps3.setInt(2, taskId);
+                ps3.executeUpdate();
+
+                conn.commit();
+            } catch (SQLException ex) {
+                conn.rollback();
+                throw ex;
             }
         }
-        return null;
-    }
-
-    public void insert(Task t) throws Exception {
-        String sql = "INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedBy) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, t.getBoardId());
-            stmt.setInt(2, t.getListId());
-            stmt.setString(3, t.getTitle());
-            stmt.setString(4, t.getDescription());
-            stmt.setInt(5, t.getStatusId());
-            stmt.setTimestamp(6, toSqlTimestamp(t.getDueDate()));
-            stmt.setInt(7, t.getCreatedBy());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void update(Task t) throws Exception {
-        String sql = "UPDATE Tasks SET Title=?, Description=?, StatusId=?, DueDate=? WHERE TaskId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, t.getTitle());
-            stmt.setString(2, t.getDescription());
-            stmt.setInt(3, t.getStatusId());
-            stmt.setTimestamp(4, toSqlTimestamp(t.getDueDate()));
-            stmt.setInt(5, t.getTaskId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void delete(int taskId) throws Exception {
-        String sql = "DELETE FROM Tasks WHERE TaskId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, taskId);
-            stmt.executeUpdate();
-        }
-    }
-
-    private java.util.Date toUtilDate(Timestamp timestamp) {
-        return timestamp != null ? new java.util.Date(timestamp.getTime()) : null;
-    }
-
-    private Timestamp toSqlTimestamp(java.util.Date date) {
-        return date != null ? new Timestamp(date.getTime()) : null;
     }
 }

@@ -2,78 +2,112 @@ package dao;
 
 import context.DBConnection;
 import model.Board;
+
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BoardDAO {
-    public List<Board> findAll() throws Exception {
-        List<Board> list = new ArrayList<>();
-        String sql = "SELECT * FROM Boards";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Board b = new Board(
-                    rs.getInt("BoardId"),
-                    rs.getInt("ProjectId"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getTimestamp("CreatedAt")
-                );
-                list.add(b);
-            }
+    private Connection connection;
+
+    public BoardDAO() {
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return list;
     }
 
-    public Board findById(int id) throws Exception {
-        String sql = "SELECT * FROM Boards WHERE BoardId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Board(
-                        rs.getInt("BoardId"),
-                        rs.getInt("ProjectId"),
-                        rs.getString("Name"),
-                        rs.getString("Description"),
-                        rs.getTimestamp("CreatedAt")
-                    );
-                }
+    // Insert new board
+    public void insert(Board board) {
+        String sql = "INSERT INTO Board (projectId, name, description, createdAt, position) VALUES (?, ?, ?, GETDATE(), ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, board.getProjectId());
+            stmt.setString(2, board.getName());
+            stmt.setString(3, board.getDescription());
+            stmt.setInt(4, board.getPosition());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Get board by ID
+    public Board findById(int boardId) {
+        String sql = "SELECT * FROM Board WHERE boardId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, boardId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToBoard(rs);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public void insert(Board b) throws Exception {
-        String sql = "INSERT INTO Boards (ProjectId, Name, Description) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, b.getProjectId());
-            stmt.setString(2, b.getName());
-            stmt.setString(3, b.getDescription());
+    // Update board name & description
+    public void update(Board board) {
+        String sql = "UPDATE Board SET name = ?, description = ? WHERE boardId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, board.getName());
+            stmt.setString(2, board.getDescription());
+            stmt.setInt(3, board.getBoardId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public void update(Board b) throws Exception {
-        String sql = "UPDATE Boards SET Name=?, Description=? WHERE BoardId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, b.getName());
-            stmt.setString(2, b.getDescription());
-            stmt.setInt(3, b.getBoardId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void delete(int boardId) throws Exception {
-        String sql = "DELETE FROM Boards WHERE BoardId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    // Delete board by ID
+    public void delete(int boardId) {
+        String sql = "DELETE FROM Board WHERE boardId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+    }
+
+    // Update board position
+    public void updateBoardPosition(int boardId, int position) {
+        String sql = "UPDATE Board SET position = ? WHERE boardId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, position);
+            stmt.setInt(2, boardId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Get all boards by project ID, ordered by position
+    public List<Board> getBoardsByProjectId(int projectId) {
+        List<Board> list = new ArrayList<>();
+        String sql = "SELECT * FROM Board WHERE projectId = ? ORDER BY position ASC";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToBoard(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Helper to map ResultSet to Board object
+    private Board mapResultSetToBoard(ResultSet rs) throws SQLException {
+        Board board = new Board();
+        board.setBoardId(rs.getInt("boardId"));
+        board.setProjectId(rs.getInt("projectId"));
+        board.setName(rs.getString("name"));
+        board.setDescription(rs.getString("description"));
+        board.setCreatedAt(rs.getTimestamp("createdAt"));
+        board.setPosition(rs.getInt("position"));
+        return board;
     }
 }
