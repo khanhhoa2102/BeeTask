@@ -142,15 +142,16 @@ public class UserDAO {
         return user;
     }
 
-    public boolean isEmailExist(String email) throws Exception {
+    public boolean isEmailExist(String email) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Users WHERE Email = ?";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1) > 0;
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
         }
+        return false;
     }
-
 
 }
