@@ -1,4 +1,4 @@
-
+const contextPath = document.body.getAttribute("data-context-path") || "";
 function initializePage() {
     // Add event listeners
     const addAccountForm = document.getElementById('addAccountForm');
@@ -435,12 +435,12 @@ function switchToAccount(email) {
         // ✅ Google account
         localStorage.setItem("switchGoogleEmail", acc.email);
         localStorage.setItem("switchGoogleRefreshToken", acc.refreshToken);
-        window.location.href = "Login.jsp";
+        window.location.href = contextPath + "/Authentication/Login.jsp";
     } else {
         // Manual account
         localStorage.setItem("switchEmail", acc.email);
         localStorage.setItem("switchPassword", acc.password);
-        window.location.href = "Login.jsp";
+        window.location.href = contextPath + "/Authentication/Login.jsp";
     }
 }
 
@@ -448,7 +448,7 @@ function switchToAccount(email) {
 function switchToGoogle(email, refreshToken) {
     localStorage.setItem("switchGoogleEmail", email);
     localStorage.setItem("switchGoogleRefreshToken", refreshToken);
-    window.location.href = "Login.jsp";
+    window.location.href = "Authentication/Login.jsp";
 }
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize the page

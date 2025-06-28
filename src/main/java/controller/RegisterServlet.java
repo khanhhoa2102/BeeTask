@@ -28,7 +28,7 @@ public class RegisterServlet extends HttpServlet {
                 request.setAttribute("emailError", "This email is already registered.");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);
-                request.getRequestDispatcher("Register.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/Register.jsp").forward(request, response);
                 return;
             }
 
@@ -41,7 +41,7 @@ public class RegisterServlet extends HttpServlet {
                 request.setAttribute("emailError", "Failed to send OTP. Please try again.");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);
-                request.getRequestDispatcher("Register.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/Register.jsp").forward(request, response);
                 return;
             }
 
@@ -54,11 +54,11 @@ public class RegisterServlet extends HttpServlet {
             session.setAttribute("email", email);
             session.setAttribute("password", password);
 
-            response.sendRedirect("EnterOTP.jsp");
+            response.sendRedirect("Authentication/EnterOTP.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("Authentication/error.jsp");
         }
     }
 }

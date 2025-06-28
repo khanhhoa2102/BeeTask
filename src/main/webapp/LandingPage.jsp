@@ -34,10 +34,10 @@
                     </div>
                 </div>
                 <div class="auth-buttons">
-                    <button class="btn btn-ghost" onclick="window.location.href = 'Login.jsp'">
+                    <button class="btn btn-ghost" onclick="window.location.href = 'Authentication/Login.jsp'">
                         <i class="fas fa-sign-in-alt"></i> Đăng nhập
                     </button>
-                    <button class="btn btn-primary" onclick="window.location.href = 'Register.jsp'">
+                    <button class="btn btn-primary" onclick="window.location.href = 'Authentication/Register.jsp'">
                         <i class="fas fa-user-plus"></i> Đăng ký
                     </button>
                 </div>
@@ -115,7 +115,7 @@
                     Tham gia cùng hàng nghìn người dùng đang quản lý công việc hiệu quả với BeeTask
                 </p>
                 <div class="cta-buttons">
-                    <button class="btn btn-white btn-large" onclick="window.location.href = 'Register.jsp'">Đăng ký miễn phí <i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-white btn-large" onclick="window.location.href = 'Authentication/Register.jsp'">Đăng ký miễn phí <i class="fas fa-arrow-right"></i></button>
                     <button class="btn btn-outline-white btn-large">Liên hệ tư vấn</button>
                 </div>
             </div>

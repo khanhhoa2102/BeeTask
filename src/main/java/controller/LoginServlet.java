@@ -30,13 +30,13 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 if (!user.isActive()) {
                     request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa.");
-                    request.getRequestDispatcher("Login.jsp").forward(request, response);
+                    request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
                     return;
                 }
 
                 if (!user.isEmailVerified()) {
                     request.setAttribute("errorMessage", "Email chưa được xác thực. Vui lòng kiểm tra hộp thư.");
-                    request.getRequestDispatcher("Login.jsp").forward(request, response);
+                    request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
                     return;
                 }
 
@@ -47,13 +47,13 @@ public class LoginServlet extends HttpServlet {
 
             } else {
                 request.setAttribute("errorMessage", "Sai email hoặc mật khẩu.");
-                request.getRequestDispatcher("Login.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Có lỗi xảy ra. Vui lòng thử lại sau.");
-            request.getRequestDispatcher("Login.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
         }
     }
 }

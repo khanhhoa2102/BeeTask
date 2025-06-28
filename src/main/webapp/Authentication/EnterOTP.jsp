@@ -7,7 +7,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BeeTask - Verify Code</title>
-        <link rel="stylesheet" href="EnterOTP.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Authentication/EnterOTP.css">
     </head>
     <body>
         <div class="decorative-shapes">
@@ -80,6 +80,6 @@
             </div>
         </div>
 
-        <script src="EnterOTP.js"></script>
+        <script src="${pageContext.request.contextPath}/Authentication/EnterOTP.js"></script>
     </body>
 </html>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeeTask - Forgot Password</title>
-    <link rel="stylesheet" href="ForgotPassword.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Authentication/ForgotPassword.css">
 </head>
 <body>
     <div class="decorative-shapes">
@@ -20,13 +20,12 @@
             <!-- Logo Section -->
             <div class="logo-section">
                 <div class="logo-container">
-                    <img src="Asset/Longlogo.png" alt="BeeTask Logo" class="logo">
+                    <img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="BeeTask Logo" class="logo">
                 </div>
                 <h2 class="forgot-title">Forgot Password</h2>
                 <p class="forgot-subtitle">Enter your email to receive a reset link</p>
             </div>
 
-            <!-- Hiển thị thông báo từ servlet (KHÔNG dùng JSTL) -->
             <%
                 Object msgObj = request.getAttribute("message");
                 if (msgObj != null) {
@@ -39,7 +38,7 @@
             %>
 
             <!-- Forgot Password Form -->
-            <form class="forgot-form" id="forgotForm" action="forgot-password" method="post">
+            <form class="forgot-form" id="forgotForm" action="${pageContext.request.contextPath}/forgot-password" method="post">
                 <!-- Email Field -->
                 <div class="form-group">
                     <input 
@@ -69,6 +68,6 @@
         </div>
     </div>
 
-    <script src="ForgotPassword.js"></script>
+    <script src="${pageContext.request.contextPath}/Authentication/ForgotPassword.js"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ public class VerifyOTPServlet extends HttpServlet {
 
         if (session == null) {
             request.setAttribute("message", "❌ Phiên làm việc không hợp lệ.");
-            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
@@ -33,19 +33,19 @@ public class VerifyOTPServlet extends HttpServlet {
 
         if (sessionOTP == null || otpExpiry == null || inputCode == null || purpose == null) {
             request.setAttribute("message", "❌ Thiếu dữ liệu để xác minh.");
-            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
         if (new Timestamp(System.currentTimeMillis()).after(otpExpiry)) {
             request.setAttribute("message", "❌ Mã OTP đã hết hạn.");
-            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
         if (!sessionOTP.trim().equals(inputCode.trim())) {
             request.setAttribute("message", "❌ Mã OTP không chính xác.");
-            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
@@ -58,7 +58,7 @@ public class VerifyOTPServlet extends HttpServlet {
 
                 if (name == null || email == null || password == null) {
                     request.setAttribute("message", "❌ Thiếu thông tin người dùng.");
-                    request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                    request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
                     return;
                 }
 
@@ -83,19 +83,19 @@ public class VerifyOTPServlet extends HttpServlet {
 
                 // 🟢 Đặt thông báo đăng ký thành công vào session và redirect
                 session.setAttribute("successMessage", "🎉 Login successfull!");
-                response.sendRedirect("Login.jsp");
+                response.sendRedirect("Authentication/Login.jsp");
 
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("message", "❌ Lỗi khi đăng ký người dùng.");
-                request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             }
         } else if ("forgot-password".equals(purpose)) {
             // ✅ Luồng quên mật khẩu
             String resetEmail = (String) session.getAttribute("resetEmail");
             if (resetEmail == null) {
                 request.setAttribute("message", "❌ Can't not find email.");
-                request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
                 return;
             }
 
@@ -106,7 +106,7 @@ public class VerifyOTPServlet extends HttpServlet {
 
                 if (!rs.next()) {
                     request.setAttribute("message", "❌ Người dùng không tồn tại.");
-                    request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                    request.getRequestDispatcher("Authentication/EnterOTP.js12p").forward(request, response);
                     return;
                 }
 
@@ -130,12 +130,12 @@ public class VerifyOTPServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("message", "❌ Lỗi hệ thống.");
-                request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             }
 
         } else {
             request.setAttribute("message", "❌ Mục đích OTP không hợp lệ.");
-            request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
         }
     }
 }
