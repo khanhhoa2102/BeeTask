@@ -21,7 +21,7 @@ public class ProjectDAO {
 
     // Lấy thông tin một project theo ID
     public Project getProjectById(int projectId) throws SQLException {
-        String sql = "SELECT * FROM Project WHERE projectId = ?";
+        String sql = "SELECT * FROM Projects WHERE projectId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();
@@ -41,7 +41,7 @@ public class ProjectDAO {
     // Lấy danh sách Board theo projectId
     public List<Board> getBoardsByProjectId(int projectId) throws SQLException {
         List<Board> boards = new ArrayList<>();
-        String sql = "SELECT * FROM Board WHERE projectId = ? ORDER BY position ASC";
+        String sql = "SELECT * FROM Boards WHERE projectId = ? ORDER BY position ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();
@@ -63,7 +63,7 @@ public class ProjectDAO {
     // Lấy danh sách Task theo projectId (dạng Map<boardId, List<Task>>)
     public Map<Integer, List<Task>> getTasksByProjectId(int projectId) throws SQLException {
         Map<Integer, List<Task>> taskMap = new HashMap<>();
-        String sql = "SELECT t.* FROM Task t JOIN Board b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY t.position ASC";
+        String sql = "SELECT t.* FROM Tasks t JOIN Boards b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY t.position ASC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);

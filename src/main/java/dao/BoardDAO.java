@@ -20,7 +20,7 @@ public class BoardDAO {
 
     // Insert new board
     public void insert(Board board) {
-        String sql = "INSERT INTO Board (projectId, name, description, createdAt, position) VALUES (?, ?, ?, GETDATE(), ?)";
+        String sql = "INSERT INTO Boards (projectId, name, description, createdAt, position) VALUES (?, ?, ?, GETDATE(), ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, board.getProjectId());
             stmt.setString(2, board.getName());
@@ -34,7 +34,7 @@ public class BoardDAO {
 
     // Get board by ID
     public Board findById(int boardId) {
-        String sql = "SELECT * FROM Board WHERE boardId = ?";
+        String sql = "SELECT * FROM Boards WHERE boardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             ResultSet rs = stmt.executeQuery();
@@ -49,7 +49,7 @@ public class BoardDAO {
 
     // Update board name & description
     public void update(Board board) {
-        String sql = "UPDATE Board SET name = ?, description = ? WHERE boardId = ?";
+        String sql = "UPDATE Boards SET name = ?, description = ? WHERE boardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, board.getName());
             stmt.setString(2, board.getDescription());
@@ -62,7 +62,7 @@ public class BoardDAO {
 
     // Delete board by ID
     public void delete(int boardId) {
-        String sql = "DELETE FROM Board WHERE boardId = ?";
+        String sql = "DELETE FROM Boards WHERE boardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             stmt.executeUpdate();
@@ -73,7 +73,7 @@ public class BoardDAO {
 
     // Update board position
     public void updateBoardPosition(int boardId, int position) {
-        String sql = "UPDATE Board SET position = ? WHERE boardId = ?";
+        String sql = "UPDATE Boards SET position = ? WHERE boardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, position);
             stmt.setInt(2, boardId);
@@ -86,7 +86,7 @@ public class BoardDAO {
     // Get all boards by project ID, ordered by position
     public List<Board> getBoardsByProjectId(int projectId) {
         List<Board> list = new ArrayList<>();
-        String sql = "SELECT * FROM Board WHERE projectId = ? ORDER BY position ASC";
+        String sql = "SELECT * FROM Boards WHERE projectId = ? ORDER BY position ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();

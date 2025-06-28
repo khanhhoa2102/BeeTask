@@ -20,7 +20,7 @@ public class TaskDAO {
 
     // Insert new task
     public void insert(Task task) {
-        String sql = "INSERT INTO Task (boardId, listId, title, description, statusId, dueDate, createdAt, createdBy, position, priority) " +
+        String sql = "INSERT INTO Tasks (boardId, listId, title, description, statusId, dueDate, createdAt, createdBy, position, priority) " +
                      "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, task.getBoardId());
@@ -40,7 +40,7 @@ public class TaskDAO {
 
     // Update task
     public void update(Task task) {
-        String sql = "UPDATE Task SET title = ?, description = ?, statusId = ?, dueDate = ?, priority = ? WHERE taskId = ?";
+        String sql = "UPDATE Tasks SET title = ?, description = ?, statusId = ?, dueDate = ?, priority = ? WHERE taskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, task.getTitle());
             stmt.setString(2, task.getDescription());
@@ -56,7 +56,7 @@ public class TaskDAO {
 
     // Delete task
     public void delete(int taskId) {
-        String sql = "DELETE FROM Task WHERE taskId = ?";
+        String sql = "DELETE FROM Tasks WHERE taskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, taskId);
             stmt.executeUpdate();
@@ -67,7 +67,7 @@ public class TaskDAO {
 
     // Move task to another board and update position
     public void moveTask(int taskId, int newBoardId, int newPosition) {
-        String sql = "UPDATE Task SET boardId = ?, position = ? WHERE taskId = ?";
+        String sql = "UPDATE Tasks SET boardId = ?, position = ? WHERE taskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, newBoardId);
             stmt.setInt(2, newPosition);
@@ -80,7 +80,7 @@ public class TaskDAO {
 
     // Update task position (within same board)
     public void updateTaskPosition(int taskId, int position) {
-        String sql = "UPDATE Task SET position = ? WHERE taskId = ?";
+        String sql = "UPDATE Tasks SET position = ? WHERE taskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, position);
             stmt.setInt(2, taskId);
@@ -93,7 +93,7 @@ public class TaskDAO {
     // Get tasks by board ID
     public List<Task> getTasksByBoardId(int boardId) {
         List<Task> list = new ArrayList<>();
-        String sql = "SELECT * FROM Task WHERE boardId = ? ORDER BY position ASC";
+        String sql = "SELECT * FROM Tasks WHERE boardId = ? ORDER BY position ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             ResultSet rs = stmt.executeQuery();
@@ -109,7 +109,7 @@ public class TaskDAO {
     // Get tasks by project ID (used for overview)
     public List<Task> getTasksByProjectId(int projectId) {
         List<Task> list = new ArrayList<>();
-        String sql = "SELECT t.* FROM Task t JOIN Board b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY b.position, t.position";
+        String sql = "SELECT t.* FROM Tasks t JOIN Boards b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY b.position, t.position";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();

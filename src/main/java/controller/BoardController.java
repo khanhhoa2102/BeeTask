@@ -8,7 +8,7 @@ import model.Board;
 
 import java.io.IOException;
 
-@WebServlet("/tasklist")
+@WebServlet("/Board")
 public class BoardController extends HttpServlet {
     private BoardDAO boardDAO;
 
