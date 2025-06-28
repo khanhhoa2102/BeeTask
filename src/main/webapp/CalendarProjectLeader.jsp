@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +42,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/Table.jsp">
+                    <a href="${pageContext.request.contextPath}/Static.jsp">
                         <i class="fas fa-table"></i><span>Statitics</span>
                     </a>
                 </li>
