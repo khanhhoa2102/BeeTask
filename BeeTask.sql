@@ -15,8 +15,11 @@ CREATE TABLE Users (
     GoogleId NVARCHAR(100) NULL, 
     IsEmailVerified BIT DEFAULT 0, 
     IsActive BIT DEFAULT 1,
-    CreatedAt DATETIME DEFAULT GETDATE()
+    Role NVARCHAR(20) NOT NULL DEFAULT 'User',
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT CHK_Users_Role CHECK (Role IN ('User', 'Premium', 'Admin'))
 );
+
 
 -- ========== FORGET PASSWORD ==========
 CREATE TABLE TokenForgetPassword (
@@ -30,115 +33,11 @@ CREATE TABLE TokenForgetPassword (
 );
 
 
-
-
-
-
-
-
-
--- ========== TASKS ==========
-CREATE TABLE Tasks (
-    TaskId INT PRIMARY KEY IDENTITY,
-    BoardId INT NOT NULL,
-    ListId INT NOT NULL,
-    Title NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    StatusId INT NOT NULL,
-    DueDate DATETIME NULL,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    CreatedBy INT NOT NULL,
-    CONSTRAINT FK_Tasks_Boards FOREIGN KEY (BoardId) REFERENCES Boards(BoardId),
-    CONSTRAINT FK_Tasks_Lists FOREIGN KEY (ListId) REFERENCES Lists(ListId),
-    CONSTRAINT FK_Tasks_TaskStatuses FOREIGN KEY (StatusId) REFERENCES TaskStatuses(StatusId),
-    CONSTRAINT FK_Tasks_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
-);
-
 -- ========== TASK STATUSES ==========
 CREATE TABLE TaskStatuses (
     StatusId INT PRIMARY KEY IDENTITY,
     Name NVARCHAR(50) UNIQUE NOT NULL
 );
-
-
-
-
-
-
-CREATE TABLE TaskApprovals (
-    ApprovalId INT PRIMARY KEY IDENTITY,
-    TaskId INT NOT NULL UNIQUE,
-    LeaderId INT NOT NULL,
-    ApprovalStatus NVARCHAR(20) NOT NULL CHECK (ApprovalStatus IN ('Approved', 'Rejected')),
-    Feedback NVARCHAR(MAX) NULL,
-    ActionTime DATETIME DEFAULT GETDATE(),
-    CONSTRAINT FK_TaskApprovals_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId) ON DELETE CASCADE,
-    CONSTRAINT FK_TaskApprovals_Users FOREIGN KEY (LeaderId) REFERENCES Users(UserId)
-);
-
-
-
-
-INSERT INTO TaskApprovals (TaskId, LeaderId, ApprovalStatus, Feedback)
-VALUES
-(1, 2, 'Approved', N'Làm tốt, cần duy trì phong độ.'),
-(2, 3, 'Rejected', N'Thiếu phần kiểm thử, bổ sung test case trước khi xác nhận.'),
-(3, 2, 'Approved', N'Hoàn thành đúng tiến độ. Giao diện rõ ràng.'),
-(4, 1, 'Rejected', N'Yêu cầu thêm demo prototype và hướng dẫn triển khai.'),
-(5, 4, 'Approved', N'Task này được thực hiện xuất sắc. Không có điểm cần chỉnh.');
-
-
-
-
--- ========== TASK ASSIGNEES ==========
-CREATE TABLE TaskAssignees (
-    TaskId INT NOT NULL,
-    UserId INT NOT NULL,
-    CONSTRAINT PK_TaskAssignees PRIMARY KEY (TaskId, UserId),
-    CONSTRAINT FK_TaskAssignees_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId),
-    CONSTRAINT FK_TaskAssignees_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
-);
-
--- ========== TASK LABELS ==========
-CREATE TABLE TaskLabels (
-    TaskId INT NOT NULL,
-    LabelId INT NOT NULL,
-    CONSTRAINT PK_TaskLabels PRIMARY KEY (TaskId, LabelId),
-    CONSTRAINT FK_TaskLabels_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId),
-    CONSTRAINT FK_TaskLabels_Labels FOREIGN KEY (LabelId) REFERENCES Labels(LabelId)
-);
-
--- ========== TASK ATTACHMENTS ==========
-CREATE TABLE TaskAttachments (
-    AttachmentId INT PRIMARY KEY IDENTITY,
-    TaskId INT NOT NULL,
-    FileUrl NVARCHAR(255) NULL,
-    FileName NVARCHAR(100) NULL,
-    FileType NVARCHAR(50) NULL,
-    FileSize INT NULL,
-    UploadedAt DATETIME DEFAULT GETDATE(),
-    CONSTRAINT FK_TaskAttachments_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId)
-);
-
--- ========== TASK COMMENTS ==========
-CREATE TABLE TaskComments (
-    CommentId INT PRIMARY KEY IDENTITY,
-    TaskId INT NOT NULL,
-    UserId INT NOT NULL,
-    Content NVARCHAR(MAX) NOT NULL,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    CONSTRAINT FK_TaskComments_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId),
-    CONSTRAINT FK_TaskComments_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
-);
-
-
-
-
-
-
-
-
-
 
 -- Sample Statuses
 INSERT INTO TaskStatuses (Name) VALUES 
@@ -147,78 +46,6 @@ INSERT INTO TaskStatuses (Name) VALUES
 (N'Done'), 
 (N'Pending'), 
 (N'Review');
-
-
--- TASKS 
-INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedBy) VALUES
-(1, 1, N'Thiết kế component Button', N'Tạo component Button tái sử dụng', 1, '2025-06-15', 1),
-(1, 1, N'Thiết kế component Input', N'Tạo component Input form', 1, '2025-06-20', 2),
-(1, 2, N'Implement login page', N'Phát triển trang đăng nhập', 2, '2025-06-25', 1),
-(1, 3, N'Homepage layout', N'Hoàn thành layout trang chủ', 3, '2025-06-10', 3),
-(2, 4, N'Setup database schema', N'Thiết lập cơ sở dữ liệu', 1, '2025-07-01', 1),
-(2, 5, N'User authentication API', N'API xác thực người dùng', 2, '2025-06-30', 4),
-(2, 6, N'Unit tests for auth', N'Kiểm thử đơn vị cho auth', 1, '2025-07-05', 5),
-(3, 7, N'iOS wireframes', N'Tạo wireframe cho iOS app', 1, '2025-06-18', 2),
-(3, 8, N'Core data setup', N'Thiết lập Core Data', 2, '2025-06-22', 6),
-(3, 9, N'App Store submission', N'Nộp app lên App Store', 1, '2025-07-15', 7),
-(4, 10, N'Android wireframes', N'Tạo wireframe cho Android', 1, '2025-06-18', 2),
-(4, 11, N'Room database setup', N'Thiết lập Room database', 2, '2025-06-22', 8),
-(4, 12, N'Play Store submission', N'Nộp app lên Play Store', 1, '2025-07-15', 9),
-(5, 13, N'Facebook campaign', N'Chiến dịch quảng cáo Facebook', 2, '2025-06-12', 3),
-(5, 14, N'Instagram stories', N'Tạo Instagram stories', 2, '2025-06-14', 10),
-(5, 15, N'LinkedIn articles', N'Viết bài cho LinkedIn', 3, '2025-06-08', 11),
-(6, 16, N'Blog post ideas', N'Brainstorm ý tưởng blog', 1, '2025-06-16', 3),
-(6, 17, N'Video content script', N'Viết script cho video', 2, '2025-06-20', 12),
-(6, 18, N'Infographic design', N'Thiết kế infographic', 1, '2025-06-25', 13),
-(7, 19, N'Data backup', N'Sao lưu dữ liệu hiện tại', 3, '2025-06-05', 4),
-(7, 20, N'Schema migration', N'Di chuyển schema database', 2, '2025-06-28', 14),
-(7, 21, N'Data validation', N'Kiểm tra tính toàn vẹn dữ liệu', 1, '2025-07-02', 1),
-(8, 22, N'ML model research', N'Nghiên cứu mô hình ML', 2, '2025-07-10', 5),
-(8, 23, N'Data preprocessing', N'Tiền xử lý dữ liệu', 2, '2025-06-25', 2),
-(8, 24, N'Model training', N'Huấn luyện mô hình', 1, '2025-07-15', 3),
-(9, 25, N'Security scan', N'Quét bảo mật hệ thống', 2, '2025-06-18', 6),
-(9, 26, N'Vulnerability report', N'Báo cáo lỗ hổng bảo mật', 1, '2025-06-22', 4),
-(9, 27, N'Security patches', N'Vá lỗi bảo mật', 1, '2025-06-25', 5),
-(10, 28, N'User interviews', N'Phỏng vấn người dùng', 3, '2025-06-01', 7),
-(10, 29, N'Usability testing', N'Kiểm thử khả năng sử dụng', 2, '2025-06-15', 14),
-(10, 30, N'User journey mapping', N'Lập bản đồ hành trình người dùng', 1, '2025-06-18', 1),
-(1, 2, N'Component library', N'Xây dựng thư viện component', 2, '2025-06-20', 9);
-
-
-
-
-
-
-
-
-
-
-- ========== PROJECTS ==========
-CREATE TABLE Projects (
-    ProjectId INT PRIMARY KEY IDENTITY,
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(255) NULL,
-    CreatedBy INT NOT NULL,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    CONSTRAINT FK_Projects_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
-);
-
--- ========== PROJECT MEMBERS ==========
-CREATE TABLE ProjectMembers (
-    ProjectId INT NOT NULL,
-    UserId INT NOT NULL,
-    Role NVARCHAR(20) NOT NULL,
-    CONSTRAINT CHK_ProjectMembers_Role CHECK (Role IN ('Leader', 'Member')),
-    CONSTRAINT PK_ProjectMembers PRIMARY KEY (ProjectId, UserId),
-    CONSTRAINT FK_ProjectMembers_Projects FOREIGN KEY (ProjectId) REFERENCES Projects(ProjectId),
-    CONSTRAINT FK_ProjectMembers_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
-);
-
-
-
-
-
-
 
 -- ========== LABELS ==========
 CREATE TABLE Labels (
@@ -330,6 +157,22 @@ CREATE TABLE Lists (
     CONSTRAINT FK_Lists_Boards FOREIGN KEY (BoardId) REFERENCES Boards(BoardId)
 );
 
+-- ========== TASKS ==========
+CREATE TABLE Tasks (
+    TaskId INT PRIMARY KEY IDENTITY,
+    BoardId INT NOT NULL,
+    ListId INT NOT NULL,
+    Title NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(MAX) NULL,
+    StatusId INT NOT NULL,
+    DueDate DATETIME NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CreatedBy INT NOT NULL,
+    CONSTRAINT FK_Tasks_Boards FOREIGN KEY (BoardId) REFERENCES Boards(BoardId),
+    CONSTRAINT FK_Tasks_Lists FOREIGN KEY (ListId) REFERENCES Lists(ListId),
+    CONSTRAINT FK_Tasks_TaskStatuses FOREIGN KEY (StatusId) REFERENCES TaskStatuses(StatusId),
+    CONSTRAINT FK_Tasks_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
+);
 
 -- =========== TASK APPROVE ============
 CREATE TABLE TaskApprovals (
@@ -453,22 +296,24 @@ CREATE TABLE SearchLogs (
 -- ========== DATA INSERTS  ==========
 
 -- USERS 
-INSERT INTO Users (Username, Email, PasswordHash, AvatarUrl) VALUES
-(N'Dương Khánh Hòa', 'khanhhoakt2k4@gmail.com', '513103', 'https://i.pinimg.com/originals/b5/9b/46/b59b46c2601ce837329a28695b7df40f.png'),
-(N'Nguyễn Văn A', 'a@gmail.com', 'hash1', 'avatar1.png'),
-(N'Lê Thị B', 'b@gmail.com', 'hash2', 'avatar2.png'),
-(N'Trần Văn C', 'c@gmail.com', 'hash3', 'avatar3.png'),
-(N'Phạm Thị D', 'd@gmail.com', 'hash4', 'avatar4.png'),
-(N'Hồ Văn E', 'e@gmail.com', 'hash5', 'avatar5.png'),
-(N'Đinh Ngọc F', 'f@gmail.com', 'hash6', 'avatar6.png'),
-(N'Võ Thị G', 'g@gmail.com', 'hash7', 'avatar7.png'),
-(N'Bùi Văn H', 'h@gmail.com', 'hash8', 'avatar8.png'),
-(N'Đặng Thị I', 'i@gmail.com', 'hash9', 'avatar9.png'),
-(N'Lý Văn J', 'j@gmail.com', 'hash10', 'avatar10.png'),
-(N'Vũ Thị K', 'k@gmail.com', 'hash11', 'avatar11.png'),
-(N'Hoàng Văn L', 'l@gmail.com', 'hash12', 'avatar12.png'),
-(N'Chu Thị M', 'm@gmail.com', 'hash13', 'avatar13.png'),
-(N'Dương Văn N', 'n@gmail.com', 'hash14', 'avatar14.png');
+INSERT INTO Users (Username, Email, PasswordHash, AvatarUrl, Role) VALUES
+(N'Dương Khánh Hòa', 'khanhhoakt2k4@gmail.com', '513103', 'https://i.pinimg.com/originals/b5/9b/46/b59b46c2601ce837329a28695b7df40f.png', 'Premium'),
+(N'Nguyễn Văn A', 'a@gmail.com', 'hash1', 'avatar1.png', 'User'),
+(N'Lê Thị B', 'b@gmail.com', 'hash2', 'avatar2.png', 'User'),
+(N'Trần Văn C', 'c@gmail.com', 'hash3', 'avatar3.png', 'User'),
+(N'Phạm Thị D', 'd@gmail.com', 'hash4', 'avatar4.png', 'User'),
+(N'Hồ Văn E', 'e@gmail.com', 'hash5', 'avatar5.png', 'User'),
+(N'Đinh Ngọc F', 'f@gmail.com', 'hash6', 'avatar6.png', 'User'),
+(N'Võ Thị G', 'g@gmail.com', 'hash7', 'avatar7.png', 'User'),
+(N'Bùi Văn H', 'h@gmail.com', 'hash8', 'avatar8.png', 'User'),
+(N'Đặng Thị I', 'i@gmail.com', 'hash9', 'avatar9.png', 'User'),
+(N'Lý Văn J', 'j@gmail.com', 'hash10', 'avatar10.png', 'User'),
+(N'Vũ Thị K', 'k@gmail.com', 'hash11', 'avatar11.png', 'User'),
+(N'Hoàng Văn L', 'l@gmail.com', 'hash12', 'avatar12.png', 'User'),
+(N'Chu Thị M', 'm@gmail.com', 'hash13', 'avatar13.png', 'User'),
+(N'Dương Văn N', 'n@gmail.com', 'hash14', 'avatar14.png', 'User'),
+(N'Premium User', 'premium@example.com', '123', 'https://example.com/premium-avatar.png', 'Premium'),
+(N'Admin', 'admin@example.com', '123', 'https://example.com/admin-avatar.png', 'Admin');
 
 -- LABELS 
 INSERT INTO Labels (Name, Color) VALUES
