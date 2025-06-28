@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const contextPath = document.body.getAttribute("data-context-path") || "";
+
   const loginForm = document.getElementById("loginForm");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -15,23 +17,43 @@ document.addEventListener("DOMContentLoaded", () => {
     // localStorage.removeItem("selectedAccount");
   }
 
-  // Show server-side error if exists
-  if (typeof errorMessage !== "undefined" && errorMessage.trim() !== "") {
-    const errorDiv = document.createElement("div");
-    errorDiv.className = "alert-error";
-    errorDiv.textContent = errorMessage;
+  // ✅ Auto-login bằng refresh token nếu có
+if (sessionStorage.getItem("switchingInProgress")) {
+  sessionStorage.removeItem("switchingInProgress");
 
-    const container = document.querySelector(".login-card");
-    container.insertBefore(errorDiv, loginForm);
+  const refreshToken = localStorage.getItem("switchGoogleRefreshToken");
+  const email = localStorage.getItem("switchGoogleEmail");
 
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-      errorDiv.style.transition = "opacity 0.5s ease";
-      errorDiv.style.opacity = "0";
-      setTimeout(() => errorDiv.remove(), 500);
-    }, 5000);
+  if (refreshToken && email) {
+    fetch(contextPath + "/refresh-token-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body:
+        "refreshToken=" + encodeURIComponent(refreshToken) +
+        "&email=" + encodeURIComponent(email)
+    })
+      .then((res) => {
+        if (res.ok) {
+          console.log("✅ Switch account auto-login success");
+          localStorage.removeItem("switchGoogleRefreshToken");
+          localStorage.removeItem("switchGoogleEmail");
+          window.location.href = contextPath + "/Home/Home.jsp";
+        } else {
+          console.warn("❌ Failed to login with refresh token (status)", res.status);
+          localStorage.removeItem("switchGoogleRefreshToken");
+          localStorage.removeItem("switchGoogleEmail");
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Auto-login error:", err);
+      });
   }
+}
 
+
+  // --- Validate ---
   function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -65,8 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Real-time validation
-  emailInput.addEventListener("blur", function () {
-    const email = this.value.trim();
+  emailInput.addEventListener("blur", () => {
+    const email = emailInput.value.trim();
     if (email && !validateEmail(email)) {
       showError("email", "Please enter a valid email address");
     } else {
@@ -74,8 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  passwordInput.addEventListener("blur", function () {
-    const password = this.value;
+  passwordInput.addEventListener("blur", () => {
+    const password = passwordInput.value;
     if (password && !validatePassword(password)) {
       showError("password", "Password must be at least 6 characters long");
     } else {
@@ -83,14 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Clear errors on input
-  emailInput.addEventListener("input", () => {
-    hideError("email");
-  });
-
-  passwordInput.addEventListener("input", () => {
-    hideError("password");
-  });
+  emailInput.addEventListener("input", () => hideError("email"));
+  passwordInput.addEventListener("input", () => hideError("password"));
 
   // Form submission
   loginForm.addEventListener("submit", function (e) {
@@ -106,8 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (!validateEmail(email)) {
       showError("email", "Please enter a valid email address");
       isValid = false;
-    } else {
-      hideError("email");
     }
 
     if (!password) {
@@ -116,26 +130,23 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (!validatePassword(password)) {
       showError("password", "Password must be at least 6 characters long");
       isValid = false;
-    } else {
-      hideError("password");
     }
 
     if (isValid) {
       showLoading();
       setTimeout(() => {
         hideLoading();
-        this.submit();
+        loginForm.submit();
       }, 1000);
     }
   });
 
-  // Google sign-in button
+  // Google sign-in
   googleBtn.addEventListener("click", () => {
-    // You can replace this with actual redirect to Google login
     alert("Google sign-in functionality would be implemented here");
   });
 
-  // Enter key support
+  // Enter key triggers form submit
   document.addEventListener("keypress", (e) => {
     if (
       e.key === "Enter" &&
@@ -144,35 +155,4 @@ document.addEventListener("DOMContentLoaded", () => {
       loginForm.dispatchEvent(new Event("submit"));
     }
   });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    const refreshToken = localStorage.getItem("switchGoogleRefreshToken");
-    const email = localStorage.getItem("switchGoogleEmail");
-
-    if (refreshToken && email) {
-        // 🛠 Gửi dữ liệu bằng x-www-form-urlencoded để Servlet đọc được
-        fetch("refresh-token-login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: "refreshToken=" + encodeURIComponent(refreshToken) + 
-                  "&email=" + encodeURIComponent(email)
-        })
-        .then(res => {
-            if (res.ok) {
-                localStorage.removeItem("switchGoogleRefreshToken");
-                localStorage.removeItem("switchGoogleEmail");
-                window.location.href = "Home/Home.jsp";
-            } else {
-                console.warn("❌ Failed to login with refresh token");
-                localStorage.removeItem("switchGoogleRefreshToken");
-                localStorage.removeItem("switchGoogleEmail");
-            }
-        })
-        .catch(err => {
-            console.error("Error auto-login:", err);
-        });
-    }
 });

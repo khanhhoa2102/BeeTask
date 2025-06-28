@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ include file="session-check.jspf" %>
+<%@ include file="/session-check.jspf" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,9 +7,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Switch Account - BeeTask</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/SwitchAccount.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Authentication/SwitchAccount.css">
     </head>
-    <body>
+    <body data-context-path="${pageContext.request.contextPath}">
         <!-- Background circles -->
         <div class="background-circles">
             <div class="circle circle-1"></div>
@@ -146,7 +146,7 @@
             const currentEmail = "<%= user != null ? user.getEmail() : "" %>";
             console.log("✅ Current email:", currentEmail);
         </script>
-        <script src="${pageContext.request.contextPath}/SwitchAccount.js"></script>
+        <script src="${pageContext.request.contextPath}/Authentication/SwitchAccount.js"></script>
 
 
     </body>

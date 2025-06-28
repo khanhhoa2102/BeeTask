@@ -21,10 +21,10 @@ public class ResetPasswordServlet extends HttpServlet {
         System.out.println("[GET] >> Session resetToken: " + token);
         if (token == null || token.isEmpty()) {
             request.setAttribute("message", "❌ Token không hợp lệ.");
-            request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ForgotPassword.jsp").forward(request, response);
         } else {
             request.setAttribute("token", token); // truyền sang JSP nếu cần
-            request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ResetPassword.jsp").forward(request, response);
         }
     }
 
@@ -43,13 +43,13 @@ public class ResetPasswordServlet extends HttpServlet {
         if (token == null || newPassword == null || confirmPassword == null
                 || token.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             request.setAttribute("message", "❌ Thiếu thông tin bắt buộc.");
-            request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ResetPassword.jsp").forward(request, response);
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("message", "❌ Mật khẩu xác nhận không khớp.");
-            request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ResetPassword.jsp").forward(request, response);
             return;
         }
 
@@ -66,7 +66,7 @@ public class ResetPasswordServlet extends HttpServlet {
 
                 if (isUsed || expiry.before(new Timestamp(System.currentTimeMillis()))) {
                     request.setAttribute("message", "❌ Token không hợp lệ hoặc đã hết hạn.");
-                    request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("Authentication/ResetPassword.jsp").forward(request, response);
                     return;
                 }
 
@@ -89,15 +89,15 @@ public class ResetPasswordServlet extends HttpServlet {
                 session.removeAttribute("resetToken");
                 System.out.println("✅ Password updated for UserId: " + userId);
 
-                response.sendRedirect("Login.jsp?msg=reset_success");
+                response.sendRedirect("Authentication/Login.jsp?msg=reset_success");
             } else {
                 request.setAttribute("message", "❌ Token không tồn tại.");
-                request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+                request.getRequestDispatcher("Authentication/ResetPassword.jsp").forward(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("message", "❌ Lỗi hệ thống. Vui lòng thử lại.");
-            request.getRequestDispatcher("ResetPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ResetPassword.jsp").forward(request, response);
         }
     }
 }

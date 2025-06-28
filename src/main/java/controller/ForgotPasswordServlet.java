@@ -16,7 +16,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/ForgotPassword.jsp");
+        response.sendRedirect(request.getContextPath() + "/Authentication/ForgotPassword.jsp");
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
         if (email == null || email.trim().isEmpty()) {
             request.setAttribute("message", "❌ Please enter your email address.");
-            request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ForgotPassword.jsp").forward(request, response);
             return;
         }
 
@@ -55,21 +55,21 @@ public class ForgotPasswordServlet extends HttpServlet {
 
                     if (emailSent) {
                         request.setAttribute("message", "✅ OTP has been sent to your email address.");
-                        request.getRequestDispatcher("EnterOTP.jsp").forward(request, response);
+                        request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
                     } else {
                         request.setAttribute("message", "❌ Failed to send OTP. Please try again.");
-                        request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
+                        request.getRequestDispatcher("Authentication/ForgotPassword.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("message", "❌ The email address does not exist in our system.");
-                    request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("Authentication/ForgotPassword.jsp").forward(request, response);
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("message", "❌ A system error occurred. Please try again later.");
-            request.getRequestDispatcher("ForgotPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("Authentication/ForgotPassword.jsp").forward(request, response);
         }
     }
 }

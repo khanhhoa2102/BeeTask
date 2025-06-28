@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeeTask - Change Password</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/ResetPassword.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Authentication/ResetPassword.css">
 </head>
 <body>
     <div class="decorative-shapes">
@@ -81,6 +81,6 @@
         </div>
     </div>
 
-    <script src="${pageContext.request.contextPath}/ResetPassword.js"></script>
+    <script src="${pageContext.request.contextPath}/Authentication/ResetPassword.js"></script>
 </body>
 </html>

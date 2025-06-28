@@ -19,7 +19,7 @@
             <div class="register-card">
                 <div class="logo-section">
                     <div class="logo-container">
-                        <img src="Asset/Longlogo.png" alt="BeeTask Logo" class="logo">
+                        <img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="BeeTask Logo" class="logo">
                     </div>
                     <h2 class="register-title">Sign up</h2>
                     <% if (request.getAttribute("emailError") != null) { %>
