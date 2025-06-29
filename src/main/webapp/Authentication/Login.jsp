@@ -3,6 +3,7 @@
     String googleClientId = System.getenv("GOOGLE_CLIENT_ID");
     String msg = request.getParameter("msg");
     String successMessage = (String) session.getAttribute("successMessage");
+    String errorMessage = (String) request.getAttribute("errorMessage");
 %>
 
 <!DOCTYPE html>
@@ -11,22 +12,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeeTask - Login</title>
-    <link rel="stylesheet" href="Login.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Authentication/Login.css">
 </head>
-<!-- ✅ Truyền contextPath vào JS qua attribute -->
+
 <body data-context-path="${pageContext.request.contextPath}">
-
-    <%-- Hiển thị thông báo nếu có --%>
-    <% if ("reset_success".equals(msg)) { %>
-    <div class="success-message">✅ Reset password successfully!.</div>
-    <% } %>
-    <% if (successMessage != null) { %>
-    <div class="success-message">✅ <%= successMessage %></div>
-    <%
-        session.removeAttribute("successMessage");
-    %>
-    <% } %>
-
     <div class="container">
         <div class="login-card">
             <div class="logo-section">
@@ -35,6 +24,22 @@
                 </div>
                 <h2 class="login-title">Login to continue</h2>
             </div>
+
+            <%-- Success messages --%>
+            <% if ("reset_success".equals(msg)) { %>
+                <div class="success-message">✅ Reset password successfully!</div>
+            <% } %>
+            <% if (successMessage != null) { %>
+                <div class="success-message">✅ <%= successMessage %></div>
+                <%
+                    session.removeAttribute("successMessage");
+                %>
+            <% } %>
+
+            <%-- Error message from servlet --%>
+            <% if (errorMessage != null) { %>
+                <div class="error-message"><%= errorMessage %></div>
+            <% } %>
 
             <form class="login-form" id="loginForm" action="${pageContext.request.contextPath}/login" method="post">
                 <div class="form-group">
@@ -87,13 +92,13 @@
                 </button>
 
                 <div class="footer-links">
-                    <a href="${pageContext.request.contextPath}/Authentication/ForgotPassword.jsp" class="forgot-link">Forgot Password</a>
-                    <a href="Register.jsp" class="register-link">Create new Account</a>
+                    <a href="${pageContext.request.contextPath}/forgot-password" class="forgot-link">Forgot Password</a>
+                    <a href="${pageContext.request.contextPath}/Authentication/Register.jsp" class="register-link">Create new Account</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="Login.js"></script>
+    <script src="${pageContext.request.contextPath}/Authentication/Login.js"></script>
 </body>
 </html>

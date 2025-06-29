@@ -109,37 +109,34 @@ if (sessionStorage.getItem("switchingInProgress")) {
   passwordInput.addEventListener("input", () => hideError("password"));
 
   // Form submission
-  loginForm.addEventListener("submit", function (e) {
-    e.preventDefault();
+loginForm.addEventListener("submit", function (e) {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  let isValid = true;
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    let isValid = true;
+  if (!email) {
+    showError("email", "Email is required");
+    isValid = false;
+  } else if (!validateEmail(email)) {
+    showError("email", "Please enter a valid email address");
+    isValid = false;
+  }
 
-    if (!email) {
-      showError("email", "Email is required");
-      isValid = false;
-    } else if (!validateEmail(email)) {
-      showError("email", "Please enter a valid email address");
-      isValid = false;
-    }
+  if (!password) {
+    showError("password", "Password is required");
+    isValid = false;
+  } else if (!validatePassword(password)) {
+    showError("password", "Password must be at least 6 characters long");
+    isValid = false;
+  }
 
-    if (!password) {
-      showError("password", "Password is required");
-      isValid = false;
-    } else if (!validatePassword(password)) {
-      showError("password", "Password must be at least 6 characters long");
-      isValid = false;
-    }
-
-    if (isValid) {
-      showLoading();
-      setTimeout(() => {
-        hideLoading();
-        loginForm.submit();
-      }, 1000);
-    }
-  });
+  // ❗ Nếu hợp lệ mới ngăn mặc định và xử lý loading
+  if (!isValid) {
+    e.preventDefault(); // chỉ chặn nếu có lỗi
+  } else {
+    showLoading();
+  }
+});
 
   // Google sign-in
   googleBtn.addEventListener("click", () => {
