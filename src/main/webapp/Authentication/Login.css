@@ -195,13 +195,20 @@ body::before {
 
 .error-message {
   color: #ef4444;
-  font-size: 0.875rem;
-  display: none;
-  margin-top: 0.25rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
 }
 
 .error-message.show {
   display: block;
+}
+
+.success-message {
+    color: green;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
 }
 
 /* Checkbox */

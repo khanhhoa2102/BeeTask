@@ -39,7 +39,7 @@ public class LeaderStaticServlet extends HttpServlet {
             List<ProjectOverview> overviewList = dao.getProjectsByLeaderId(leaderUserId);
 
             request.setAttribute("overviewList", overviewList);
-            request.getRequestDispatcher("Static.jsp").forward(request, response);
+            request.getRequestDispatcher("Home/Statistic.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
