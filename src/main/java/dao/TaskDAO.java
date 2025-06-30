@@ -20,7 +20,7 @@ public class TaskDAO {
 
     // Insert new task
     public void insert(Task task) {
-        String sql = "INSERT INTO Tasks (boardId, listId, title, description, statusId, dueDate, createdAt, createdBy, position, priority) " +
+        String sql = "INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedAt, CreatedBy, Position, Priority) " +
                      "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, task.getBoardId());
@@ -40,7 +40,7 @@ public class TaskDAO {
 
     // Update task
     public void update(Task task) {
-        String sql = "UPDATE Tasks SET title = ?, description = ?, statusId = ?, dueDate = ?, priority = ? WHERE taskId = ?";
+        String sql = "UPDATE Tasks SET Title = ?, Description = ?, StatusId = ?, DueDate = ?, Priority = ? WHERE TaskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, task.getTitle());
             stmt.setString(2, task.getDescription());
@@ -56,7 +56,7 @@ public class TaskDAO {
 
     // Delete task
     public void delete(int taskId) {
-        String sql = "DELETE FROM Tasks WHERE taskId = ?";
+        String sql = "DELETE FROM Tasks WHERE TaskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, taskId);
             stmt.executeUpdate();
@@ -67,7 +67,7 @@ public class TaskDAO {
 
     // Move task to another board and update position
     public void moveTask(int taskId, int newBoardId, int newPosition) {
-        String sql = "UPDATE Tasks SET boardId = ?, position = ? WHERE taskId = ?";
+        String sql = "UPDATE Tasks SET BoardId = ?, Position = ? WHERE TaskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, newBoardId);
             stmt.setInt(2, newPosition);
@@ -80,7 +80,7 @@ public class TaskDAO {
 
     // Update task position (within same board)
     public void updateTaskPosition(int taskId, int position) {
-        String sql = "UPDATE Tasks SET position = ? WHERE taskId = ?";
+        String sql = "UPDATE Tasks SET Position = ? WHERE TaskId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, position);
             stmt.setInt(2, taskId);
@@ -93,7 +93,7 @@ public class TaskDAO {
     // Get tasks by board ID
     public List<Task> getTasksByBoardId(int boardId) {
         List<Task> list = new ArrayList<>();
-        String sql = "SELECT * FROM Tasks WHERE boardId = ? ORDER BY position ASC";
+        String sql = "SELECT * FROM Tasks WHERE BoardId = ? ORDER BY Position ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             ResultSet rs = stmt.executeQuery();
@@ -109,7 +109,7 @@ public class TaskDAO {
     // Get tasks by project ID (used for overview)
     public List<Task> getTasksByProjectId(int projectId) {
         List<Task> list = new ArrayList<>();
-        String sql = "SELECT t.* FROM Tasks t JOIN Boards b ON t.boardId = b.boardId WHERE b.projectId = ? ORDER BY b.position, t.position";
+        String sql = "SELECT T.* FROM Tasks T JOIN Boards B ON T.BoardId = B.BoardId WHERE B.ProjectId = ? ORDER BY B.Position, T.Position";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();
@@ -125,20 +125,21 @@ public class TaskDAO {
     // Helper to map ResultSet to Task
     private Task mapResultSetToTask(ResultSet rs) throws SQLException {
         Task task = new Task();
-        task.setTaskId(rs.getInt("taskId"));
-        task.setBoardId(rs.getInt("boardId"));
-        task.setListId(rs.getInt("listId"));
-        task.setTitle(rs.getString("title"));
-        task.setDescription(rs.getString("description"));
-        task.setStatus(rs.getString("statusId"));
-        task.setDueDate(rs.getDate("dueDate"));
-        task.setCreatedAt(rs.getTimestamp("createdAt"));
-        task.setCreatedBy(rs.getString("createdBy"));
-        task.setPosition(rs.getInt("position"));
-        task.setPriority(rs.getString("priority"));
+        task.setTaskId(rs.getInt("TaskId"));
+        task.setBoardId(rs.getInt("BoardId"));
+        task.setListId(rs.getInt("ListId"));
+        task.setTitle(rs.getString("Title"));
+        task.setDescription(rs.getString("Description"));
+        task.setStatus(rs.getString("StatusId"));
+        task.setDueDate(rs.getDate("DueDate"));
+        task.setCreatedAt(rs.getTimestamp("CreatedAt"));
+        task.setCreatedBy(rs.getString("CreatedBy"));
+        task.setPosition(rs.getInt("Position"));
+        task.setPriority(rs.getString("Priority"));
         return task;
     }
-    // ✅ Move task to new board + position (for drag & drop)
+
+    // Move task to new board + position (for drag & drop)
     public void moveTaskToBoard(int taskId, int newBoardId, int newIndex) throws SQLException {
         String updateBoardSQL = "UPDATE Tasks SET BoardId = ?, Position = 9999 WHERE TaskId = ?";
         String shiftTasksSQL = "UPDATE Tasks SET Position = Position + 1 WHERE BoardId = ? AND Position >= ?";
@@ -151,17 +152,14 @@ public class TaskDAO {
                  PreparedStatement ps2 = conn.prepareStatement(shiftTasksSQL);
                  PreparedStatement ps3 = conn.prepareStatement(updatePositionSQL)) {
 
-                // Step 1: Move task to new board with temporary position
                 ps1.setInt(1, newBoardId);
                 ps1.setInt(2, taskId);
                 ps1.executeUpdate();
 
-                // Step 2: Shift other tasks down to make space
                 ps2.setInt(1, newBoardId);
                 ps2.setInt(2, newIndex);
                 ps2.executeUpdate();
 
-                // Step 3: Set correct final position
                 ps3.setInt(1, newIndex);
                 ps3.setInt(2, taskId);
                 ps3.executeUpdate();

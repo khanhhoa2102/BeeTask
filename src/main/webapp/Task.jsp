@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="model.Project, model.Board, model.Task" %>
+<%@ page import="model.Project, model.Board, model.Task, model.User" %>
 <%@ page import="dao.ProjectDAO" %>
 <%@ page import="java.util.*" %>
 
 <%
+    User user = (User) session.getAttribute("user");
     String rawId = request.getParameter("projectId");
     int projectId = -1;
     
@@ -11,6 +12,7 @@
         out.println("<h2>Error: Project ID is missing.</h2>");
         return;
     }
+
     ProjectDAO dao = new ProjectDAO();
     Project project = null;
     List<Board> boards = new ArrayList<>();
@@ -35,9 +37,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <%@ include file="/Header.jsp" %>
     <title>BeeTask - <%= project.getName() %></title>
-    <link rel="stylesheet" href="TemplateDetail.css">
+    <link rel="stylesheet" href="Task.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="theme-light dark-mode">
 <div class="container">
@@ -47,62 +51,80 @@
     </aside>
 
     <main class="main-content">
-        <%@include file="/Header.jsp" %>
-
-        <!-- Project Header -->
         <div class="template-header">
             <div class="header-content">
-                <h2 class="template-title"><%= project.getName() %></h2>
+                <div class="template-info">
+                    <div class="template-title-section">
+                        <h2 class="template-title"><%= project.getName() %></h2>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="Dashboard.jsp" class="use-template-btn"><span>Back to Dashboard</span></a>
+                </div>
             </div>
         </div>
 
-        <!-- Add Board -->
+        <!-- Stats -->
+        <div class="stats-section">
+            <div class="stat-card"><i class="fas fa-tasks"></i><div><h3 id="totalTasks">0</h3><p>Total Tasks</p></div></div>
+            <div class="stat-card"><i class="fas fa-columns"></i><div><h3><%= boards.size() %></h3><p>Boards</p></div></div>
+            <div class="stat-card"><i class="fas fa-clock"></i><div><h3 id="pendingTasks">0</h3><p>Pending</p></div></div>
+            <div class="stat-card"><i class="fas fa-check-circle"></i><div><h3 id="completedTasks">0</h3><p>Completed</p></div></div>
+        </div>
+
+        <!-- Board Management -->
         <div class="boards-section">
-            <form action="board" method="post" class="add-board-form">
-                <input type="hidden" name="action" value="add">
-                <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                <input type="hidden" name="position" value="<%= boards.size() %>">
-                <input type="text" name="name" placeholder="New Board Name" required>
-                <button type="submit">Add Board</button>
-            </form>
+            <div class="section-header">
+                <h2><%= boards.size() %> Boards</h2>
+                <form action="board" method="post" class="add-board-form">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
+                    <input type="hidden" name="position" value="<%= boards.size() %>">
+                    <input type="text" name="name" placeholder="New Board Name" required>
+                    <button type="submit"><i class="fas fa-plus"></i> Add Board</button>
+                </form>
+            </div>
 
             <div class="boards-container" id="boardsContainer">
                 <% for (Board board : boards) {
                     List<Task> tasks = tasksMap.get(board.getBoardId()); %>
                     <div class="board-card" data-board-id="<%= board.getBoardId() %>">
                         <div class="board-header">
-                            <h3><%= board.getName() %> (<%= tasks != null ? tasks.size() : 0 %>)</h3>
-                            <div class="dropdown">
-                                <form action="board" method="post">
-                                    <input type="hidden" name="action" value="edit">
-                                    <input type="hidden" name="listId" value="<%= board.getBoardId() %>">
-                                    <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                                    <input type="text" name="name" value="<%= board.getName() %>" required>
-                                    <button>Edit</button>
-                                </form>
-                                <form action="board" method="post" onsubmit="return confirm('Delete this board?');">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="listId" value="<%= board.getBoardId() %>">
-                                    <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                                    <button>Delete</button>
-                                </form>
+                            <h3 class="board-title"><%= board.getName() %></h3>
+                            <span class="task-count"><%= tasks != null ? tasks.size() : 0 %></span>
+                            <div class="board-options">
+                                <button class="options-btn" onclick="toggleBoardMenu(this)"><i class="fas fa-ellipsis-h"></i></button>
+                                <div class="board-dropdown-menu">
+                                    <form action="board" method="post" class="board-edit-form">
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" name="listId" value="<%= board.getBoardId() %>">
+                                        <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
+                                        <input type="text" name="name" value="<%= board.getName() %>" required>
+                                        <button type="submit">Rename</button>
+                                    </form>
+                                    <form action="board" method="post" onsubmit="return confirm('Delete this board?');">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="listId" value="<%= board.getBoardId() %>">
+                                        <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
+                                        <button class="danger">Delete</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Task List -->
                         <div class="board-tasks" data-board-id="<%= board.getBoardId() %>">
                             <% if (tasks != null) {
                                 for (Task task : tasks) { %>
                                 <div class="task-card" data-task-id="<%= task.getTaskId() %>">
                                     <div class="task-priority <%= task.getPriority().toLowerCase() %>"></div>
-                                    <h4><%= task.getTitle() %></h4>
-                                    <p><%= task.getDescription() %></p>
-                                    <small>Status: <%= task.getStatus() %></small><br>
-                                    <small>Due: <%= task.getDueDate() %></small>
+                                    <div class="task-content">
+                                        <h4 class="task-title"><%= task.getTitle() %></h4>
+                                        <p class="task-description"><%= task.getDescription() %></p>
+                                        <span class="task-date"><i class="fas fa-calendar-alt"></i> <%= task.getDueDate() %></span>
+                                    </div>
                                 </div>
                             <% } } %>
 
-                            <!-- Create Task Form -->
                             <form action="task" method="post" class="create-task-form">
                                 <input type="hidden" name="action" value="create">
                                 <input type="hidden" name="boardId" value="<%= board.getBoardId() %>">
@@ -118,7 +140,7 @@
                                     <option value="Medium">Medium</option>
                                     <option value="Low">Low</option>
                                 </select>
-                                <button>Add Task</button>
+                                <button type="submit">Add Task</button>
                             </form>
                         </div>
                     </div>
@@ -128,14 +150,14 @@
 
         <!-- Task Overview Table -->
         <div class="overview-section">
-            <h3>Task Overview</h3>
+            <h2>Task Overview</h2>
             <div class="overview-table">
                 <div class="table-header">
-                    <div>Task</div>
-                    <div>Board</div>
-                    <div>Due</div>
-                    <div>Priority</div>
-                    <div>Status</div>
+                    <div class="col-header">Task</div>
+                    <div class="col-header">Board</div>
+                    <div class="col-header">Due Date</div>
+                    <div class="col-header">Priority</div>
+                    <div class="col-header">Status</div>
                 </div>
                 <div class="table-body">
                     <% for (Board board : boards) {
@@ -156,47 +178,8 @@
     </main>
 </div>
 
-<!-- Script for Drag & Drop -->
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Drag task
-    document.querySelectorAll('.board-tasks').forEach(container => {
-        Sortable.create(container, {
-            group: 'tasks',
-            animation: 150,
-            onEnd: evt => {
-                const taskId = evt.item.dataset.taskId;
-                const newBoardId = evt.to.closest('.board-card').dataset.boardId;
-                const newIndex = evt.newIndex;
-
-                fetch('task?action=move', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `taskId=${taskId}&newBoardId=${newBoardId}&newIndex=${newIndex}`
-                });
-            }
-        });
-    });
-
-    // Drag boards
-    Sortable.create(document.getElementById('boardsContainer'), {
-        animation: 200,
-        onEnd: function (evt) {
-            const boardCards = document.querySelectorAll('.board-card');
-            const updates = [];
-
-            boardCards.forEach((card, index) => {
-                updates.push(`boardIds[]=${card.dataset.boardId}&positions[]=${index}`);
-            });
-
-            fetch('board?action=moveBoardPosition', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: updates.join('&')
-            });
-        }
-    });
-</script>
+<script src="TaskScript.js"></script>
 </body>
 </html>

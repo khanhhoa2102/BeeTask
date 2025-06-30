@@ -1,21 +1,33 @@
-class TemplateDetailManager {
+// TaskScript.js - Full Version for BeeTask
+
+class TaskManager {
     constructor() {
-        this.currentTheme = localStorage.getItem("theme") || "light"
+        this.currentTheme = localStorage.getItem("theme") || "light-mode"
         this.init()
     }
 
     init() {
         this.applyTheme(this.currentTheme)
+
+        // Elements
         this.searchInput = document.getElementById("searchInput")
-        this.themeToggle = document.getElementById("themeToggle")
+        this.themeToggle = document.getElementById("darkModeToggle")
+
         this.bindEvents()
         this.updateStats()
+        this.updateBoardCounters()
     }
 
     bindEvents() {
-        // Theme toggle
+        // Dark mode toggle
         if (this.themeToggle) {
-            this.themeToggle.addEventListener("click", () => this.toggleTheme())
+            this.themeToggle.checked = this.currentTheme === "dark-mode"
+            this.themeToggle.addEventListener("change", () => {
+                const isDark = this.themeToggle.checked
+                const newTheme = isDark ? "dark-mode" : "light-mode"
+                this.applyTheme(newTheme)
+                localStorage.setItem("theme", newTheme)
+            })
         }
 
         // Search
@@ -23,113 +35,134 @@ class TemplateDetailManager {
             this.searchInput.addEventListener("input", (e) => this.handleSearch(e.target.value))
         }
 
-        // Filter buttons
-        document.querySelectorAll(".filter-btn").forEach((btn) => {
+        // Filter
+        document.querySelectorAll(".filter-btn").forEach(btn => {
             btn.addEventListener("click", (e) => this.handleFilter(e.target))
         })
-
-        // AJAX form for board (tasklist)
-        document.querySelectorAll('form[action="tasklist"]').forEach(form => {
-            form.addEventListener("submit", (e) => this.handleTaskListFormSubmit(e, form))
-        })
-    }
-
-    toggleTheme() {
-        this.currentTheme = this.currentTheme === "light" ? "dark" : "light"
-        this.applyTheme(this.currentTheme)
-        localStorage.setItem("theme", this.currentTheme)
     }
 
     applyTheme(theme) {
-        document.body.classList.remove("theme-light", "theme-dark")
-        document.body.classList.add(`theme-${theme}`)
-        if (theme === "dark") {
-            document.body.classList.add("dark-mode")
-        } else {
-            document.body.classList.remove("dark-mode")
-        }
+        document.body.classList.toggle("dark-mode", theme === "dark-mode")
     }
 
     handleSearch(query) {
         const searchTerm = query.toLowerCase().trim()
-        document.querySelectorAll(".task-card").forEach((card) => {
-            const title = card.querySelector(".task-title")?.textContent.toLowerCase() || ""
-            const description = card.querySelector(".task-description")?.textContent.toLowerCase() || ""
-            const isMatch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm)
-            card.style.display = isMatch ? "block" : "none"
+
+        // Task cards
+        document.querySelectorAll(".task-card").forEach(card => {
+            const title = card.querySelector("h4")?.textContent.toLowerCase() || ""
+            const desc = card.querySelector("p")?.textContent.toLowerCase() || ""
+            const match = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm)
+            card.style.display = match ? "block" : "none"
         })
 
-        document.querySelectorAll(".table-row").forEach((row) => {
-            const title = row.querySelector(".task-details h4")?.textContent.toLowerCase() || ""
-            const description = row.querySelector(".task-details p")?.textContent.toLowerCase() || ""
-            const isMatch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm)
-            row.style.display = isMatch ? "grid" : "none"
+        // Table rows
+        document.querySelectorAll(".table-row").forEach(row => {
+            const title = row.querySelector("div:first-child")?.textContent.toLowerCase() || ""
+            const match = !searchTerm || title.includes(searchTerm)
+            row.style.display = match ? "grid" : "none"
         })
 
         this.updateBoardCounters()
     }
 
-    handleFilter(button) {
-        document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"))
-        button.classList.add("active")
+    handleFilter(btn) {
+        // UI highlight
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"))
+        btn.classList.add("active")
 
-        const filter = button.dataset.filter
-        document.querySelectorAll(".table-row").forEach((row) => {
-            const status = row.dataset.status || "todo"
-            row.style.display = (filter === "all" || status === filter) ? "grid" : "none"
+        const filter = btn.dataset.filter
+        document.querySelectorAll(".table-row").forEach(row => {
+            const status = (row.dataset.status || "").toLowerCase()
+            row.style.display = filter === "all" || status === filter ? "grid" : "none"
         })
     }
 
     updateStats() {
         const totalTasks = document.querySelectorAll(".task-card").length
-        const pendingTasks = totalTasks // Simplified
+        const pendingTasks = document.querySelectorAll('.task-card[data-status="To Do"], .task-card[data-status="In Progress"]').length
 
-        const totalTasksEl = document.getElementById("totalTasks")
-        const pendingTasksEl = document.getElementById("pendingTasks")
+        const totalEl = document.getElementById("totalTasks")
+        const pendingEl = document.getElementById("pendingTasks")
 
-        if (totalTasksEl) totalTasksEl.textContent = totalTasks
-        if (pendingTasksEl) pendingTasksEl.textContent = pendingTasks
+        if (totalEl) totalEl.textContent = totalTasks
+        if (pendingEl) pendingEl.textContent = pendingTasks
     }
 
     updateBoardCounters() {
-        document.querySelectorAll(".board-card").forEach((board) => {
-            const visibleTasks = board.querySelectorAll('.task-card:not([style*="display: none"])')
+        document.querySelectorAll(".board-card").forEach(board => {
+            const visibleTasks = board.querySelectorAll('.task-card:not([style*="display: none"])').length
             const counter = board.querySelector(".task-count")
             if (counter) {
-                counter.textContent = visibleTasks.length
+                counter.textContent = visibleTasks
             }
         })
     }
-
-    async handleTaskListFormSubmit(e, form) {
-        e.preventDefault()
-        const formData = new FormData(form)
-        const action = formData.get("action")
-
-        if (action === "delete" && !confirm("Are you sure you want to delete this list?")) {
-            return
-        }
-
-        try {
-            const response = await fetch("tasklist", {
-                method: "POST",
-                body: formData
-            })
-
-            if (response.ok) {
-                alert(`${action.charAt(0).toUpperCase() + action.slice(1)} successful`)
-                setTimeout(() => window.location.reload(), 500)
-            } else {
-                throw new Error("Server error");
-            }
-        } catch (err) {
-            console.error(err)
-            alert("Something went wrong.");
-        }
-    }
 }
 
-// Run after DOM loaded
+// Initialize after DOM load
 document.addEventListener("DOMContentLoaded", () => {
-    new TemplateDetailManager()
+    new TaskManager()
+    console.log("✅ TaskScript.js initialized.")
 }
+
+import Sortable from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js';
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Drag tasks between boards
+  document.querySelectorAll('.board-tasks').forEach(board => {
+    Sortable.create(board, {
+      group: 'shared',
+      animation: 150,
+      onEnd: function (evt) {
+        const taskId = evt.item.getAttribute('data-task-id');
+        const newBoardId = evt.to.closest('.board-card').getAttribute('data-board-id');
+        const newIndex = evt.newIndex;
+
+        fetch('task?action=move', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `taskId=${taskId}&newBoardId=${newBoardId}&newIndex=${newIndex}`
+        }).catch(err => alert('Error moving task: ' + err));
+      }
+    });
+  });
+
+  // Drag boards
+  Sortable.create(document.getElementById('boardsContainer'), {
+    animation: 200,
+    onEnd: function (evt) {
+      const boardCards = document.querySelectorAll('.boards-container .board-card');
+      const updates = [];
+
+      boardCards.forEach((card, index) => {
+        const boardId = card.getAttribute('data-board-id');
+        updates.push(`boardIds[]=${boardId}&positions[]=${index}`);
+      });
+
+      fetch('board?action=moveBoardPosition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: updates.join('&')
+      }).catch(err => alert('Error moving board: ' + err));
+    }
+  });
+
+  // Toggle board options menu
+  window.toggleBoardMenu = function (button) {
+    const menu = button.nextElementSibling;
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  };
+
+  // Close dropdown menus when clicking outside
+  document.addEventListener('click', function (event) {
+    if (!event.target.closest('.board-options')) {
+      document.querySelectorAll('.board-dropdown-menu').forEach(menu => {
+        menu.style.display = 'none';
+      });
+    }
+  });
+});
+
+)
+

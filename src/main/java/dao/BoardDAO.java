@@ -20,11 +20,15 @@ public class BoardDAO {
 
     // Insert new board
     public void insert(Board board) {
-        String sql = "INSERT INTO Boards (projectId, name, description, createdAt, position) VALUES (?, ?, ?, GETDATE(), ?)";
+        String sql = "INSERT INTO Boards (ProjectId, Name, Description, CreatedAt, Position) VALUES (?, ?, ?, GETDATE(), ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, board.getProjectId());
             stmt.setString(2, board.getName());
-            stmt.setString(3, board.getDescription());
+
+            // FIX: Nếu description null thì gán chuỗi rỗng
+            String desc = board.getDescription() != null ? board.getDescription() : "";
+            stmt.setString(3, desc);
+
             stmt.setInt(4, board.getPosition());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -34,7 +38,7 @@ public class BoardDAO {
 
     // Get board by ID
     public Board findById(int boardId) {
-        String sql = "SELECT * FROM Boards WHERE boardId = ?";
+        String sql = "SELECT * FROM Boards WHERE BoardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             ResultSet rs = stmt.executeQuery();
@@ -49,7 +53,7 @@ public class BoardDAO {
 
     // Update board name & description
     public void update(Board board) {
-        String sql = "UPDATE Boards SET name = ?, description = ? WHERE boardId = ?";
+        String sql = "UPDATE Boards SET Name = ?, Description = ? WHERE BoardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, board.getName());
             stmt.setString(2, board.getDescription());
@@ -62,7 +66,7 @@ public class BoardDAO {
 
     // Delete board by ID
     public void delete(int boardId) {
-        String sql = "DELETE FROM Boards WHERE boardId = ?";
+        String sql = "DELETE FROM Boards WHERE BoardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, boardId);
             stmt.executeUpdate();
@@ -73,7 +77,7 @@ public class BoardDAO {
 
     // Update board position
     public void updateBoardPosition(int boardId, int position) {
-        String sql = "UPDATE Boards SET position = ? WHERE boardId = ?";
+        String sql = "UPDATE Boards SET Position = ? WHERE BoardId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, position);
             stmt.setInt(2, boardId);
@@ -86,7 +90,7 @@ public class BoardDAO {
     // Get all boards by project ID, ordered by position
     public List<Board> getBoardsByProjectId(int projectId) {
         List<Board> list = new ArrayList<>();
-        String sql = "SELECT * FROM Boards WHERE projectId = ? ORDER BY position ASC";
+        String sql = "SELECT * FROM Boards WHERE ProjectId = ? ORDER BY Position ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();
@@ -102,12 +106,12 @@ public class BoardDAO {
     // Helper to map ResultSet to Board object
     private Board mapResultSetToBoard(ResultSet rs) throws SQLException {
         Board board = new Board();
-        board.setBoardId(rs.getInt("boardId"));
-        board.setProjectId(rs.getInt("projectId"));
-        board.setName(rs.getString("name"));
-        board.setDescription(rs.getString("description"));
-        board.setCreatedAt(rs.getTimestamp("createdAt"));
-        board.setPosition(rs.getInt("position"));
+        board.setBoardId(rs.getInt("BoardId"));
+        board.setProjectId(rs.getInt("ProjectId"));
+        board.setName(rs.getString("Name"));
+        board.setDescription(rs.getString("Description"));
+        board.setCreatedAt(rs.getTimestamp("CreatedAt"));
+        board.setPosition(rs.getInt("Position"));
         return board;
     }
 }

@@ -1,14 +1,15 @@
 package controller;
 
 import dao.BoardDAO;
+import model.Board;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.Board;
 
 import java.io.IOException;
 
-@WebServlet("/Board")
+@WebServlet("/board")
 public class BoardController extends HttpServlet {
     private BoardDAO boardDAO;
 
@@ -18,66 +19,76 @@ public class BoardController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String action = request.getParameter("action");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8"); // ✅ FIX HERE
+        String action = req.getParameter("action");
 
-        try {
-            switch (action) {
-                case "add":
-                    addBoard(request);
-                    break;
-                case "edit":
-                    editBoard(request);
-                    break;
-                case "delete":
-                    deleteBoard(request);
-                    break;
-                case "moveBoardPosition":
-                    moveBoardPosition(request);
-                    break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        switch (action) {
+            case "add":
+                addBoard(req, resp);
+                break;
+            case "edit":
+                editBoard(req, resp);
+                break;
+            case "delete":
+                deleteBoard(req, resp);
+                break;
+            case "moveBoardPosition":
+                moveBoardPosition(req, resp);
+                break;
+            default:
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+        }
+    }
+
+        private void addBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            int projectId = Integer.parseInt(req.getParameter("projectId"));
+            String name = req.getParameter("name");
+            int position = Integer.parseInt(req.getParameter("position"));
+
+            System.out.println(">> Add board: " + name + " - ProjectId: " + projectId + ", Position: " + position);
+
+            Board board = new Board();
+            board.setProjectId(projectId);
+            board.setName(name);
+            board.setDescription(""); // ✅ Bổ sung dòng này
+            board.setPosition(position);
+            boardDAO.insert(board);
+
+            resp.sendRedirect("Task.jsp?projectId=" + projectId);
         }
 
-        int projectId = Integer.parseInt(request.getParameter("projectId"));
-        response.sendRedirect("Task.jsp?projectId=" + projectId);
-    }
-
-    private void addBoard(HttpServletRequest request) throws Exception {
-        String name = request.getParameter("name");
-        int projectId = Integer.parseInt(request.getParameter("projectId"));
-        int position = Integer.parseInt(request.getParameter("position"));
-        Board board = new Board(0, projectId, name, "", null);
-        board.setPosition(position);
-
-        boardDAO.insert(board);
-    }
-
-    private void editBoard(HttpServletRequest request) throws Exception {
-        int boardId = Integer.parseInt(request.getParameter("listId"));
-        String name = request.getParameter("name");
+    private void editBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int boardId = Integer.parseInt(req.getParameter("listId"));
+        String name = req.getParameter("name");
+        int projectId = Integer.parseInt(req.getParameter("projectId"));
 
         Board board = boardDAO.findById(boardId);
-        board.setName(name);
-        boardDAO.update(board);
+        if (board != null) {
+            board.setName(name);
+            boardDAO.update(board);
+        }
+
+        resp.sendRedirect("Task.jsp?projectId=" + projectId);
     }
 
-    private void deleteBoard(HttpServletRequest request) throws Exception {
-        int boardId = Integer.parseInt(request.getParameter("listId"));
+    private void deleteBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int boardId = Integer.parseInt(req.getParameter("listId"));
+        int projectId = Integer.parseInt(req.getParameter("projectId"));
+
         boardDAO.delete(boardId);
+        resp.sendRedirect("Task.jsp?projectId=" + projectId);
     }
 
-    private void moveBoardPosition(HttpServletRequest request) throws Exception {
-        String[] boardIds = request.getParameterValues("boardIds[]");
-        String[] positions = request.getParameterValues("positions[]");
+    private void moveBoardPosition(HttpServletRequest req, HttpServletResponse resp) {
+        String[] boardIds = req.getParameterValues("boardIds[]");
+        String[] positions = req.getParameterValues("positions[]");
 
         if (boardIds != null && positions != null) {
             for (int i = 0; i < boardIds.length; i++) {
                 int boardId = Integer.parseInt(boardIds[i]);
-                int position = Integer.parseInt(positions[i]);
-                boardDAO.updateBoardPosition(boardId, position);
+                int pos = Integer.parseInt(positions[i]);
+                boardDAO.updateBoardPosition(boardId, pos);
             }
         }
     }
