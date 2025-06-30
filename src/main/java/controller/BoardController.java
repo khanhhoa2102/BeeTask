@@ -20,48 +20,58 @@ public class BoardController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8"); // ✅ FIX HERE
+        req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
 
-        switch (action) {
-            case "add":
-                addBoard(req, resp);
-                break;
-            case "edit":
-                editBoard(req, resp);
-                break;
-            case "delete":
-                deleteBoard(req, resp);
-                break;
-            case "moveBoardPosition":
-                moveBoardPosition(req, resp);
-                break;
-            default:
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+        if (action == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing action parameter.");
+            return;
+        }
+
+        try {
+            switch (action) {
+                case "add":
+                    addBoard(req, resp);
+                    break;
+                case "edit":
+                    editBoard(req, resp);
+                    break;
+                case "delete":
+                    deleteBoard(req, resp);
+                    break;
+                case "duplicate":
+                    duplicateBoard(req, resp);
+                    break;
+                case "moveBoardPosition":
+                    moveBoardPosition(req, resp);
+                    break;
+                default:
+                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
         }
     }
 
-        private void addBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            int projectId = Integer.parseInt(req.getParameter("projectId"));
-            String name = req.getParameter("name");
-            int position = Integer.parseInt(req.getParameter("position"));
+    private void addBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int projectId = Integer.parseInt(req.getParameter("projectId"));
+        String name = req.getParameter("name");
+        int position = Integer.parseInt(req.getParameter("position"));
 
-            System.out.println(">> Add board: " + name + " - ProjectId: " + projectId + ", Position: " + position);
+        Board board = new Board();
+        board.setProjectId(projectId);
+        board.setName(name);
+        board.setPosition(position);
 
-            Board board = new Board();
-            board.setProjectId(projectId);
-            board.setName(name);
-            board.setDescription(""); // ✅ Bổ sung dòng này
-            board.setPosition(position);
-            boardDAO.insert(board);
+        boardDAO.insert(board);
 
-            resp.sendRedirect("Task.jsp?projectId=" + projectId);
-        }
+        resp.sendRedirect("Task.jsp?projectId=" + projectId);
+    }
 
     private void editBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        int boardId = Integer.parseInt(req.getParameter("listId"));
+        int boardId = Integer.parseInt(req.getParameter("boardId"));
         String name = req.getParameter("name");
-        int projectId = Integer.parseInt(req.getParameter("projectId"));
 
         Board board = boardDAO.findById(boardId);
         if (board != null) {
@@ -69,7 +79,7 @@ public class BoardController extends HttpServlet {
             boardDAO.update(board);
         }
 
-        resp.sendRedirect("Task.jsp?projectId=" + projectId);
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     private void deleteBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -77,10 +87,17 @@ public class BoardController extends HttpServlet {
         int projectId = Integer.parseInt(req.getParameter("projectId"));
 
         boardDAO.delete(boardId);
+
         resp.sendRedirect("Task.jsp?projectId=" + projectId);
     }
 
-    private void moveBoardPosition(HttpServletRequest req, HttpServletResponse resp) {
+    private void duplicateBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int boardId = Integer.parseInt(req.getParameter("boardId"));
+        boardDAO.duplicate(boardId);
+        resp.sendRedirect(req.getHeader("Referer"));
+    }
+
+    private void moveBoardPosition(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String[] boardIds = req.getParameterValues("boardIds[]");
         String[] positions = req.getParameterValues("positions[]");
 
@@ -91,5 +108,7 @@ public class BoardController extends HttpServlet {
                 boardDAO.updateBoardPosition(boardId, pos);
             }
         }
+
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 }
