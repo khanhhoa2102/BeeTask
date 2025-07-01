@@ -9,7 +9,7 @@ public class Task {
     private int listId;
     private String title;
     private String description;
-    private String status;      // e.g., "To Do", "In Progress", "Done"
+    private String statusId;      // e.g., "To Do", "In Progress", "Done"
     private Date dueDate;
     private Timestamp createdAt;
     private String createdBy;
@@ -19,14 +19,14 @@ public class Task {
     public Task() {}
 
     public Task(int taskId, int boardId, int listId, String title, String description,
-                String status, Date dueDate, Timestamp createdAt, String createdBy,
+                String statusId, Date dueDate, Timestamp createdAt, String createdBy,
                 int position, String priority) {
         this.taskId = taskId;
         this.boardId = boardId;
         this.listId = listId;
         this.title = title;
         this.description = description;
-        this.status = status;
+        this.statusId = statusId;
         this.dueDate = dueDate;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
@@ -50,8 +50,8 @@ public class Task {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getStatusId() { return statusId; }
+    public void setStatusId(String statusId) { this.statusId = statusId; }
 
     public Date getDueDate() { return dueDate; }
     public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
