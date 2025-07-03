@@ -10,38 +10,13 @@ import java.util.List;
 import model.Task;
 
 public class TaskDAO {
+
     public List<Task> findAll() throws Exception {
         List<Task> list = new ArrayList<>();
         String sql = "SELECT * FROM Tasks";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Task task = new Task(
-                    rs.getInt("TaskId"),
-                    rs.getInt("BoardId"),
-                    rs.getInt("ListId"),
-                    rs.getString("Title"),
-                    rs.getString("Description"),
-                    rs.getInt("StatusId"),
-                    toUtilDate(rs.getTimestamp("DueDate")),
-                    toUtilDate(rs.getTimestamp("CreatedAt")),
-                    rs.getInt("CreatedBy")
-                );
-                list.add(task);
-            }
-        }
-        return list;
-    }
-
-    public Task findById(int id) throws Exception {
-        String sql = "SELECT * FROM Tasks WHERE TaskId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Task(
                         rs.getInt("TaskId"),
                         rs.getInt("BoardId"),
                         rs.getInt("ListId"),
@@ -51,6 +26,29 @@ public class TaskDAO {
                         toUtilDate(rs.getTimestamp("DueDate")),
                         toUtilDate(rs.getTimestamp("CreatedAt")),
                         rs.getInt("CreatedBy")
+                );
+                list.add(task);
+            }
+        }
+        return list;
+    }
+
+    public Task findById(int id) throws Exception {
+        String sql = "SELECT * FROM Tasks WHERE TaskId = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Task(
+                            rs.getInt("TaskId"),
+                            rs.getInt("BoardId"),
+                            rs.getInt("ListId"),
+                            rs.getString("Title"),
+                            rs.getString("Description"),
+                            rs.getInt("StatusId"),
+                            toUtilDate(rs.getTimestamp("DueDate")),
+                            toUtilDate(rs.getTimestamp("CreatedAt")),
+                            rs.getInt("CreatedBy")
                     );
                 }
             }
@@ -60,8 +58,7 @@ public class TaskDAO {
 
     public void insert(Task t) throws Exception {
         String sql = "INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedBy) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, t.getBoardId());
             stmt.setInt(2, t.getListId());
             stmt.setString(3, t.getTitle());
@@ -75,8 +72,7 @@ public class TaskDAO {
 
     public void update(Task t) throws Exception {
         String sql = "UPDATE Tasks SET Title=?, Description=?, StatusId=?, DueDate=? WHERE TaskId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, t.getTitle());
             stmt.setString(2, t.getDescription());
             stmt.setInt(3, t.getStatusId());
@@ -88,11 +84,42 @@ public class TaskDAO {
 
     public void delete(int taskId) throws Exception {
         String sql = "DELETE FROM Tasks WHERE TaskId=?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, taskId);
             stmt.executeUpdate();
         }
+    }
+
+    public List<Task> getTasksByUserId(int userId) throws Exception {
+        List<Task> list = new ArrayList<>();
+        String sql
+                = "SELECT t.* "
+                + "FROM Tasks t "
+                + "INNER JOIN TaskAssignees ta ON t.TaskId = ta.TaskId "
+                + "WHERE ta.UserId = ?";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Task task = new Task(
+                            rs.getInt("TaskId"),
+                            rs.getInt("BoardId"),
+                            rs.getInt("ListId"),
+                            rs.getString("Title"),
+                            rs.getString("Description"),
+                            rs.getInt("StatusId"),
+                            toUtilDate(rs.getTimestamp("DueDate")),
+                            toUtilDate(rs.getTimestamp("CreatedAt")),
+                            rs.getInt("CreatedBy")
+                    );
+                    list.add(task);
+                }
+            }
+        }
+        return list;
     }
 
     private java.util.Date toUtilDate(Timestamp timestamp) {
