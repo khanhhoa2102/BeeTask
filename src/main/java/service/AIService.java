@@ -2,6 +2,7 @@ package service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import config.AppConfig;
 import model.ai.AISuggestionRequest;
 import model.ai.AISuggestionResponse;
 
@@ -13,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class AIService {
 
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
-    private static final String API_KEY = "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"; // Replace with your real API key
+   private static final String API_KEY = AppConfig.get("openrouter.api.key");
     private static final String MODEL_NAME = "mistralai/mistral-7b-instruct:free";
 
     public AISuggestionResponse sendSchedulingRequest(AISuggestionRequest request) throws IOException {
