@@ -34,7 +34,7 @@ function createNotification(event) {
         body: `targetId=${targetId}&message=${encodeURIComponent(message)}`
     }).then(() => {
         document.getElementById("createForm").reset();
-        loadNotifications();
+        loadAllNotifications();
     });
 }
 
@@ -47,7 +47,7 @@ function editNotification(id) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `notificationId=${id}&message=${encodeURIComponent(newMessage)}`
     }).then(() => {
-        loadNotifications();
+        loadAllNotifications();
     });
 }
 
@@ -59,7 +59,7 @@ function deleteNotification(id) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `notificationId=${id}`
     }).then(() => {
-        loadNotifications();
+        loadAllNotifications();
     });
 }
 
