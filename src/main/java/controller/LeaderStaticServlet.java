@@ -24,13 +24,6 @@ public class LeaderStaticServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
-//        // 👉 Nếu chưa đăng nhập, tạo user test tạm thời
-//        if (user == null) {
-//            user = new User();
-//            user.setUserId(1); // ID của leader thật trong DB
-//            user.setUsername("testleader");
-//            session.setAttribute("user", user);
-//        }
 
         int leaderUserId = user.getUserId();
 
