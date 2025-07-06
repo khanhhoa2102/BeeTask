@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
-
+import org.mindrot.jbcrypt.BCrypt;
 import java.io.IOException;
 
 @WebServlet("/login")
@@ -25,9 +25,9 @@ public class LoginServlet extends HttpServlet {
 
         try {
             UserDAO dao = new UserDAO();
-            User user = dao.login(email, password);
+            User user = dao.findByEmail(email); // ✅ chỉ lấy user theo email
 
-            if (user != null) {
+            if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
                 if (!user.isActive()) {
                     request.setAttribute("errorMessage", "Your account has been locked.");
                     request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
@@ -42,11 +42,11 @@ public class LoginServlet extends HttpServlet {
 
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
-                session.setAttribute("loginPassword", password); 
+                session.setAttribute("loginPassword", password);
                 response.sendRedirect(request.getContextPath() + "/Home/Home.jsp");
 
             } else {
-                request.setAttribute("errorMessage", "Incorrect email or password. Please try again..");
+                request.setAttribute("errorMessage", "Incorrect email or password. Please try again.");
                 request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
             }
 

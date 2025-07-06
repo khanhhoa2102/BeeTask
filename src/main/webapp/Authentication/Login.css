@@ -110,7 +110,7 @@ body::before {
   overflow-y: auto;
 }
 
-/* Logo Section */
+/* Fixed Logo Section */
 .logo-section {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -205,10 +205,10 @@ body::before {
 }
 
 .success-message {
-    color: green;
-    margin-bottom: 10px;
-    font-weight: bold;
-    text-align: center;
+  color: green;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
 }
 
 /* Checkbox */
@@ -292,32 +292,39 @@ body::before {
   }
 }
 
-/* Divider */
 .divider {
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  margin: 0.75rem 0;
+  font-size: 0.875rem;
   font-weight: 500;
+  color: #6b7280;
+  margin: 1rem 0;
+  padding: 0.5rem 0;
 }
 
 .divider::before,
 .divider::after {
   content: "";
-  position: absolute;
-  top: 50%;
-  width: 40%;
+  flex: 1;
   height: 1px;
-  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+  background: #e5e7eb;
+  margin: 0 0.75rem;
 }
 
-.divider::before {
-  left: 0;
-}
-
-.divider::after {
-  right: 0;
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
 }
 
 /* Google Button */
@@ -353,9 +360,11 @@ body::before {
 /* Footer Links */
 .footer-links {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  gap: 0.5rem;
 }
 
 .forgot-link {
@@ -379,7 +388,8 @@ body::before {
 .register-link:hover {
   color: #2563eb;
 }
-.alert-error {
+
+.server-message.error {
   background-color: #ffe6e6;
   color: #d8000c;
   padding: 10px;
@@ -387,10 +397,7 @@ body::before {
   border-radius: 4px;
   text-align: center;
   font-weight: bold;
-  opacity: 1;
-  transition: opacity 0.5s ease;
 }
-
 
 /* Responsive Design */
 @media (max-width: 640px) {
@@ -404,8 +411,13 @@ body::before {
     border-radius: 12px;
   }
 
-  .logo {
-    height: 2.5rem;
+  .bee-body {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
   }
 
   .login-title {
