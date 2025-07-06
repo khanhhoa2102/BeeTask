@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.sql.*;
@@ -22,7 +23,7 @@ public class VerifyOTPServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session == null) {
-            request.setAttribute("message", "❌ Phiên làm việc không hợp lệ.");
+            request.setAttribute("message", "❌ Invalid session.");
             request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
@@ -32,48 +33,49 @@ public class VerifyOTPServlet extends HttpServlet {
         String purpose = (String) session.getAttribute("otpPurpose");
 
         if (sessionOTP == null || otpExpiry == null || inputCode == null || purpose == null) {
-            request.setAttribute("message", "❌ Thiếu dữ liệu để xác minh.");
+            request.setAttribute("message", "❌ Missing verification data.");
             request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
         if (new Timestamp(System.currentTimeMillis()).after(otpExpiry)) {
-            request.setAttribute("message", "❌ Mã OTP đã hết hạn.");
+            request.setAttribute("message", "❌ OTP has expired.");
             request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
         if (!sessionOTP.trim().equals(inputCode.trim())) {
-            request.setAttribute("message", "❌ Mã OTP không chính xác.");
+            request.setAttribute("message", "❌ Invalid OTP code.");
             request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             return;
         }
 
         if ("register".equals(purpose)) {
-            // ✅ Luồng đăng ký
             try {
                 String name = (String) session.getAttribute("name");
                 String email = (String) session.getAttribute("email");
-                String password = (String) session.getAttribute("password");
+                String rawPassword = (String) session.getAttribute("password");
 
-                if (name == null || email == null || password == null) {
-                    request.setAttribute("message", "❌ Thiếu thông tin người dùng.");
+                if (name == null || email == null || rawPassword == null) {
+                    request.setAttribute("message", "❌ Missing user information.");
                     request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
                     return;
                 }
 
+                // ✅ Hash password with BCrypt
+                String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+
                 User user = new User();
                 user.setUsername(name);
                 user.setEmail(email);
-                user.setPasswordHash(password); // nếu đã hash sẵn từ trước
+                user.setPasswordHash(hashedPassword);
                 user.setLoginProvider("Local");
                 user.setEmailVerified(true);
                 user.setActive(true);
 
-                UserDAO dao = new UserDAO();
-                dao.insert(user);
+                new UserDAO().insert(user);
 
-                // 🟢 Dọn dẹp session nhưng vẫn giữ lại để set thông báo
+                // 🧹 Clean session
                 session.removeAttribute("otp");
                 session.removeAttribute("otpExpiry");
                 session.removeAttribute("otpPurpose");
@@ -81,20 +83,19 @@ public class VerifyOTPServlet extends HttpServlet {
                 session.removeAttribute("email");
                 session.removeAttribute("password");
 
-                // 🟢 Đặt thông báo đăng ký thành công vào session và redirect
-                session.setAttribute("successMessage", "🎉 Login successfull!");
+                session.setAttribute("successMessage", "🎉 Registration successful! You can now log in.");
                 response.sendRedirect("Authentication/Login.jsp");
 
             } catch (Exception e) {
                 e.printStackTrace();
-                request.setAttribute("message", "❌ Lỗi khi đăng ký người dùng.");
+                request.setAttribute("message", "❌ Error while creating account.");
                 request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             }
+
         } else if ("forgot-password".equals(purpose)) {
-            // ✅ Luồng quên mật khẩu
             String resetEmail = (String) session.getAttribute("resetEmail");
             if (resetEmail == null) {
-                request.setAttribute("message", "❌ Can't not find email.");
+                request.setAttribute("message", "❌ Cannot find email.");
                 request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
                 return;
             }
@@ -105,8 +106,8 @@ public class VerifyOTPServlet extends HttpServlet {
                 ResultSet rs = getUserStmt.executeQuery();
 
                 if (!rs.next()) {
-                    request.setAttribute("message", "❌ Người dùng không tồn tại.");
-                    request.getRequestDispatcher("Authentication/EnterOTP.js12p").forward(request, response);
+                    request.setAttribute("message", "❌ User not found.");
+                    request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
                     return;
                 }
 
@@ -129,12 +130,12 @@ public class VerifyOTPServlet extends HttpServlet {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                request.setAttribute("message", "❌ Lỗi hệ thống.");
+                request.setAttribute("message", "❌ System error occurred.");
                 request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             }
 
         } else {
-            request.setAttribute("message", "❌ Mục đích OTP không hợp lệ.");
+            request.setAttribute("message", "❌ Invalid OTP purpose.");
             request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
         }
     }

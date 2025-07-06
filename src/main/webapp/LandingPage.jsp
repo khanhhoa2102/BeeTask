@@ -9,11 +9,11 @@
 %>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeeTask - Quản lý công việc và ghi chú</title>
+    <title>BeeTask - Work & Note Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="LandingPage.css">
 </head>
@@ -30,15 +30,15 @@
                 <div class="search-container">
                     <div class="search-box">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" placeholder="Tìm kiếm templates..." class="search-input">
+                        <input type="text" placeholder="Search templates..." class="search-input">
                     </div>
                 </div>
                 <div class="auth-buttons">
                     <button class="btn btn-ghost" onclick="window.location.href = 'Authentication/Login.jsp'">
-                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                        <i class="fas fa-sign-in-alt"></i> Login
                     </button>
                     <button class="btn btn-primary" onclick="window.location.href = 'Authentication/Register.jsp'">
-                        <i class="fas fa-user-plus"></i> Đăng ký
+                        <i class="fas fa-user-plus"></i> Register
                     </button>
                 </div>
             </div>
@@ -49,17 +49,17 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <div class="badge">🚀 Quản lý công việc hiệu quả</div>
+                <div class="badge">🚀 Efficient Task Management</div>
                 <h1 class="hero-title">
-                    Quản lý công việc và ghi chú với 
+                    Manage tasks and notes with 
                     <span class="gradient-text">BeeTask</span>
                 </h1>
                 <p class="hero-description">
-                    Tương tự như Trello, BeeTask giúp bạn tổ chức công việc một cách trực quan và hiệu quả.
+                    Similar to Trello, BeeTask helps you organize tasks visually and effectively.
                 </p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary btn-large">Bắt đầu miễn phí <i class="fas fa-arrow-right"></i></button>
-                    <button class="btn btn-outline btn-large">Xem demo</button>
+                    <button class="btn btn-primary btn-large">Get Started for Free <i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-outline btn-large">View Demo</button>
                 </div>
             </div>
         </div>
@@ -69,9 +69,9 @@
     <section class="templates">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Template mẫu</h2>
+                <h2 class="section-title">Sample Templates</h2>
                 <p class="section-description">
-                    Bắt đầu nhanh chóng với các template được thiết kế sẵn cho nhiều mục đích khác nhau
+                    Get started quickly with pre-designed templates for different purposes.
                 </p>
             </div>
 
@@ -100,7 +100,7 @@
             </div>
             <div class="view-all">
                 <button class="btn btn-outline btn-large">
-                    Xem tất cả Template <i class="fas fa-arrow-right"></i>
+                    View All Templates <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
@@ -110,13 +110,13 @@
     <section class="cta">
         <div class="container">
             <div class="cta-content">
-                <h2 class="cta-title">Sẵn sàng bắt đầu với BeeTask?</h2>
+                <h2 class="cta-title">Ready to start with BeeTask?</h2>
                 <p class="cta-description">
-                    Tham gia cùng hàng nghìn người dùng đang quản lý công việc hiệu quả với BeeTask
+                    Join thousands of users who are managing work efficiently with BeeTask.
                 </p>
                 <div class="cta-buttons">
-                    <button class="btn btn-white btn-large" onclick="window.location.href = 'Authentication/Register.jsp'">Đăng ký miễn phí <i class="fas fa-arrow-right"></i></button>
-                    <button class="btn btn-outline-white btn-large">Liên hệ tư vấn</button>
+                    <button class="btn btn-white btn-large" onclick="window.location.href = 'Authentication/Register.jsp'">Sign Up Free <i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-outline-white btn-large">Contact Us</button>
                 </div>
             </div>
         </div>
@@ -130,15 +130,15 @@
                     <div class="logo-icon">B</div>
                     <span class="logo-text">BeeTask</span>
                 </div>
-                <p class="footer-description">Quản lý công việc và ghi chú hiệu quả</p>
+                <p class="footer-description">Efficient task & note management</p>
                 <div class="footer-links">
-                    <a href="#">Về chúng tôi</a>
-                    <a href="#">Tính năng</a>
-                    <a href="#">Hỗ trợ</a>
-                    <a href="#">Liên hệ</a>
+                    <a href="#">About Us</a>
+                    <a href="#">Features</a>
+                    <a href="#">Support</a>
+                    <a href="#">Contact</a>
                 </div>
                 <div class="footer-copyright">
-                    © 2024 BeeTask. Tất cả quyền được bảo lưu.
+                    © 2024 BeeTask. All rights reserved.
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BeeTask - Sign Up</title>
-        <link rel="stylesheet" href="Register.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Authentication/Register.css">
     </head>
     <body>
         <div class="decorative-shapes">
@@ -110,6 +110,6 @@
             </div>
         </div>
 
-        <script src="Register.js"></script>
+        <script src="${pageContext.request.contextPath}/Authentication/Register.js"></script>
     </body>
 </html>
