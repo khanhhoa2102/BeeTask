@@ -38,6 +38,7 @@
             return;
         }
     } catch (Exception e) {
+        e.printStackTrace();
         response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=" + e.getMessage());
         return;
     }
@@ -194,7 +195,7 @@
                                         <div class="task-meta">
                                             <span class="task-date">
                                                 <i class="fas fa-calendar-alt"></i>
-                                                <%= task.getDueDate() %>
+                                                <%= task.getDueDate() != null ? task.getDueDate() : "No due date" %>
                                             </span>
                                         </div>
                                         <div class="task-badges">
@@ -229,11 +230,11 @@
                     <% } %>
 
                     <!-- Add Board Card -->
-                    <div class="board-card add-board-card" onclick="openAddBoardModal()" title="Add New Board">
+                    <div class="board-card add-board-card" onclick="openAddBoardModal()">
                         <div class="add-board-content">
                             <i class="fas fa-plus"></i>
-                            <h3>Add Board</h3>
-                            <p>Click to create a new board</p>
+                            <h3>Add New Board</h3>
+                            <p>Create a new board to organize your tasks</p>
                         </div>
                     </div>
                 </div>
@@ -276,7 +277,7 @@
                             </div>
                             <div class="date-info">
                                 <i class="fas fa-calendar-alt"></i>
-                                <span><%= task.getDueDate() %></span>
+                                <span><%= task.getDueDate() != null ? task.getDueDate() : "No due date" %></span>
                             </div>
                             <div class="priority-info">
                                 <span class="priority-badge <%= task.getPriority().toLowerCase() %>">
@@ -285,7 +286,7 @@
                                 </span>
                             </div>
                             <div class="status-info">
-                                <span class="status-badge <%= (task.getStatus() != null ? task.getStatus().toLowerCase().replace(" ", "") : "unknown") %>">
+                                <span class="status-badge <%= task.getStatus().toLowerCase().replace(" ", "") %>">
                                     <i class="fas fa-circle"></i>
                                     <%= task.getStatus() %>
                                 </span>
@@ -306,13 +307,13 @@
                 <span class="close" onclick="closeAddBoardModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="addBoardForm" method="post" action="board">
+                <form action="board" method="post">
                     <input type="hidden" name="action" value="add">
                     <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
                     <input type="hidden" name="position" value="<%= boards.size() %>">
                     <div class="form-group">
                         <label><i class="fas fa-tag"></i> Board Name:</label>
-                        <input type="text" name="name" id="boardName" placeholder="Enter board name..." required>
+                        <input type="text" name="name" placeholder="Enter board name..." required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="closeAddBoardModal()">Cancel</button>
@@ -322,7 +323,6 @@
             </div>
         </div>
     </div>
-
 
     <div id="addTaskModal" class="modal">
         <div class="modal-content">

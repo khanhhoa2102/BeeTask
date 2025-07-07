@@ -2,7 +2,6 @@ package dao;
 
 import context.DBConnection;
 import model.Board;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +61,37 @@ public class BoardDAO {
 
     // Delete board by ID
     public void delete(int boardId) {
-        String sql = "DELETE FROM Boards WHERE BoardId = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, boardId);
-            stmt.executeUpdate();
+        try {
+            connection.setAutoCommit(false);
+            
+            // First delete all tasks in this board
+            String deleteTasksSQL = "DELETE FROM Tasks WHERE BoardId = ?";
+            try (PreparedStatement stmt1 = connection.prepareStatement(deleteTasksSQL)) {
+                stmt1.setInt(1, boardId);
+                stmt1.executeUpdate();
+            }
+            
+            // Then delete the board
+            String deleteBoardSQL = "DELETE FROM Boards WHERE BoardId = ?";
+            try (PreparedStatement stmt2 = connection.prepareStatement(deleteBoardSQL)) {
+                stmt2.setInt(1, boardId);
+                stmt2.executeUpdate();
+            }
+            
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -110,26 +134,36 @@ public class BoardDAO {
         board.setPosition(rs.getInt("Position"));
         return board;
     }
-    
+
     // Duplicate board (with tasks)
     public void duplicate(int boardId) {
         try {
             connection.setAutoCommit(false);
-
+            
+            // Get original board info
+            Board originalBoard = findById(boardId);
+            if (originalBoard == null) {
+                return;
+            }
+            
             // Duplicate Board
-            String duplicateBoardSQL = "INSERT INTO Boards (ProjectId, Name, CreatedAt, Position) " +
-                                       "SELECT ProjectId, CONCAT(Name, ' (Copy)'), GETDATE(), Position + 1 FROM Boards WHERE BoardId = ?";
+            String duplicateBoardSQL = "INSERT INTO Boards (ProjectId, Name, Description, CreatedAt, Position) " +
+                                       "VALUES (?, ?, GETDATE(), ?)";
+            int newBoardId = -1;
+            
             try (PreparedStatement boardStmt = connection.prepareStatement(duplicateBoardSQL, Statement.RETURN_GENERATED_KEYS)) {
-                boardStmt.setInt(1, boardId);
+                boardStmt.setInt(1, originalBoard.getProjectId());
+                boardStmt.setString(2, originalBoard.getName() + " (Copy)");
+                boardStmt.setInt(3, originalBoard.getPosition() + 1);
                 boardStmt.executeUpdate();
-
+                
                 ResultSet rs = boardStmt.getGeneratedKeys();
                 if (rs.next()) {
-                    int newBoardId = rs.getInt(1);
-
+                    newBoardId = rs.getInt(1);
+                    
                     // Duplicate tasks
-                    String duplicateTasksSQL = "INSERT INTO Tasks (BoardId, Title, Description, StatusId, DueDate, CreatedAt, Position, Priority) " +
-                            "SELECT ?, Title, Description, StatusId, DueDate, GETDATE(), Position, Priority FROM Tasks WHERE BoardId = ?";
+                    String duplicateTasksSQL = "INSERT INTO Tasks (BoardId, Title, Description, Status, DueDate, CreatedAt, Position, Priority) " +
+                            "SELECT ?, Title, Description, Status, DueDate, GETDATE(), Position, Priority FROM Tasks WHERE BoardId = ?";
                     try (PreparedStatement taskStmt = connection.prepareStatement(duplicateTasksSQL)) {
                         taskStmt.setInt(1, newBoardId);
                         taskStmt.setInt(2, boardId);
@@ -137,13 +171,21 @@ public class BoardDAO {
                     }
                 }
             }
-
+            
             connection.commit();
         } catch (SQLException e) {
-            try { connection.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { 
+                connection.rollback(); 
+            } catch (SQLException ex) { 
+                ex.printStackTrace(); 
+            }
             e.printStackTrace();
         } finally {
-            try { connection.setAutoCommit(true); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { 
+                connection.setAutoCommit(true); 
+            } catch (SQLException ex) { 
+                ex.printStackTrace(); 
+            }
         }
     }
 }

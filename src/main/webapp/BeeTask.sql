@@ -134,7 +134,7 @@ CREATE TABLE Boards (
     Name NVARCHAR(100) NOT NULL,
     Description NVARCHAR(255) NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
-    Position INT
+    Position INT,
     CONSTRAINT FK_Boards_Projects FOREIGN KEY (ProjectId) REFERENCES Projects(ProjectId)
 );
 
@@ -170,7 +170,7 @@ CREATE TABLE Tasks (
     CreatedAt DATETIME DEFAULT GETDATE(),
     CreatedBy INT NOT NULL,
     Position INT,
-    Priority NVARCHAR(50)
+    Priority NVARCHAR(50),
     CONSTRAINT FK_Tasks_Boards FOREIGN KEY (BoardId) REFERENCES Boards(BoardId),
     CONSTRAINT FK_Tasks_Lists FOREIGN KEY (ListId) REFERENCES Lists(ListId),
     CONSTRAINT FK_Tasks_TaskStatuses FOREIGN KEY (StatusId) REFERENCES TaskStatuses(StatusId),

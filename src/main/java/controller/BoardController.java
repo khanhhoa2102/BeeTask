@@ -5,7 +5,6 @@ import model.Board;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import java.io.IOException;
 
 @WebServlet("/board")
@@ -21,25 +20,30 @@ public class BoardController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
-
-        switch (action) {
-            case "add":
-                addBoard(req, resp);
-                break;
-            case "edit":
-                editBoard(req, resp);
-                break;
-            case "delete":
-                deleteBoard(req, resp);
-                break;
-            case "moveBoardPosition":
-                moveBoardPosition(req, resp);
-                break;
-            case "duplicate":
-                duplicateBoard(req, resp);
-                break;
-            default:
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+        
+        try {
+            switch (action) {
+                case "add":
+                    addBoard(req, resp);
+                    break;
+                case "edit":
+                    editBoard(req, resp);
+                    break;
+                case "delete":
+                    deleteBoard(req, resp);
+                    break;
+                case "moveBoardPosition":
+                    moveBoardPosition(req, resp);
+                    break;
+                case "duplicate":
+                    duplicateBoard(req, resp);
+                    break;
+                default:
+                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
         }
     }
 
@@ -59,16 +63,18 @@ public class BoardController extends HttpServlet {
     }
 
     private void editBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        int boardId = Integer.parseInt(req.getParameter("listId"));
+        // Fix: Use boardId instead of listId for consistency
+        int boardId = Integer.parseInt(req.getParameter("boardId"));
         String name = req.getParameter("name");
-        int projectId = Integer.parseInt(req.getParameter("projectId"));
-
+        
         Board board = boardDAO.findById(boardId);
         if (board != null) {
             board.setName(name);
             boardDAO.update(board);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Board not found");
         }
-        resp.sendRedirect("Task.jsp?projectId=" + projectId);
     }
 
     private void deleteBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -79,7 +85,7 @@ public class BoardController extends HttpServlet {
         resp.sendRedirect("Task.jsp?projectId=" + projectId);
     }
 
-    private void moveBoardPosition(HttpServletRequest req, HttpServletResponse resp) {
+    private void moveBoardPosition(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String[] boardIds = req.getParameterValues("boardIds[]");
         String[] positions = req.getParameterValues("positions[]");
 
@@ -89,20 +95,21 @@ public class BoardController extends HttpServlet {
                 int pos = Integer.parseInt(positions[i]);
                 boardDAO.updateBoardPosition(boardId, pos);
             }
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing board IDs or positions");
         }
     }
 
     private void duplicateBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int boardId = Integer.parseInt(req.getParameter("boardId"));
+        
         Board board = boardDAO.findById(boardId);
         if (board != null) {
-            Board newBoard = new Board();
-            newBoard.setProjectId(board.getProjectId());
-            newBoard.setName(board.getName() + " (Copy)");
-            newBoard.setDescription(board.getDescription());
-            newBoard.setPosition(board.getPosition() + 1);
-            boardDAO.insert(newBoard);
+            boardDAO.duplicate(boardId);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Board not found");
         }
-        resp.sendRedirect(req.getHeader("Referer"));
     }
 }

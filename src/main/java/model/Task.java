@@ -6,24 +6,24 @@ import java.sql.Timestamp;
 public class Task {
     private int taskId;
     private int boardId;
-    private int listId;
     private String title;
     private String description;
-    private String statusId;      // e.g., "To Do", "In Progress", "Done"
+    private int statusId;
     private Date dueDate;
     private Timestamp createdAt;
-    private String createdBy;
+    private int createdBy;
     private int position;
-    private String priority;    // e.g., "High", "Medium", "Low"
+    private String priority;
 
+    // Default constructor
     public Task() {}
 
-    public Task(int taskId, int boardId, int listId, String title, String description,
-                String statusId, Date dueDate, Timestamp createdAt, String createdBy,
+    // Full constructor (đã bỏ listId)
+    public Task(int taskId, int boardId, String title, String description,
+                int statusId, Date dueDate, Timestamp createdAt, int createdBy,
                 int position, String priority) {
         this.taskId = taskId;
         this.boardId = boardId;
-        this.listId = listId;
         this.title = title;
         this.description = description;
         this.statusId = statusId;
@@ -34,37 +34,100 @@ public class Task {
         this.priority = priority;
     }
 
-    // Getters and Setters
-    public int getTaskId() { return taskId; }
-    public void setTaskId(int taskId) { this.taskId = taskId; }
+    // Getters & Setters
+    public int getTaskId() {
+        return taskId;
+    }
 
-    public int getBoardId() { return boardId; }
-    public void setBoardId(int boardId) { this.boardId = boardId; }
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
 
-    public int getListId() { return listId; }
-    public void setListId(int listId) { this.listId = listId; }
+    public int getBoardId() {
+        return boardId;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setBoardId(int boardId) {
+        this.boardId = boardId;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getTitle() {
+        return title != null ? title : "";
+    }
 
-    public String getStatusId() { return statusId; }
-    public void setStatusId(String statusId) { this.statusId = statusId; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public Date getDueDate() { return dueDate; }
-    public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
+    public String getDescription() {
+        return description != null ? description : "";
+    }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getCreatedBy() { return createdBy; }
-    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+    public int getStatusId() {
+        return statusId;
+    }
 
-    public int getPosition() { return position; }
-    public void setPosition(int position) { this.position = position; }
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
+    }
 
-    public String getPriority() { return priority; }
-    public void setPriority(String priority) { this.priority = priority; }
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public int getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public String getPriority() {
+        return priority != null ? priority : "Medium";
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "taskId=" + taskId +
+                ", boardId=" + boardId +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", statusId=" + statusId +
+                ", dueDate=" + dueDate +
+                ", createdAt=" + createdAt +
+                ", createdBy=" + createdBy +
+                ", position=" + position +
+                ", priority='" + priority + '\'' +
+                '}';
+    }
 }
