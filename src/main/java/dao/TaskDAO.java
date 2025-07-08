@@ -13,13 +13,14 @@ public class TaskDAO {
     
     // Insert new task
     public void insert(Task task) {
-        String sql = "INSERT INTO Tasks (BoardId, Title, Description, StatusId, Priority, DueDate, Position, CreatedBy, CreatedAt) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, Priority, DueDate, Position, CreatedBy, CreatedAt) " +
+                     "VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
         
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, task.getBoardId());
+            // ListId = 1 (default, we ignore this)
             stmt.setString(2, task.getTitle());
             stmt.setString(3, task.getDescription() != null ? task.getDescription() : "");
             stmt.setInt(4, task.getStatusId());
@@ -127,12 +128,11 @@ public class TaskDAO {
         System.out.println("🔍 Loading tasks for project: " + projectId);
         
         Map<Integer, List<Task>> taskMap = new HashMap<>();
-        String sql = "SELECT t.*, b.Name as BoardName FROM Tasks t " +
+        String sql = "SELECT t.*, b.Name as BoardName, ts.Name as StatusName FROM Tasks t " +
                      "INNER JOIN Boards b ON t.BoardId = b.BoardId " +
+                     "INNER JOIN TaskStatuses ts ON t.StatusId = ts.StatusId " +
                      "WHERE b.ProjectId = ? " +
                      "ORDER BY b.Position ASC, t.Position ASC";
-        
-        System.out.println("🔍 Executing SQL: " + sql);
         
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -140,31 +140,22 @@ public class TaskDAO {
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();
             
-            int rowCount = 0;
             while (rs.next()) {
-                rowCount++;
                 Task task = mapResultSetToTask(rs);
+                // Set the status name from the join
+                task.setStatusName(rs.getString("StatusName"));
                 int boardId = task.getBoardId();
                 
-                System.out.println("📝 Row " + rowCount + ": Task=" + task.getTitle() + 
-                                 ", BoardId=" + boardId + ", StatusId=" + task.getStatusId());
-            
                 // Initialize list if not exists
                 if (!taskMap.containsKey(boardId)) {
                     taskMap.put(boardId, new ArrayList<>());
-                    System.out.println("🆕 Created new list for board " + boardId);
                 }
                 
                 taskMap.get(boardId).add(task);
+                System.out.println("📝 Found task: " + task.getTitle() + " in board " + boardId + " with status: " + task.getStatusName());
             }
             
-            System.out.println("✅ Total rows processed: " + rowCount);
             System.out.println("✅ Found tasks for " + taskMap.size() + " boards in project " + projectId);
-            
-            // Debug each board's task count
-            for (Map.Entry<Integer, List<Task>> entry : taskMap.entrySet()) {
-                System.out.println("📋 Board " + entry.getKey() + " has " + entry.getValue().size() + " tasks");
-            }
             
         } catch (SQLException e) {
             System.err.println("❌ Error getting tasks by project ID: " + e.getMessage());
@@ -180,6 +171,7 @@ public class TaskDAO {
         
         task.setTaskId(rs.getInt("TaskId"));
         task.setBoardId(rs.getInt("BoardId"));
+        // We ignore ListId completely
         task.setTitle(rs.getString("Title") != null ? rs.getString("Title") : "");
         task.setDescription(rs.getString("Description") != null ? rs.getString("Description") : "");
         task.setStatusId(rs.getInt("StatusId"));
@@ -243,55 +235,7 @@ public class TaskDAO {
         return tasks;
     }
 
-    // Get first list ID for a board (for creating new tasks)
-    public int getFirstListIdForBoard(int boardId) {
-        // First try to get from Lists table
-        String sql = "SELECT TOP 1 ListId FROM Lists WHERE BoardId = ? ORDER BY ListId";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, boardId);
-            ResultSet rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt("ListId");
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Error getting first list ID: " + e.getMessage());
-            // If Lists table doesn't exist or is empty, create a default list
-            return createDefaultListForBoard(boardId);
-        }
-        
-        return createDefaultListForBoard(boardId);
-    }
-    
-    // Create default list for board if none exists
-    private int createDefaultListForBoard(int boardId) {
-        String sql = "INSERT INTO Lists (BoardId, Name, Position) VALUES (?, 'Default List', 0)";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
-            stmt.setInt(1, boardId);
-            stmt.executeUpdate();
-            
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                int listId = rs.getInt(1);
-                System.out.println("Created default list " + listId + " for board " + boardId);
-                return listId;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Error creating default list: " + e.getMessage());
-        }
-        
-        return 1; // Ultimate fallback
-    }
-
-    // Debug method - Add this to TaskDAO
+    // Debug method
     public void debugTasksForProject(int projectId) {
         System.out.println("=== DEBUG TASKS FOR PROJECT " + projectId + " ===");
         
@@ -325,9 +269,10 @@ public class TaskDAO {
         }
         
         // Check tasks
-        String taskSQL = "SELECT t.TaskId, t.Title, t.BoardId, b.Name as BoardName " +
+        String taskSQL = "SELECT t.TaskId, t.Title, t.BoardId, b.Name as BoardName, ts.Name as StatusName " +
                          "FROM Tasks t " +
                          "INNER JOIN Boards b ON t.BoardId = b.BoardId " +
+                         "INNER JOIN TaskStatuses ts ON t.StatusId = ts.StatusId " +
                          "WHERE b.ProjectId = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(taskSQL)) {
@@ -337,7 +282,7 @@ public class TaskDAO {
             System.out.println("Tasks for project " + projectId + ":");
             while (rs.next()) {
                 System.out.println("  - Task " + rs.getInt("TaskId") + ": " + rs.getString("Title") + 
-                                 " (Board: " + rs.getString("BoardName") + ")");
+                                 " (Board: " + rs.getString("BoardName") + ", Status: " + rs.getString("StatusName") + ")");
             }
         } catch (SQLException e) {
             System.err.println("Error checking tasks: " + e.getMessage());
