@@ -4,6 +4,7 @@
     String msg = request.getParameter("msg");    
     String successMessage = (String) session.getAttribute("successMessage");    
     String errorMessage = (String) request.getAttribute("errorMessage");
+    
 %>
 <!DOCTYPE html>
 <html lang="en">

@@ -1,4 +1,4 @@
-/* General Styles */
+/* Reset & Base */
 * {
     margin: 0;
     padding: 0;
@@ -6,335 +6,281 @@
 }
 
 body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
-    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
 }
 
-/* Background Circles */
-.background-circles {
+/* Background */
+.background-gradient {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    z-index: 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    z-index: -1;
 }
 
-.circle {
+.background-gradient::before {
+    content: '';
     position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    animation: float 6s ease-in-out infinite;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
 }
 
-.circle-1 {
-    width: 60px;
-    height: 60px;
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
-}
-
-.circle-2 {
-    width: 80px;
-    height: 80px;
-    top: 20%;
-    right: 15%;
-    animation-delay: 1s;
-}
-
-.circle-3 {
-    width: 40px;
-    height: 40px;
-    bottom: 30%;
-    left: 20%;
-    animation-delay: 2s;
-}
-
-.circle-4 {
-    width: 70px;
-    height: 70px;
-    bottom: 20%;
-    right: 25%;
-    animation-delay: 3s;
-}
-
-.circle-5 {
-    width: 30px;
-    height: 30px;
-    top: 50%;
-    left: 50%;
-    animation-delay: 4s;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-15px);
-    }
-}
-
-/* Container */
-.switch-account-container {
-    position: relative;
-    z-index: 1;
+/* Container - Made wider and more compact */
+.switch-container {
+    max-width: 600px; /* Increased from 400px */
+    margin: 0 auto;
+    padding: 20px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 15px;
+    justify-content: center; /* Center vertically */
 }
 
-/* Header */
+/* Header - Reduced spacing */
 .switch-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    max-width: 420px; /* Reduced from 500px */
-    margin-bottom: 15px; /* Reduced from 20px */
+    margin-bottom: 16px; /* Reduced from 24px */
 }
 
-.back-btn, .close-btn {
-    width: 36px; /* Reduced from 40px */
-    height: 36px;
+.nav-btn {
+    width: 32px; /* Reduced from 36px */
+    height: 32px;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #e2e8f0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     backdrop-filter: blur(10px);
-    font-size: 14px; /* Added smaller font size */
 }
 
-.back-btn:hover, .close-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
 }
 
-.logo-container {
+.logo-section {
     flex: 1;
     display: flex;
     justify-content: center;
 }
 
 .logo {
-    height: 32px; 
-   
+    height: 24px; /* Reduced from 28px */
 }
 
-/* Main Card */
-.main-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 16px; /* Reduced from 20px */
-    width: 100%;
-    max-width: 420px; /* Reduced from 500px */
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Reduced shadow */
-    backdrop-filter: blur(10px);
-    overflow: hidden;
+/* Main Content - More compact */
+.main-content {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px; /* Reduced from 24px */
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.card-header {
+.content-header {
     text-align: center;
-    padding: 24px 24px 16px; /* Reduced padding */
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    margin-bottom: 20px; /* Reduced from 32px */
 }
 
-.card-header h1 {
-    font-size: 24px; /* Reduced from 28px */
+.content-header h1 {
+    font-size: 22px; /* Reduced from 24px */
     font-weight: 700;
-    color: #333;
     margin-bottom: 6px; /* Reduced from 8px */
+    color: #f8fafc;
 }
 
-.card-header p {
-    color: #666;
-    font-size: 14px; /* Reduced from 16px */
+.content-header p {
+    color: #94a3b8;
+    font-size: 13px; /* Reduced from 14px */
 }
 
-/* Sections */
-.current-account-section,
-.other-accounts-section,
-.add-account-section {
-    padding: 16px 24px; /* Reduced padding */
+/* Sections - Reduced spacing */
+.section {
+    margin-bottom: 16px; /* Reduced from 24px */
 }
 
-.current-account-section h2,
-.other-accounts-section h2 {
-    font-size: 16px; /* Reduced from 18px */
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 12px; /* Reduced from 15px */
+.section-title {
     display: flex;
     align-items: center;
     gap: 6px; /* Reduced from 8px */
+    margin-bottom: 8px; /* Reduced from 12px */
+    font-size: 13px; /* Reduced from 14px */
+    font-weight: 600;
+    color: #cbd5e1;
 }
 
-.current-account-section h2::before {
-    content: "👤";
+.section-title i {
+    color: #667eea;
     font-size: 14px; /* Reduced from 16px */
 }
 
-.other-accounts-section h2::before {
-    content: "👥";
-    font-size: 14px; /* Reduced from 16px */
-}
-
-/* Account Cards */
-.account-card {
+/* Account Items - More compact */
+.account-item {
     display: flex;
     align-items: center;
-    padding: 12px; /* Reduced from 16px */
-    border: 2px solid transparent;
+    padding: 10px; /* Reduced from 12px */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px; /* Reduced from 12px */
-    margin-bottom: 10px; /* Reduced from 12px */
-    transition: all 0.3s ease;
+    margin-bottom: 6px; /* Reduced from 8px */
+    transition: all 0.2s ease;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(5px);
+    position: relative;
 }
 
-.account-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15); /* Reduced shadow */
-    transform: translateY(-1px); /* Reduced from -2px */
+.account-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(102, 126, 234, 0.3);
+    transform: translateY(-1px);
 }
 
-.account-card.current {
-    border-color: #20c997;
-    background: linear-gradient(135deg, rgba(32, 201, 151, 0.1) 0%, rgba(32, 201, 151, 0.05) 100%);
+.account-item.current-account {
+    border-color: rgba(34, 197, 94, 0.3);
+    background: rgba(34, 197, 94, 0.05);
 }
 
 .account-avatar {
-    width: 42px; /* Reduced from 50px */
-    height: 42px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 36px; /* Reduced from 40px */
+    height: 36px;
+    border-radius: 8px; /* Reduced from 10px */
+    background: linear-gradient(135deg, #667eea, #764ba2);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: bold;
-    font-size: 14px; /* Reduced from 16px */
-    margin-right: 12px; /* Reduced from 16px */
+    font-weight: 600;
+    font-size: 13px; /* Reduced from 14px */
+    margin-right: 10px; /* Reduced from 12px */
     flex-shrink: 0;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2); /* Reduced shadow */
 }
 
-.account-info {
+.account-avatar.current {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.account-details {
     flex: 1;
     min-width: 0;
 }
 
-.account-info h3 {
-    font-size: 15px; /* Reduced from 16px */
+.account-details h3 {
+    font-size: 14px; /* Reduced from 15px */
     font-weight: 600;
-    color: #333;
-    margin-bottom: 3px; /* Reduced from 4px */
+    color: #f8fafc;
+    margin-bottom: 1px; /* Reduced from 2px */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.account-info p {
-    font-size: 13px; /* Reduced from 14px */
-    color: #666;
-    margin-bottom: 3px; /* Reduced from 4px */
+.account-details p {
+    font-size: 12px; /* Reduced from 13px */
+    color: #94a3b8;
+    margin-bottom: 2px; /* Reduced from 4px */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.current-badge {
+.status-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
-    color: white;
-    font-size: 10px; /* Reduced from 11px */
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    font-size: 9px; /* Reduced from 10px */
     font-weight: 600;
-    padding: 2px 6px; /* Reduced padding */
-    border-radius: 10px; /* Reduced from 12px */
+    padding: 1px 4px; /* Reduced padding */
+    border-radius: 4px; /* Reduced from 6px */
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .last-used {
-    font-size: 11px; /* Reduced from 12px */
-    color: #999;
+    font-size: 10px; /* Reduced from 11px */
+    color: #64748b;
 }
 
-.account-actions {
+/* Account Menu - More compact */
+.account-menu {
     display: flex;
     align-items: center;
-    gap: 6px; /* Reduced from 8px */
+    gap: 4px;
 }
 
-.action-btn {
+.menu-btn {
+    width: 26px; /* Reduced from 28px */
+    height: 26px;
     border: none;
-    border-radius: 6px; /* Reduced from 8px */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #94a3b8;
     cursor: pointer;
-    font-size: 12px; /* Reduced from 14px */
-    font-weight: 500;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 11px; /* Reduced from 12px */
+}
+
+.menu-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
 }
 
 .switch-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
-    padding: 6px 12px; /* Reduced padding */
-    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.3); /* Reduced shadow */
+    padding: 5px 10px; /* Reduced padding */
+    font-size: 11px; /* Reduced from 12px */
+    font-weight: 500;
+    border-radius: 5px; /* Reduced from 6px */
+    width: auto;
+    height: auto;
 }
 
 .switch-btn:hover {
-    transform: translateY(-1px); /* Reduced from -2px */
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); /* Reduced shadow */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.settings-btn, .remove-btn {
-    width: 30px; /* Reduced from 36px */
-    height: 30px;
-    background: rgba(108, 117, 125, 0.1);
-    color: #6c757d;
-    border-radius: 50%;
-    font-size: 11px; /* Reduced font size */
+.delete-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
 }
 
-.settings-btn:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
 }
 
-.remove-btn:hover {
-    background: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-}
-
-/* Add Account Button */
+/* Add Account Button - More compact */
 .add-account-btn {
     width: 100%;
-    padding: 12px; /* Reduced from 16px */
-    border: 2px dashed #ddd;
+    padding: 10px; /* Reduced from 12px */
+    border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 10px; /* Reduced from 12px */
-    background: rgba(255, 255, 255, 0.5);
-    color: #666;
+    background: rgba(255, 255, 255, 0.02);
+    color: #94a3b8;
     font-size: 13px; /* Reduced from 14px */
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -342,67 +288,37 @@ body {
 }
 
 .add-account-btn:hover {
-    border-color: #667eea;
-    color: #667eea;
+    border-color: rgba(102, 126, 234, 0.4);
     background: rgba(102, 126, 234, 0.05);
-    transform: translateY(-1px); /* Reduced from -2px */
+    color: #667eea;
+    transform: translateY(-1px);
 }
 
-/* Empty State */
-.empty-state {
+/* Empty Message - More compact */
+.empty-message {
     text-align: center;
-    padding: 30px 16px; /* Reduced padding */
-    color: #999;
+    padding: 16px; /* Reduced from 24px */
+    color: #64748b;
 }
 
-.empty-state i {
-    font-size: 40px; /* Reduced from 48px */
-    margin-bottom: 12px; /* Reduced from 16px */
-    color: #ddd;
+.empty-message i {
+    font-size: 28px; /* Reduced from 32px */
+    margin-bottom: 8px; /* Reduced from 12px */
+    color: #475569;
 }
 
-.empty-state h3 {
-    font-size: 16px; /* Reduced from 18px */
-    font-weight: 600;
-    margin-bottom: 6px; /* Reduced from 8px */
-    color: #666;
-}
-
-.empty-state p {
+.empty-message p {
     font-size: 13px; /* Reduced from 14px */
 }
 
-/* Footer */
-.switch-footer {
-    padding: 16px 24px; /* Reduced padding */
-    text-align: center;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    background: rgba(0, 0, 0, 0.02);
-}
-
-.switch-footer p {
-    font-size: 11px; /* Reduced from 12px */
-    color: #999;
-}
-
-.switch-footer a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.switch-footer a:hover {
-    text-decoration: underline;
-}
-
-/* Modal Styles */
-.modal-overlay {
+/* Modal - Keep existing modal styles but adjust size */
+.modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
     display: none;
     align-items: center;
     justify-content: center;
@@ -412,23 +328,21 @@ body {
     backdrop-filter: blur(5px);
 }
 
-.modal-overlay.show {
+.modal-backdrop.show {
     opacity: 1;
 }
 
-.modal {
-    background: white;
-    border-radius: 12px; /* Reduced from 16px */
+.modal-content {
+    background: #1e293b;
+    border-radius: 16px;
     width: 90%;
-    max-width: 360px; /* Reduced from 400px */
-    max-height: 90vh;
-    overflow-y: auto;
+    max-width: 420px; /* Slightly wider */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transform: scale(0.9);
     transition: transform 0.3s ease;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); /* Reduced shadow */
 }
 
-.modal-overlay.show .modal {
+.modal-backdrop.show .modal-content {
     transform: scale(1);
 }
 
@@ -437,128 +351,147 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px; /* Reduced padding */
-    border-bottom: 1px solid #eee;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-header h3 {
     font-size: 16px; /* Reduced from 18px */
     font-weight: 600;
-    color: #333;
+    color: #f8fafc;
 }
 
-.modal-close {
+.close-btn {
     width: 28px; /* Reduced from 32px */
     height: 28px;
     border: none;
-    background: none;
-    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px; /* Reduced from 8px */
+    color: #94a3b8;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #999;
-    transition: all 0.3s ease;
-    font-size: 12px; /* Added smaller font size */
+    transition: all 0.2s ease;
 }
 
-.modal-close:hover {
-    background: #f8f9fa;
-    color: #333;
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
 }
 
 .modal-body {
-    padding: 20px; /* Reduced from 24px */
+    padding: 16px 20px; /* Reduced padding */
 }
 
-/* Form Styles */
-.form-group {
-    margin-bottom: 16px; /* Reduced from 20px */
+/* Form - More compact */
+.input-group {
+    margin-bottom: 12px; /* Reduced from 16px */
 }
 
-.form-group label {
+.input-group label {
     display: block;
     font-size: 13px; /* Reduced from 14px */
     font-weight: 500;
-    color: #333;
-    margin-bottom: 6px; /* Reduced from 8px */
+    color: #e2e8f0;
+    margin-bottom: 4px; /* Reduced from 6px */
 }
 
-.form-group input {
+.input-group input {
     width: 100%;
-    padding: 10px 14px; /* Reduced padding */
-    border: 2px solid #eee;
+    padding: 10px; /* Reduced from 12px */
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px; /* Reduced from 8px */
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
     font-size: 13px; /* Reduced from 14px */
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
 }
 
-.form-group input:focus {
+.input-group input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    background: white;
+    background: rgba(255, 255, 255, 0.08);
 }
 
-.form-actions {
+.input-group input::placeholder {
+    color: #64748b;
+}
+
+/* Modal Actions - More compact */
+.modal-actions {
     display: flex;
     gap: 10px; /* Reduced from 12px */
     justify-content: flex-end;
-    margin-top: 20px; /* Reduced from 24px */
+    margin-top: 16px; /* Reduced from 24px */
 }
 
-.btn-primary, .btn-secondary, .btn-danger {
-    padding: 10px 20px; /* Reduced padding */
+.btn-cancel, .btn-primary, .btn-danger {
+    padding: 8px 16px; /* Reduced padding */
     border: none;
     border-radius: 6px; /* Reduced from 8px */
     font-size: 13px; /* Reduced from 14px */
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
-    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.3); /* Reduced shadow */
 }
 
 .btn-primary:hover {
-    transform: translateY(-1px); /* Reduced from -2px */
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); /* Reduced shadow */
-}
-
-.btn-secondary {
-    background: #f8f9fa;
-    color: #6c757d;
-    border: 1px solid #dee2e6;
-}
-
-.btn-secondary:hover {
-    background: #e9ecef;
-    color: #495057;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
     color: white;
-    box-shadow: 0 3px 12px rgba(220, 53, 69, 0.3); /* Reduced shadow */
 }
 
 .btn-danger:hover {
-    transform: translateY(-1px); /* Reduced from -2px */
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4); /* Reduced shadow */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* Loading Overlay */
+/* Confirm Content - More compact */
+.confirm-content {
+    text-align: center;
+    margin-bottom: 16px; /* Reduced from 20px */
+}
+
+.confirm-content i {
+    font-size: 40px; /* Reduced from 48px */
+    color: #f59e0b;
+    margin-bottom: 12px; /* Reduced from 16px */
+}
+
+.confirm-content p {
+    color: #e2e8f0;
+    font-size: 14px; /* Reduced from 16px */
+    line-height: 1.5;
+}
+
+/* Loading - Keep existing styles */
 .loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.8);
     display: none;
     align-items: center;
     justify-content: center;
@@ -572,88 +505,141 @@ body {
     opacity: 1;
 }
 
-.loading-spinner {
+.loading-content {
     text-align: center;
-    color: #667eea;
+    color: #e2e8f0;
 }
 
-.loading-spinner i {
-    font-size: 28px; /* Reduced from 32px */
-    margin-bottom: 12px; /* Reduced from 16px */
+.spinner {
+    width: 36px; /* Reduced from 40px */
+    height: 36px;
+    border: 3px solid rgba(102, 126, 234, 0.3);
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px; /* Reduced margin */
 }
 
-.loading-spinner p {
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-content p {
     font-size: 14px; /* Reduced from 16px */
     font-weight: 500;
 }
 
-/* Notifications */
-.notification {
+/* Toast - Keep existing styles but make more compact */
+.toast-container {
     position: fixed;
-    top: 15px; /* Reduced from 20px */
-    right: 15px;
-    background: white;
+    top: 20px;
+    right: 20px;
+    z-index: 3000;
+}
+
+.toast {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px; /* Reduced from 12px */
     padding: 12px; /* Reduced from 16px */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Reduced shadow */
+    margin-bottom: 8px; /* Reduced from 12px */
     display: flex;
     align-items: center;
     gap: 10px; /* Reduced from 12px */
-    z-index: 3000;
+    min-width: 280px; /* Reduced from 300px */
     transform: translateX(100%);
     transition: transform 0.3s ease;
-    max-width: 320px; /* Reduced from 400px */
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
 }
 
-.notification.show {
+.toast.show {
     transform: translateX(0);
 }
 
-.notification.success {
-    border-left: 3px solid #20c997; /* Reduced from 4px */
+.toast.success {
+    border-left: 3px solid #22c55e; /* Reduced from 4px */
 }
 
-.notification.error {
-    border-left: 3px solid #dc3545; /* Reduced from 4px */
+.toast.error {
+    border-left: 3px solid #ef4444; /* Reduced from 4px */
 }
 
-.notification i {
+.toast i {
     font-size: 16px; /* Reduced from 18px */
 }
 
-.notification.success i {
-    color: #20c997;
+.toast.success i {
+    color: #22c55e;
 }
 
-.notification.error i {
-    color: #dc3545;
+.toast.error i {
+    color: #ef4444;
 }
 
-.notification span {
+.toast span {
     flex: 1;
+    color: #e2e8f0;
     font-size: 13px; /* Reduced from 14px */
-    color: #333;
 }
 
-.notification-close {
+.toast-close {
     width: 20px; /* Reduced from 24px */
     height: 20px;
     border: none;
-    background: none;
-    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px; /* Reduced from 6px */
+    color: #94a3b8;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #999;
-    transition: all 0.3s ease;
-    font-size: 10px; /* Added smaller font size */
+    transition: all 0.2s ease;
 }
 
-.notification-close:hover {
-    background: #f8f9fa;
-    color: #333;
+.toast-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .switch-container {
+        max-width: 500px; /* Adjusted for mobile */
+        padding: 16px;
+    }
+    
+    .main-content {
+        padding: 16px; /* Reduced padding on mobile */
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 16px;
+    }
+    
+    .toast {
+        min-width: auto;
+        left: 16px;
+        right: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .switch-container {
+        max-width: 100%;
+        padding: 12px;
+    }
+    
+    .account-menu {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .switch-btn {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
 }
 
 /* Animations */
@@ -679,101 +665,10 @@ body {
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .switch-account-container {
-        padding: 10px;
-    }
-    
-    .main-card {
-        border-radius: 12px; /* Reduced from 16px */
-        max-width: 380px; /* Reduced for mobile */
-    }
-    
-    .card-header {
-        padding: 20px 18px 12px; /* Reduced padding */
-    }
-    
-    .card-header h1 {
-        font-size: 22px; /* Reduced from 24px */
-    }
-    
-    .current-account-section,
-    .other-accounts-section,
-    .add-account-section {
-        padding: 12px 18px; /* Reduced padding */
-    }
-    
-    .account-card {
-        padding: 10px; /* Reduced from 12px */
-    }
-    
-    .account-avatar {
-        width: 38px; /* Reduced from 42px */
-        height: 38px;
-        font-size: 13px; /* Reduced from 14px */
-        margin-right: 10px; /* Reduced from 12px */
-    }
-    
-    .account-info h3 {
-        font-size: 14px; /* Reduced from 15px */
-    }
-    
-    .account-info p {
-        font-size: 12px; /* Reduced from 13px */
-    }
-    
-    .modal {
-        width: 95%;
-        margin: 15px; 
-        border-radius: 10px; 
-        max-width: 340px; 
-    }
-    
-    .notification {
-        right: 10px;
-        left: 10px;
-        max-width: none;
-    }
+.account-item {
+    animation: slideIn 0.3s ease;
 }
 
-@media (max-width: 480px) {
-    .switch-header {
-        margin-bottom: 12px;
-    }
-    
-    .logo {
-        height: 28px; 
-    }
-    
-    .main-card {
-        max-width: 340px; 
-    }
-    
-    .card-header h1 {
-        font-size: 20px;
-    }
-    
-    .card-header p {
-        font-size: 13px; 
-    }
-    
-    .account-actions {
-        flex-direction: column;
-        gap: 4px; 
-    }
-    
-    .switch-btn {
-        padding: 5px 10px; 
-        font-size: 11px; 
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .btn-primary, .btn-secondary, .btn-danger {
-        width: 100%;
-        padding: 8px 16px;
-    }
+.account-item.removing {
+    animation: slideOut 0.3s ease;
 }

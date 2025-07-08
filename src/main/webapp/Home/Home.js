@@ -414,3 +414,34 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("✅ Dark mode initialized in Home.jsp");
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    const user = window.beeUser;
+    if (!user || !user.email) return;
+
+    let accounts = JSON.parse(localStorage.getItem("recentAccounts")) || [];
+
+    const hasGoogle = accounts.some(acc => acc.email === user.email && acc.refreshToken);
+    const hasLocal = accounts.some(acc => acc.email === user.email && acc.password);
+
+    if (user.refreshToken && !hasGoogle) {
+        accounts = accounts.filter(acc => acc.email !== user.email);
+        accounts.push({
+            email: user.email,
+            username: user.username,
+            refreshToken: user.refreshToken,
+            addedAt: new Date().toISOString()
+        });
+        localStorage.setItem("recentAccounts", JSON.stringify(accounts));
+        console.log("✅ Google account added to recentAccounts");
+    } else if (!hasLocal && user.password) {
+        accounts = accounts.filter(acc => acc.email !== user.email);
+        accounts.push({
+            email: user.email,
+            username: user.username,
+            password: user.password,
+            addedAt: new Date().toISOString()
+        });
+        localStorage.setItem("recentAccounts", JSON.stringify(accounts));
+        console.log("✅ Local account added to recentAccounts");
+    }
+});
