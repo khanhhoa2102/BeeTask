@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.Project, model.Board, model.Task, model.User" %>
-<%@ page import="dao.ProjectDAO, dao.BoardDAO, dao.TaskDAO" %>
+<%@ page import="dao.ProjectDAO, dao.BoardDAO, dao.TaskDAO, dao.TaskStatusDAO" %>
 <%@ page import="java.util.*" %>
 
 <%
@@ -8,12 +8,19 @@
     String rawId = request.getParameter("projectId");
     int projectId = -1;
 
+    // Debug information
+    System.out.println("=== TASK.JSP DEBUG ===");
+    System.out.println("User: " + (user != null ? user.getUsername() : "null"));
+    System.out.println("Raw Project ID: " + rawId);
+
     if (user == null) {
+        System.out.println("User not logged in, redirecting to login");
         response.sendRedirect("/BeeTask/Authentication/Login.jsp");
         return;
     }
 
     if (rawId == null || rawId.trim().isEmpty()) {
+        System.out.println("Missing project ID, redirecting to error page");
         response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=Missing Project ID");
         return;
     }
@@ -21,27 +28,63 @@
     ProjectDAO projectDAO = new ProjectDAO();
     BoardDAO boardDAO = new BoardDAO();
     TaskDAO taskDAO = new TaskDAO();
+    TaskStatusDAO statusDAO = new TaskStatusDAO();
 
     Project project = null;
     List<Board> boards = new ArrayList<>();
     Map<Integer, List<Task>> tasksMap = new HashMap<>();
+    Map<Integer, String> statusMap = new HashMap<>();
 
     try {
         projectId = Integer.parseInt(rawId);
+        System.out.println("Parsed Project ID: " + projectId);
+        
+        // Load status map first
+        statusMap = statusDAO.getAllStatuses();
+        System.out.println("Status map loaded: " + statusMap.size() + " statuses");
+        
+        // Load project
         project = projectDAO.getProjectById(projectId);
+        System.out.println("Project loaded: " + (project != null ? project.getName() : "null"));
 
         if (project != null) {
+            // Load boards
             boards = boardDAO.getBoardsByProjectId(projectId);
+            System.out.println("Boards loaded: " + boards.size());
+            
+            // Load tasks
             tasksMap = taskDAO.getTasksByProjectIdGrouped(projectId);
+            System.out.println("Tasks map size: " + tasksMap.size());
+            
+            // Debug each board's tasks
+            for (Board board : boards) {
+                List<Task> boardTasks = tasksMap.get(board.getBoardId());
+                System.out.println("Board '" + board.getName() + "' (ID: " + board.getBoardId() + ") has " + 
+                    (boardTasks != null ? boardTasks.size() : 0) + " tasks");
+                if (boardTasks != null) {
+                    for (Task task : boardTasks) {
+                        String statusName = statusMap.get(task.getStatusId());
+                        System.out.println("  - Task: " + task.getTitle() + " (Status: " + statusName + ")");
+                    }
+                }
+            }
         } else {
+            System.out.println("Project not found, redirecting to error page");
             response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=Project Not Found");
             return;
         }
+    } catch (NumberFormatException e) {
+        System.out.println("Invalid project ID format: " + rawId);
+        response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=Invalid Project ID");
+        return;
     } catch (Exception e) {
+        System.out.println("Error loading project data: " + e.getMessage());
         e.printStackTrace();
         response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=" + e.getMessage());
         return;
     }
+    
+    System.out.println("=== END DEBUG ===");
 %>
 
 <!DOCTYPE html>
@@ -100,7 +143,7 @@
                 </div>
             </div>
 
-            <!-- Improved Boards Section -->
+            <!-- Boards Section -->
             <div class="boards-section">
                 <div class="boards-header">
                     <div class="boards-info">
@@ -130,7 +173,9 @@
                         int completedTasks = 0;
                         if (tasks != null) {
                             for (Task task : tasks) {
-                                if ("Done".equals(task.getStatus())) {
+                                String statusName = statusMap.get(task.getStatusId());
+                                if (statusName == null) statusName = "Unknown";
+                                if ("Done".equals(statusName)) {
                                     completedTasks++;
                                 }
                             }
@@ -182,10 +227,13 @@
                         <div class="board-content">
                             <div class="board-tasks" data-board-id="<%= board.getBoardId() %>">
                                 <% if (tasks != null && !tasks.isEmpty()) {
-                                    for (Task task : tasks) { %>
+                                    for (Task task : tasks) { 
+                                        String statusName = statusMap.get(task.getStatusId());
+                                        if (statusName == null) statusName = "Unknown";
+                                %>
                                 <div class="task-card priority-<%= task.getPriority().toLowerCase() %>" 
                                      data-task-id="<%= task.getTaskId() %>" 
-                                     onclick="openTaskDetailPopup('<%= task.getTaskId() %>', '<%= task.getTitle().replace("'", "\\'") %>', '<%= task.getDescription().replace("'", "\\'") %>', '<%= task.getDueDate() %>', '<%= task.getPriority() %>', '<%= task.getStatus() %>')">
+                                     onclick="openTaskDetailPopup('<%= task.getTaskId() %>', '<%= task.getTitle().replace("'", "\\'") %>', '<%= task.getDescription().replace("'", "\\'") %>', '<%= task.getDueDate() %>', '<%= task.getPriority() %>', '<%= statusName %>')">
                                     <div class="task-priority-indicator"></div>
                                     <div class="task-content">
                                         <h4 class="task-title"><%= task.getTitle() %></h4>
@@ -203,8 +251,8 @@
                                                 <i class="fas fa-flag"></i>
                                                 <%= task.getPriority() %>
                                             </span>
-                                            <span class="status-badge <%= task.getStatus().toLowerCase().replace(" ", "") %>">
-                                                <%= task.getStatus() %>
+                                            <span class="status-badge <%= statusName.toLowerCase().replace(" ", "") %>">
+                                                <%= statusName %>
                                             </span>
                                         </div>
                                     </div>
@@ -247,7 +295,7 @@
                     <div class="view-filters">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="todo">To Do</button>
-                        <button class="filter-btn" data-filter="progress">In Progress</button>
+                        <button class="filter-btn" data-filter="inprogress">In Progress</button>
                         <button class="filter-btn" data-filter="done">Done</button>
                     </div>
                 </div>
@@ -263,8 +311,11 @@
                         <% for (Board board : boards) {
                             List<Task> tasks = tasksMap.get(board.getBoardId());
                             if (tasks != null) {
-                                for (Task task : tasks) { %>
-                        <div class="table-row" data-status="<%= task.getStatus().toLowerCase().replace(" ", "") %>">
+                                for (Task task : tasks) { 
+                                    String statusName = statusMap.get(task.getStatusId());
+                                    if (statusName == null) statusName = "Unknown";
+                        %>
+                        <div class="table-row" data-status="<%= statusName.toLowerCase().replace(" ", "") %>">
                             <div class="task-info">
                                 <div class="task-indicator"></div>
                                 <div class="task-details">
@@ -286,9 +337,9 @@
                                 </span>
                             </div>
                             <div class="status-info">
-                                <span class="status-badge <%= task.getStatus().toLowerCase().replace(" ", "") %>">
+                                <span class="status-badge <%= statusName.toLowerCase().replace(" ", "") %>">
                                     <i class="fas fa-circle"></i>
-                                    <%= task.getStatus() %>
+                                    <%= statusName %>
                                 </span>
                             </div>
                         </div>
@@ -373,6 +424,56 @@
         </div>
     </div>
 
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Task</h3>
+                <span class="close" onclick="closeEditTaskModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editTaskForm" action="task" method="post">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="taskId" id="editTaskId">
+                    <div class="form-group">
+                        <label><i class="fas fa-heading"></i> Title:</label>
+                        <input type="text" name="title" id="editTaskTitle" placeholder="Enter task title..." required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Description:</label>
+                        <textarea name="description" id="editTaskDescription" placeholder="Enter task description..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Due Date:</label>
+                            <input type="date" name="dueDate" id="editTaskDueDate">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-flag"></i> Priority:</label>
+                            <select name="priority" id="editTaskPriority">
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tasks"></i> Status:</label>
+                        <select name="status" id="editTaskStatus">
+                            <option value="To Do">To Do</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditTaskModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div id="taskDetailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -398,11 +499,16 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <form action="task" method="post" onsubmit="return confirm('Are you sure you want to delete this task?')">
+                    <button type="button" class="btn btn-secondary" onclick="closeTaskDetailModal()">Close</button>
+                    <button type="button" class="btn btn-warning" onclick="editTaskFromDetail()">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <form action="task" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this task?')">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="taskId" id="taskDetailId">
-                        <button type="button" class="btn btn-secondary" onclick="closeTaskDetailModal()">Close</button>
-                        <button type="submit" class="btn btn-danger">Delete Task</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </form>
                 </div>
             </div>
@@ -425,6 +531,42 @@
         function closeAddTaskModal() {
             document.getElementById('addTaskModal').style.display = 'none';
         }
+        
+        // Edit Task Functions
+        function openEditTaskModal(taskId) {
+            // Fetch task data from server
+            fetch('task?action=getTask&taskId=' + taskId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('editTaskId').value = data.taskId;
+                    document.getElementById('editTaskTitle').value = data.title;
+                    document.getElementById('editTaskDescription').value = data.description;
+                    document.getElementById('editTaskDueDate').value = data.dueDate;
+                    document.getElementById('editTaskPriority').value = data.priority;
+                    
+                    // Set status based on statusId
+                    const statusSelect = document.getElementById('editTaskStatus');
+                    const statusMap = {1: 'To Do', 2: 'In Progress', 3: 'Done'};
+                    statusSelect.value = statusMap[data.statusId] || 'To Do';
+                    
+                    document.getElementById('editTaskModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching task data:', error);
+                    alert('Error loading task data');
+                });
+        }
+        
+        function closeEditTaskModal() {
+            document.getElementById('editTaskModal').style.display = 'none';
+        }
+        
+        function editTaskFromDetail() {
+            const taskId = document.getElementById('taskDetailId').value;
+            closeTaskDetailModal();
+            openEditTaskModal(taskId);
+        }
+        
         function openTaskDetailPopup(taskId, title, description, dueDate, priority, status) {
             document.getElementById('taskDetailId').value = taskId;
             document.getElementById('taskDetailTitle').innerText = title;
@@ -441,6 +583,7 @@
             if (event.target.classList.contains('modal')) {
                 closeAddBoardModal();
                 closeAddTaskModal();
+                closeEditTaskModal();
                 closeTaskDetailModal();
             }
         }

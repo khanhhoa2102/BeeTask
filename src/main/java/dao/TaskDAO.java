@@ -61,6 +61,33 @@ public class TaskDAO {
         }
     }
 
+    // Get task by ID for editing
+    public Task getTaskById(int taskId) {
+        String sql = "SELECT t.*, ts.Name as StatusName FROM Tasks t " +
+                     "INNER JOIN TaskStatuses ts ON t.StatusId = ts.StatusId " +
+                     "WHERE t.TaskId = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, taskId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Task task = mapResultSetToTask(rs);
+                task.setStatusName(rs.getString("StatusName"));
+                System.out.println("✅ Found task: " + task.getTitle());
+                return task;
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("❌ Error getting task by ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+
     // Delete task
     public void delete(int taskId) {
         String sql = "DELETE FROM Tasks WHERE TaskId = ?";
