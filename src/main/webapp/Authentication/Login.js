@@ -25,22 +25,24 @@ document.addEventListener("DOMContentLoaded", () => {
     emailInput.value = selectedAccount.email;
   }
 
-  // Auto-login with refresh token
-  if (sessionStorage.getItem("switchingInProgress")) {
+  // ✅ Auto-login when switching account (Google or Local)
+  const switching = sessionStorage.getItem("switchingInProgress");
+  if (switching) {
     sessionStorage.removeItem("switchingInProgress");
 
     const refreshToken = localStorage.getItem("switchGoogleRefreshToken");
-    const email = localStorage.getItem("switchGoogleEmail");
+    const googleEmail = localStorage.getItem("switchGoogleEmail");
+    const localEmail = localStorage.getItem("switchEmail");
+    const localPassword = localStorage.getItem("switchPassword");
 
-    if (refreshToken && email) {
+    if (refreshToken && googleEmail) {
+      // Auto-login via refresh token (Google)
       fetch(contextPath + "/refresh-token-login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body:
           "refreshToken=" + encodeURIComponent(refreshToken) +
-          "&email=" + encodeURIComponent(email)
+          "&email=" + encodeURIComponent(googleEmail)
       })
         .then((res) => {
           if (res.ok) {
@@ -57,6 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch((err) => {
           console.error("❌ Auto-login error:", err);
         });
+    } else if (localEmail && localPassword) {
+      // ✅ FIX: Auto-login for local account (bằng form.submit)
+      if (emailInput && passwordInput && loginForm) {
+        emailInput.value = localEmail;
+        passwordInput.value = localPassword;
+        localStorage.removeItem("switchEmail");
+        localStorage.removeItem("switchPassword");
+
+        setTimeout(() => {
+          showLoading();
+          loginForm.submit(); // 🔥 submit trực tiếp form
+        }, 500);
+      }
     }
   }
 
@@ -115,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
   emailInput.addEventListener("input", () => hideError("email"));
   passwordInput.addEventListener("input", () => hideError("password"));
 
-  // ✅ Form submission fix
+  // ✅ Form submission
   loginForm.addEventListener("submit", function (e) {
     const email = emailInput.value.trim();
     const password = passwordInput.value;
@@ -140,13 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isValid) {
       e.preventDefault(); // Prevent form submit only if invalid
     } else {
-      e.preventDefault(); // Prevent default first
+      e.preventDefault(); // Always prevent default first
       showLoading();
-
-      // ✅ Submit form manually
-      setTimeout(() => {
-        loginForm.submit();
-      }, 300); // Optional: short delay to show spinner
+      setTimeout(() => loginForm.submit(), 1000); // Delay optional
     }
   });
 
