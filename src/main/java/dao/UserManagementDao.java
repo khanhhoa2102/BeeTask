@@ -53,24 +53,26 @@ public class UserManagementDao {
         }
     }
 
-    private User mapRow(ResultSet rs) throws SQLException {
-        return new User(
-                rs.getInt("UserId"),
-                rs.getString("Username"),
-                rs.getString("Email"),
-                rs.getString("PasswordHash"),
-                rs.getString("AvatarUrl"),
-                rs.getString("PhoneNumber"),
-                rs.getDate("DateOfBirth"),
-                rs.getString("Gender"),
-                rs.getString("Address"),
-                rs.getString("LoginProvider"),
-                rs.getString("GoogleId"),
-                rs.getBoolean("IsEmailVerified"),
-                rs.getBoolean("IsActive"),
-                rs.getTimestamp("CreatedAt")
-        );
-    }
+   private User mapRow(ResultSet rs) throws SQLException {
+    return new User(
+            rs.getInt("UserId"),
+            rs.getString("Username"),
+            rs.getString("Email"),
+            rs.getString("PasswordHash"),
+            rs.getString("AvatarUrl"),
+            rs.getString("PhoneNumber"),
+            rs.getDate("DateOfBirth"),
+            rs.getString("Gender"),
+            rs.getString("Address"),
+            rs.getString("LoginProvider"),
+            rs.getString("GoogleId"),
+            rs.getBoolean("IsEmailVerified"),
+            rs.getBoolean("IsActive"),
+            rs.getTimestamp("CreatedAt"),
+            rs.getString("Role") 
+    );
+}
+
 
     public List<User> searchUsers(String keyword) {
     List<User> list = new ArrayList<>();

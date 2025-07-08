@@ -13,8 +13,6 @@ body.dashboard-body {
 }
 
 
-
-
 .container {
     display: flex;
     min-height: 100vh;
@@ -25,11 +23,6 @@ body.dashboard-body {
     background-color: #f5f5f5;
     padding: 2rem;
     overflow-y: auto;
-}
-
-/*  Profile */
-.user-profile {
-    margin-bottom: 2rem;
 }
 
 
@@ -44,16 +37,17 @@ body.dashboard-body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Project Header Card */
 .project-header-card {
     display: flex;
     gap: 1rem;
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     padding: 1rem;
     margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    border: 2px solid #cbd5e1;
 }
+
 
 .project-icon {
     font-size: 2rem;
@@ -127,19 +121,26 @@ body.dashboard-body {
 }
 
 /* Table Footer */
-.table-footer {
-    margin-top: 1rem;
-    background-color: #f0f0f0;
-    border-radius: 12px;
-    padding: 1rem;
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .table-stats {
     display: flex;
     gap: 2rem;
-    justify-content: space-around;
     font-size: 0.95rem;
+    flex-wrap: wrap;
 }
+
+/* Đảm bảo nút export không bị đẩy xuống khi co nhỏ */
+.export-btn {
+    white-space: nowrap;
+}
+
 
 /* Detail Table */
 .table-container {
@@ -166,23 +167,102 @@ body.dashboard-body {
     background-color: #ecf0f1;
     font-weight: bold;
 }
-.sidebar {
-    width: 250px;
-   background-color: #111726 !important;
-    color: #fff !important;
-    padding: 20px;
-    box-sizing: border-box;
-    min-height: 100vh;
+
+
+.filters {
+    margin-bottom: 10px;
     display: flex;
-    flex-direction: column;
-    gap: 1rem; /* Nếu muốn giãn cách các khối */
+    gap: 10px;
+}
+.filters input, .filters select {
+    padding: 5px;
+    font-size: 14px;
 }
 
-.sidebar .menu li {
-    color: #ffffff !important;
+.calendar td {
+    display: table-cell !important;
 }
 
-.sidebar .menu li a {
-    color: #ffffff !important;
-    text-decoration: none;
+
+
+
+
+
+
+
+
+
+
+
+/* === DARK MODE SUPPORT === */
+body.dark-mode {
+    background-color: #0f172a;
+    color: #e2e8f0;
+}
+
+body.dark-mode .main-content {
+    background-color: #0f172a;
+}
+
+body.dark-mode .calendar-box,
+body.dark-mode .project-header-card,
+body.dark-mode .table-footer,
+body.dark-mode .table-container {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+     border: 2px solid #475569;
+}
+
+body.dark-mode .project-title,
+body.dark-mode .project-description,
+body.dark-mode .project-meta,
+body.dark-mode .table-stats,
+body.dark-mode .task-row td {
+    color: #e2e8f0;
+}
+
+body.dark-mode .calendar th {
+    background-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .calendar td {
+    border-color: #475569;
+    color: #cbd5e1;
+}
+
+body.dark-mode .search-box input,
+body.dark-mode .filter-select {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+
+body.dark-mode .export-btn,
+body.dark-mode .refresh-btn,
+body.dark-mode .detail-btn {
+    background-color: #3b82f6;
+    color: white;
+}
+
+body.dark-mode .export-btn:hover,
+body.dark-mode .refresh-btn:hover,
+body.dark-mode .detail-btn:hover {
+    background-color: #2563eb;
+}
+
+/* Optional: hide border for cleaner dark mode */
+body.dark-mode .calendar th,
+body.dark-mode .calendar td {
+    border-color: #334155;
+}
+
+
+
+
+
+.project-block {
+    margin-bottom: 3rem;
 }
