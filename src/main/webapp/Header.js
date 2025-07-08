@@ -130,3 +130,17 @@ function markAllUnread(event) {
     fetch(`${contextPath}/notifications?action=markAllUnread`)
         .then(() => loadNotifications());
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -139,6 +139,13 @@ public class UserDAO {
         user.setEmailVerified(rs.getBoolean("IsEmailVerified"));
         user.setActive(rs.getBoolean("IsActive"));
         user.setCreatedAt(rs.getTimestamp("CreatedAt"));
+       
+        
+
+// QUAN TRỌNG: thêm dòng này để gán Role từ CSDL
+    user.setRole(rs.getString("Role"));
+        
+        
         return user;
     }
 
