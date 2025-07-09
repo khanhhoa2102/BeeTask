@@ -1,294 +1,509 @@
-// Toggle dark mode
-document.getElementById('darkModeToggle').addEventListener('change', function () {
-    document.body.classList.toggle('dark-mode');
-});
-
-
-// Toggle sidebar collapse
-document.querySelector('.toggle-btn').addEventListener('click', function () {
-    document.querySelector('.sidebar').classList.toggle('collapsed');
-});
-
-// Toggle board collapse
-document.querySelectorAll('.collapse-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const column = this.closest('.task-column');
-        column.classList.toggle('collapsed');
-    });
-});
-
-// Popup handling for List actions
-const listActionsPopup = document.getElementById('taskPopup');
-const addTaskPopup = document.getElementById('addTaskPopup');
-const taskDetailPopup = document.getElementById('taskDetailPopup');
-
-// Mở popup List actions khi nhấn nút 3 chấm
-document.querySelectorAll('.menu-btn').forEach(btn => {
-    btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        listActionsPopup.style.display = 'block';
-        const rect = btn.getBoundingClientRect();
-        const popupWidth = 200;
-        const windowWidth = window.innerWidth;
-        let left = rect.left + window.scrollX;
-        if (left + popupWidth > windowWidth) {
-            left = rect.left + window.scrollX - popupWidth + btn.offsetWidth;
-        }
-        listActionsPopup.style.top = `${rect.bottom + window.scrollY + 5}px`;
-        listActionsPopup.style.left = `${left}px`;
-    });
-});
-
-// Đóng popup List actions khi nhấn nút close
-document.querySelector('#taskPopup .popup-close').addEventListener('click', function () {
-    listActionsPopup.style.display = 'none';
-});
-
-// Đóng popup List actions khi nhấn bên ngoài menu
-document.addEventListener('click', function (e) {
-    if (!listActionsPopup.contains(e.target) && !e.target.closest('.menu-btn')) {
-        listActionsPopup.style.display = 'none';
+// Enhanced TaskScript.js for BeeTask
+document.addEventListener("DOMContentLoaded", () => {
+  class TaskManager {
+    constructor() {
+      this.currentTheme = localStorage.getItem("theme") || "light-mode"
+      this.currentView = localStorage.getItem("boardView") || "grid"
+      this.init()
     }
-});
 
-// Mở popup Add Task khi nhấn "Add Tasks"
-document.querySelector('#taskPopup .dropdown-item[data-action="add-tasks"]').addEventListener('click', function () {
-    listActionsPopup.style.display = 'none';
-    addTaskPopup.style.display = 'block';
-});
+    init() {
+      this.applyTheme(this.currentTheme)
+      this.applyView(this.currentView)
+      this.bindEvents()
+      this.updateStats()
+      this.updateBoardCounters()
+      this.initializeSortable()
+    }
 
-// Đóng popup Add Task khi nhấn nút close
-document.querySelector('#addTaskPopup .popup-close').addEventListener('click', function () {
-    addTaskPopup.style.display = 'none';
-});
+    bindEvents() {
+      // Dark mode toggle
+      const themeToggle = document.getElementById("darkModeToggle")
+      if (themeToggle) {
+        themeToggle.checked = this.currentTheme === "dark-mode"
+        themeToggle.addEventListener("change", () => {
+          const isDark = themeToggle.checked
+          const newTheme = isDark ? "dark-mode" : "light-mode"
+          this.applyTheme(newTheme)
+          localStorage.setItem("theme", newTheme)
+        })
+      }
 
-// Đóng popup Add Task khi nhấn Cancel
-document.querySelector('#addTaskPopup .cancel-btn').addEventListener('click', function () {
-    addTaskPopup.style.display = 'none';
-});
+      // Search functionality
+      const boardSearch = document.getElementById("boardSearch")
+      if (boardSearch) {
+        boardSearch.addEventListener("input", (e) => this.handleBoardSearch(e.target.value))
+      }
 
-// Đóng popup Add Task khi nhấn Add Task (tạm thời)
-document.querySelector('#addTaskPopup .add-btn').addEventListener('click', function () {
-    addTaskPopup.style.display = 'none';
-});
+      const searchInput = document.getElementById("searchInput")
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => this.handleTaskSearch(e.target.value))
+      }
 
-// Tạo bảng trống "Title" khi nhấn "Add Board"
-document.querySelector('#addBoardBtn').addEventListener('click', function () {
-    const taskStatusContainer = document.querySelector('.task-status-container');
-    const newBoard = document.createElement('div');
-    newBoard.className = 'task-column';
-    newBoard.innerHTML = `
-        <h3>
-            <div class="board-detail">
-                <span class="board-title" contenteditable="false">Title</span>
-                <span class="task-count">(0)</span>
-            </div>
-            <span>
-                <button class="collapse-btn"><i class="fas fa-chevron-up"></i></button>
-                <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </span>
-        </h3>
-    `;
-    taskStatusContainer.appendChild(newBoard);
-    newBoard.querySelector('.collapse-btn').addEventListener('click', function () {
-        const column = this.closest('.task-column');
-        column.classList.toggle('collapsed');
-    });
-    newBoard.querySelector('.menu-btn').addEventListener('click', function (e) {
-        e.preventDefault();
-        listActionsPopup.style.display = 'block';
-        const rect = this.getBoundingClientRect();
-        const popupWidth = 200;
-        const windowWidth = window.innerWidth;
-        let left = rect.left + window.scrollX;
-        if (left + popupWidth > windowWidth) {
-            left = rect.left + window.scrollX - popupWidth + this.offsetWidth;
+      // View toggle buttons
+      document.querySelectorAll(".view-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => this.handleViewToggle(e.target))
+      })
+
+      // Filter buttons
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => this.handleFilter(e.target))
+      })
+
+      // Board menu toggles
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".board-menu")) {
+          document.querySelectorAll(".board-dropdown").forEach((dropdown) => {
+            dropdown.style.display = "none"
+          })
         }
-        listActionsPopup.style.top = `${rect.bottom + window.scrollY + 5}px`;
-        listActionsPopup.style.left = `${left}px`;
-    });
-    const newBoardTitle = newBoard.querySelector('.board-title');
-    newBoardTitle.addEventListener('click', enableBoardTitleEdit);
-    newBoardTitle.addEventListener('blur', saveBoardTitle);
-    newBoardTitle.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            this.blur();
+      })
+
+      // Modal close on outside click
+      window.addEventListener("click", (event) => {
+        if (event.target.classList.contains("modal")) {
+          this.closeAllModals()
         }
-    });
-    taskStatusContainer.scrollLeft = taskStatusContainer.scrollWidth;
-});
+      })
 
-function enableBoardTitleEdit() {
-    this.setAttribute('contenteditable', 'true');
-    this.focus();
-}
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => this.handleKeyboardShortcuts(e))
+    }
 
-function saveBoardTitle() {
-    this.setAttribute('contenteditable', 'false');
-    let newTitle = this.textContent.trim();
-    if (!newTitle) this.textContent = 'Untitled';
-}
+    applyTheme(theme) {
+      document.body.classList.toggle("dark-mode", theme === "dark-mode")
+      this.currentTheme = theme
+    }
 
-document.querySelectorAll('.board-title').forEach(title => {
-    title.addEventListener('click', enableBoardTitleEdit);
-    title.addEventListener('blur', saveBoardTitle);
-    title.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            this.blur();
+    applyView(view) {
+      const container = document.getElementById("boardsContainer")
+      if (container) {
+        container.className = `boards-container ${view}-view`
+
+        // Update view buttons
+        document.querySelectorAll(".view-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.view === view)
+        })
+      }
+      this.currentView = view
+    }
+
+    handleViewToggle(button) {
+      const view = button.dataset.view
+      this.applyView(view)
+      localStorage.setItem("boardView", view)
+    }
+
+    handleBoardSearch(query) {
+      const searchTerm = query.toLowerCase().trim()
+      document.querySelectorAll(".board-card:not(.add-board-card)").forEach((card) => {
+        const title = card.querySelector(".board-title")?.textContent.toLowerCase() || ""
+        const match = !searchTerm || title.includes(searchTerm)
+        card.style.display = match ? "block" : "none"
+      })
+    }
+
+    handleTaskSearch(query) {
+      const searchTerm = query.toLowerCase().trim()
+      document.querySelectorAll(".task-card").forEach((card) => {
+        const title = card.querySelector(".task-title")?.textContent.toLowerCase() || ""
+        const desc = card.querySelector(".task-description")?.textContent.toLowerCase() || ""
+        const match = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm)
+        card.style.display = match ? "block" : "none"
+      })
+
+      document.querySelectorAll(".table-row").forEach((row) => {
+        const title = row.querySelector(".task-details h4")?.textContent.toLowerCase() || ""
+        const match = !searchTerm || title.includes(searchTerm)
+        row.style.display = match ? "grid" : "none"
+      })
+
+      this.updateBoardCounters()
+    }
+
+    handleFilter(btn) {
+      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"))
+      btn.classList.add("active")
+
+      const filter = btn.dataset.filter
+      document.querySelectorAll(".table-row").forEach((row) => {
+        const status = (row.dataset.status || "").toLowerCase()
+        row.style.display = filter === "all" || status === filter ? "grid" : "none"
+      })
+    }
+
+    handleKeyboardShortcuts(e) {
+      // Ctrl/Cmd + K for search
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault()
+        const searchInput = document.getElementById("boardSearch") || document.getElementById("searchInput")
+        if (searchInput) {
+          searchInput.focus()
         }
-    });
-});
+      }
 
-// Mở popup Task Detail khi nhấp vào task card hoặc task row
-document.querySelectorAll('.task-card, .task-row').forEach(element => {
-    element.addEventListener('click', function (e) {
-        e.preventDefault();
-        taskDetailPopup.style.display = 'block';
+      // Escape to close modals
+      if (e.key === "Escape") {
+        this.closeAllModals()
+      }
 
-        let taskTitle, taskDescription, taskDate, priority, assignee, deadline, labels;
+      // Ctrl/Cmd + B for new board
+      if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+        e.preventDefault()
+        window.openAddBoardModal() // Assuming openAddBoardModal is a global function
+      }
+    }
 
-        if (element.classList.contains('task-card')) {
-            taskTitle = element.querySelector('.task-title')?.textContent || 'Untitled Task';
-            taskDescription = element.getAttribute('data-description') || 'Add detailed description ...';
-            taskDate = element.querySelector('.task-date')?.textContent || 'No Date';
-            deadline = element.getAttribute('data-deadline') || 'May 11, 2025 7:30 PM';
-            assignee = element.getAttribute('data-assignee') || 'Nguyenhuongsa62@gmail';
-            priority = element.getAttribute('data-priority') || 'High';
-            labels = element.getAttribute('data-labels') || '#FF4500'; // Lưu màu thay vì tên
-        } else if (element.classList.contains('task-row')) {
-            const cells = element.querySelectorAll('.task-cell');
-            taskTitle = cells[0]?.textContent || 'Untitled Task';
-            priority = cells[1]?.querySelector('.priority')?.textContent || 'Low';
-            taskDate = cells[2]?.textContent || 'No Date';
-            taskDescription = element.getAttribute('data-description') || 'Add detailed description ...';
-            deadline = element.getAttribute('data-deadline') || 'May 11, 2025 7:30 PM';
-            assignee = element.getAttribute('data-assignee') || 'Nguyenhuongsa62@gmail';
-            labels = element.getAttribute('data-labels') || '#FF4500'; // Lưu màu thay vì tên
+    updateStats() {
+      const totalTasks = document.querySelectorAll(".task-card").length
+      const pendingTasks = document.querySelectorAll(
+        ".task-card .status-badge.todo, .task-card .status-badge.inprogress",
+      ).length
+      const completedTasks = document.querySelectorAll(".task-card .status-badge.done").length
+
+      const totalEl = document.getElementById("totalTasks")
+      const pendingEl = document.getElementById("pendingTasks")
+      const completedEl = document.getElementById("completedTasks")
+
+      if (totalEl) totalEl.textContent = totalTasks
+      if (pendingEl) pendingEl.textContent = pendingTasks
+      if (completedEl) completedEl.textContent = completedTasks
+    }
+
+    updateBoardCounters() {
+      document.querySelectorAll(".board-card:not(.add-board-card)").forEach((board) => {
+        const visibleTasks = board.querySelectorAll('.task-card:not([style*="display: none"])').length
+        const totalTasks = board.querySelectorAll(".task-card").length
+        const completedTasks = board.querySelectorAll(".task-card .status-badge.done").length
+
+        const counter = board.querySelector(".task-count")
+        const progressFill = board.querySelector(".progress-fill")
+        const progressText = board.querySelector(".progress-text")
+
+        if (counter) {
+          counter.textContent = visibleTasks
         }
 
-        const titleInput = document.querySelector('.task-title-input');
-        const descriptionInput = document.querySelector('.task-description-input');
-        const labelsValue = document.querySelector('#taskDetailPopup .task-detail-values [data-type="labels"] .value');
-        const deadlineValue = document.querySelector('#taskDetailPopup .task-detail-values [data-type="deadline"] .value');
-        const assigneeValue = document.querySelector('#taskDetailPopup .task-detail-values [data-type="assignee"] .value');
-        const priorityValue = document.querySelector('#taskDetailPopup .task-detail-values [data-type="priority"] .value');
-
-        titleInput.value = taskTitle;
-        descriptionInput.value = taskDescription;
-
-        const dueDate = new Date(deadline);
-        const currentDate = new Date('May 28, 2025 22:44:00 +07'); // 10:44 PM +07
-
-        // Đảm bảo chỉ hiển thị một ô màu duy nhất trong .value
-        labelsValue.innerHTML = ''; // Xóa toàn bộ nội dung cũ
-        const selectedLabel = document.createElement('span');
-        selectedLabel.className = 'selected-label';
-        selectedLabel.style.backgroundColor = labels;
-        selectedLabel.setAttribute('data-color', labels);
-        labelsValue.appendChild(selectedLabel);
-        selectedLabel.addEventListener('click', function () {
-            document.querySelector('.labels-dropdown').style.display = 'block';
-        });
-
-        // Cập nhật các giá trị khác, không có icon
-        deadlineValue.textContent = dueDate.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) + (dueDate < currentDate ? ' (Overdue)' : '');
-        assigneeValue.textContent = assignee;
-        priorityValue.textContent = priority;
-    });
-});
-
-// Xử lý hiển thị/ẩn dropdown khi nhấn nút Labels
-document.querySelector('.labels-btn').addEventListener('click', function (e) {
-    e.preventDefault();
-    const dropdown = document.querySelector('.labels-dropdown');
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-});
-
-// Đóng dropdown khi nhấn nút close
-document.querySelector('.labels-dropdown .dropdown-close').addEventListener('click', function () {
-    const dropdown = document.querySelector('.labels-dropdown');
-    dropdown.style.display = 'none';
-});
-
-// Xử lý chọn nhãn
-document.querySelectorAll('.label-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', function () {
-        const color = this.getAttribute('data-color');
-        const labelsValue = document.querySelector('#taskDetailPopup .task-detail-values [data-type="labels"] .value');
-        if (this.checked) {
-            // Xóa tất cả checkbox khác và chỉ giữ một màu
-            document.querySelectorAll('.label-checkbox').forEach(cb => {
-                if (cb !== this) cb.checked = false;
-            });
-            labelsValue.innerHTML = ''; // Xóa toàn bộ nội dung cũ
-            const selectedLabel = document.createElement('span');
-            selectedLabel.className = 'selected-label';
-            selectedLabel.style.backgroundColor = color;
-            selectedLabel.setAttribute('data-color', color);
-            labelsValue.appendChild(selectedLabel);
-        } else {
-            labelsValue.innerHTML = ''; // Nếu không chọn, xóa ô màu
+        if (progressFill && progressText) {
+          const percentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
+          progressFill.style.width = `${percentage}%`
+          progressText.textContent = `${completedTasks}/${totalTasks}`
         }
-        document.querySelector('.labels-dropdown').style.display = 'none';
-    });
-});
+      })
+    }
 
-// Xử lý thêm nhãn mới
-document.querySelector('.add-label-btn').addEventListener('click', function () {
-    const input = document.querySelector('.add-label-input');
-    const color = input.value;
-    if (color) {
-        const dropdownContent = document.querySelector('.labels-dropdown .dropdown-content');
-        const newLabel = document.createElement('label');
-        newLabel.className = 'dropdown-item';
-        newLabel.innerHTML = `<input type="checkbox" class="label-checkbox" data-color="${color}"><span class="color-box" style="background-color: ${color};"></span>`;
-        dropdownContent.insertBefore(newLabel, document.querySelector('.add-label'));
+    initializeSortable() {
+      // Load SortableJS
+      const Sortable = window.Sortable // Assuming Sortable is available globally
+      if (typeof Sortable === "undefined") {
+        const script = document.createElement("script")
+        script.src = "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
+        script.onload = () => this.setupSortable()
+        document.head.appendChild(script)
+      } else {
+        this.setupSortable()
+      }
+    }
 
-        // Thêm sự kiện cho nhãn mới
-        newLabel.querySelector('.label-checkbox').addEventListener('change', function () {
-            const selectedColor = this.getAttribute('data-color');
-            const labelsValue = document.querySelector('#taskDetailPopup .task-detail-values [data-type="labels"] .value');
-            if (this.checked) {
-                document.querySelectorAll('.label-checkbox').forEach(cb => {
-                    if (cb !== this) cb.checked = false;
-                });
-                labelsValue.innerHTML = ''; // Xóa toàn bộ nội dung cũ
-                const selectedLabel = document.createElement('span');
-                selectedLabel.className = 'selected-label';
-                selectedLabel.style.backgroundColor = selectedColor;
-                selectedLabel.setAttribute('data-color', selectedColor);
-                labelsValue.appendChild(selectedLabel);
+    setupSortable() {
+      // Drag tasks between boards
+      document.querySelectorAll(".board-tasks").forEach((board) => {
+        new window.Sortable(board, {
+          group: "shared",
+          animation: 150,
+          ghostClass: "sortable-ghost",
+          chosenClass: "sortable-chosen",
+          dragClass: "sortable-drag",
+          onStart: (evt) => {
+            document.querySelectorAll(".board-tasks").forEach((b) => {
+              b.classList.add("drag-over")
+            })
+          },
+          onEnd: (evt) => {
+            document.querySelectorAll(".board-tasks").forEach((b) => {
+              b.classList.remove("drag-over")
+            })
+
+            const taskId = evt.item.getAttribute("data-task-id")
+            const newBoardId = evt.to.closest(".board-card").getAttribute("data-board-id")
+            const newIndex = evt.newIndex
+
+            // Update task position via AJAX
+            fetch("task?action=move", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: `taskId=${taskId}&newBoardId=${newBoardId}&newIndex=${newIndex}`,
+            })
+              .then((response) => {
+                if (response.ok) {
+                  this.updateBoardCounters()
+                  this.showNotification("Task moved successfully", "success")
+                } else {
+                  this.showNotification("Error moving task", "error")
+                }
+              })
+              .catch((err) => {
+                console.error("Error moving task:", err)
+                this.showNotification("Error moving task", "error")
+              })
+          },
+        })
+      })
+
+      // Drag boards to reorder
+      const boardsContainer = document.getElementById("boardsContainer")
+      if (boardsContainer) {
+        new window.Sortable(boardsContainer, {
+          animation: 200,
+          filter: ".add-board-card",
+          onEnd: (evt) => {
+            const boardCards = document.querySelectorAll(".boards-container .board-card:not(.add-board-card)")
+            const updates = []
+
+            boardCards.forEach((card, index) => {
+              const boardId = card.getAttribute("data-board-id")
+              updates.push(`boardIds[]=${boardId}&positions[]=${index}`)
+            })
+
+            fetch("board?action=moveBoardPosition", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: updates.join("&"),
+            })
+              .then((response) => {
+                if (response.ok) {
+                  this.showNotification("Board order updated", "success")
+                } else {
+                  this.showNotification("Error updating board order", "error")
+                }
+              })
+              .catch((err) => {
+                console.error("Error moving board:", err)
+                this.showNotification("Error updating board order", "error")
+              })
+          },
+        })
+      }
+    }
+
+    showNotification(message, type = "info") {
+      // Create notification element
+      const notification = document.createElement("div")
+      notification.className = `notification notification-${type}`
+      notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-${type === "success" ? "check-circle" : type === "error" ? "exclamation-circle" : "info-circle"}"></i>
+                    <span>${message}</span>
+                </div>
+            `
+
+      // Add to page
+      document.body.appendChild(notification)
+
+      // Show notification
+      setTimeout(() => notification.classList.add("show"), 100)
+
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.classList.remove("show")
+        setTimeout(() => notification.remove(), 300)
+      }, 3000)
+    }
+
+    closeAllModals() {
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.style.display = "none"
+      })
+    }
+
+    // Board management functions
+    editBoard(boardId, currentName) {
+      const newName = prompt("Enter new board name:", currentName)
+      if (newName && newName.trim() !== "" && newName !== currentName) {
+        fetch("board?action=edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `boardId=${boardId}&name=${encodeURIComponent(newName.trim())}`,
+        })
+          .then((response) => {
+            if (response.ok) {
+              location.reload() // Refresh to show changes
             } else {
-                labelsValue.innerHTML = ''; // Nếu không chọn, xóa ô màu
+              this.showNotification("Error updating board name", "error")
             }
-            document.querySelector('.labels-dropdown').style.display = 'none';
-        });
-        input.value = '#FF4500'; // Reset về màu mặc định
+          })
+          .catch((err) => {
+            console.error("Error editing board:", err)
+            this.showNotification("Error updating board name", "error")
+          })
+      }
     }
-});
 
-// Đóng dropdown khi nhấn bên ngoài
-document.addEventListener('click', function (e) {
-    const dropdown = document.querySelector('.labels-dropdown');
-    const labelsBtn = document.querySelector('.labels-btn');
-    if (!dropdown.contains(e.target) && !labelsBtn.contains(e.target)) {
-        dropdown.style.display = 'none';
+    duplicateBoard(boardId) {
+      if (confirm("Duplicate this board with all its tasks?")) {
+        fetch("board?action=duplicate", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `boardId=${boardId}`,
+        })
+          .then((response) => {
+            if (response.ok) {
+              location.reload() // Refresh to show new board
+            } else {
+              this.showNotification("Error duplicating board", "error")
+            }
+          })
+          .catch((err) => {
+            console.error("Error duplicating board:", err)
+            this.showNotification("Error duplicating board", "error")
+          })
+      }
     }
-});
+  }
 
-// Đóng popup Task Detail khi nhấn nút close
-document.querySelector('#taskDetailPopup .popup-close').addEventListener('click', function () {
-    taskDetailPopup.style.display = 'none';
-});
+  // Initialize TaskManager
+  const taskManager = new TaskManager()
 
-// Đóng popup khi nhấn bên ngoài
-document.addEventListener('click', function (e) {
-    if (!taskDetailPopup.contains(e.target) && !e.target.closest('.task-card') && !e.target.closest('.task-row')) {
-        taskDetailPopup.style.display = 'none';
+  // Global functions for JSP compatibility
+  window.toggleBoardMenu = (button) => {
+    const dropdown = button.parentElement.querySelector(".board-dropdown")
+    const isVisible = dropdown.style.display === "block"
+
+    // Close all other dropdowns
+    document.querySelectorAll(".board-dropdown").forEach((d) => {
+      d.style.display = "none"
+    })
+
+    // Toggle current dropdown
+    dropdown.style.display = isVisible ? "none" : "block"
+  }
+
+  window.editBoard = (boardId, currentName) => {
+    taskManager.editBoard(boardId, currentName)
+  }
+
+  window.duplicateBoard = (boardId) => {
+    taskManager.duplicateBoard(boardId)
+  }
+
+  window.toggleViewMode = () => {
+    const newView = taskManager.currentView === "grid" ? "list" : "grid"
+    taskManager.applyView(newView)
+    localStorage.setItem("boardView", newView)
+
+    // Update button text
+    const viewModeText = document.getElementById("viewModeText")
+    const viewModeIcon = document.getElementById("viewModeIcon")
+    if (viewModeText && viewModeIcon) {
+      viewModeText.textContent = newView === "grid" ? "Grid View" : "List View"
+      viewModeIcon.className = newView === "grid" ? "fas fa-th-large" : "fas fa-list"
     }
-    if (!addTaskPopup.contains(e.target) && !e.target.closest('.dropdown-item[data-action="add-tasks"]')) {
-        addTaskPopup.style.display = 'none';
+  }
+
+  window.openAddBoardModal = () => {
+    document.getElementById("addBoardModal").style.display = "block"
+  }
+
+  window.closeAddBoardModal = () => {
+    document.getElementById("addBoardModal").style.display = "none"
+  }
+
+  window.openAddTaskModal = (boardId) => {
+    document.getElementById("addTaskModal").style.display = "block"
+    document.getElementById("taskBoardId").value = boardId
+  }
+
+  window.closeAddTaskModal = () => {
+    document.getElementById("addTaskModal").style.display = "none"
+  }
+
+  window.openTaskDetailPopup = (taskId, title, description, dueDate, priority, status) => {
+    document.getElementById("taskDetailId").value = taskId
+    document.getElementById("taskDetailTitle").innerText = title
+    document.getElementById("taskDetailDescription").innerText = description
+    document.getElementById("taskDetailDueDate").innerText = dueDate
+    document.getElementById("taskDetailPriority").innerText = priority
+    document.getElementById("taskDetailStatus").innerText = status
+    document.getElementById("taskDetailModal").style.display = "block"
+  }
+
+  window.closeTaskDetailModal = () => {
+    document.getElementById("taskDetailModal").style.display = "none"
+  }
+  
+    window.openEditTaskModal = (taskId) => {
+    // This function is defined in the JSP file
+    if (typeof openEditTaskModal === 'function') {
+      openEditTaskModal(taskId)
     }
-});
+  }
+
+  window.closeEditTaskModal = () => {
+    document.getElementById("editTaskModal").style.display = "none"
+  }
+
+  console.log("✅ Enhanced TaskScript.js initialized successfully.")
+})
+
+// Add notification styles dynamically
+const notificationStyles = `
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        border-left: 4px solid #3b82f6;
+        max-width: 300px;
+    }
+
+    .notification.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .notification-success {
+        border-left-color: #10b981;
+    }
+
+    .notification-error {
+        border-left-color: #ef4444;
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .notification-success .notification-content i {
+        color: #10b981;
+    }
+
+    .notification-error .notification-content i {
+        color: #ef4444;
+    }
+
+    .notification-info .notification-content i {
+        color: #3b82f6;
+    }
+
+    body.dark-mode .notification {
+        background: #1e293b;
+        color: #f8fafc;
+        border-left-color: #3b82f6;
+    }
+`
+
+// Inject notification styles
+const styleSheet = document.createElement("style")
+styleSheet.textContent = notificationStyles
+document.head.appendChild(styleSheet)

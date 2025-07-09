@@ -1,4 +1,3 @@
-
 package model;
 
 import java.sql.Timestamp;
@@ -7,9 +6,13 @@ public class Project {
     private int projectId;
     private String name;
     private String description;
-    private int createdBy;
+    private int createdBy;  // Changed from String to int to match database
     private Timestamp createdAt;
 
+    // Default constructor
+    public Project() {}
+
+    // Full constructor
     public Project(int projectId, String name, String description, int createdBy, Timestamp createdAt) {
         this.projectId = projectId;
         this.name = name;
@@ -18,6 +21,7 @@ public class Project {
         this.createdAt = createdAt;
     }
 
+    // Getters and Setters
     public int getProjectId() {
         return projectId;
     }
@@ -60,8 +64,12 @@ public class Project {
 
     @Override
     public String toString() {
-        return "Project{" + "projectId=" + projectId + ", name=" + name + ", description=" + description + ", createdBy=" + createdBy + ", createdAt=" + createdAt + '}';
+        return "Project{" +
+                "projectId=" + projectId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", createdBy=" + createdBy +
+                ", createdAt=" + createdAt +
+                '}';
     }
-    
-    
 }

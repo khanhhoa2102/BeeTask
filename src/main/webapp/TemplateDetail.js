@@ -1,155 +1,129 @@
-// Simple Template Detail Manager - Basic functionality only
-class TemplateDetailManager {
+// TaskScript.js - Full Version for BeeTask
+
+class TaskManager {
     constructor() {
-        this.currentTheme = localStorage.getItem("theme") || "light"
+        this.currentTheme = localStorage.getItem("theme") || "light-mode"
         this.init()
     }
 
     init() {
-        // Apply saved theme
         this.applyTheme(this.currentTheme)
 
-        // Get elements
+        // Elements
         this.searchInput = document.getElementById("searchInput")
-        this.themeToggle = document.getElementById("themeToggle")
+        this.themeToggle = document.getElementById("darkModeToggle")
 
-        // Bind events
         this.bindEvents()
-
-        // Update stats
         this.updateStats()
+        this.updateBoardCounters()
     }
 
     bindEvents() {
-        // Theme toggle
+        // Dark mode toggle
         if (this.themeToggle) {
-            this.themeToggle.addEventListener("click", () => this.toggleTheme())
+            this.themeToggle.checked = this.currentTheme === "dark-mode"
+            this.themeToggle.addEventListener("change", () => {
+                const isDark = this.themeToggle.checked
+                const newTheme = isDark ? "dark-mode" : "light-mode"
+                this.applyTheme(newTheme)
+                localStorage.setItem("theme", newTheme)
+            })
         }
 
-        // Search functionality
+        // Search
         if (this.searchInput) {
             this.searchInput.addEventListener("input", (e) => this.handleSearch(e.target.value))
         }
 
-        // Filter buttons
-        document.querySelectorAll(".filter-btn").forEach((btn) => {
+        // Filter
+        document.querySelectorAll(".filter-btn").forEach(btn => {
             btn.addEventListener("click", (e) => this.handleFilter(e.target))
         })
     }
 
-    // Theme Management
-    toggleTheme() {
-        this.currentTheme = this.currentTheme === "light" ? "dark" : "light"
-        this.applyTheme(this.currentTheme)
-        localStorage.setItem("theme", this.currentTheme)
-    }
-
     applyTheme(theme) {
-        document.body.classList.remove("theme-light", "theme-dark")
-        document.body.classList.add(`theme-${theme}`)
-        if (theme === "dark") {
-            document.body.classList.add("dark-mode")
-        } else {
-            document.body.classList.remove("dark-mode")
-        }
+        document.body.classList.toggle("dark-mode", theme === "dark-mode")
     }
 
-    // Search Functionality
     handleSearch(query) {
         const searchTerm = query.toLowerCase().trim()
 
-        // Search in task cards
-        document.querySelectorAll(".task-card").forEach((card) => {
-            const title = card.querySelector(".task-title")?.textContent.toLowerCase() || ""
-            const description = card.querySelector(".task-description")?.textContent.toLowerCase() || ""
-            const isMatch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm)
-
-            card.style.display = isMatch ? "block" : "none"
+        // Task cards
+        document.querySelectorAll(".task-card").forEach(card => {
+            const title = card.querySelector("h4")?.textContent.toLowerCase() || ""
+            const desc = card.querySelector("p")?.textContent.toLowerCase() || ""
+            const match = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm)
+            card.style.display = match ? "block" : "none"
         })
 
-        // Search in overview rows
-        document.querySelectorAll(".table-row").forEach((row) => {
-            const title = row.querySelector(".task-details h4")?.textContent.toLowerCase() || ""
-            const description = row.querySelector(".task-details p")?.textContent.toLowerCase() || ""
-            const isMatch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm)
-
-            row.style.display = isMatch ? "grid" : "none"
+        // Table rows
+        document.querySelectorAll(".table-row").forEach(row => {
+            const title = row.querySelector("div:first-child")?.textContent.toLowerCase() || ""
+            const match = !searchTerm || title.includes(searchTerm)
+            row.style.display = match ? "grid" : "none"
         })
 
-        // Update board counters
         this.updateBoardCounters()
     }
 
-    // Filter Functionality
-    handleFilter(button) {
-        // Update active state
-        document.querySelectorAll(".filter-btn").forEach((btn) => {
-            btn.classList.remove("active")
-        })
-        button.classList.add("active")
+    handleFilter(btn) {
+        // UI highlight
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"))
+        btn.classList.add("active")
 
-        // Apply filter (basic implementation)
-        const filter = button.dataset.filter
-        document.querySelectorAll(".table-row").forEach((row) => {
-            const status = row.dataset.status || "todo"
-            const shouldShow = filter === "all" || status === filter
-            row.style.display = shouldShow ? "grid" : "none"
+        const filter = btn.dataset.filter
+        document.querySelectorAll(".table-row").forEach(row => {
+            const status = (row.dataset.status || "").toLowerCase()
+            row.style.display = filter === "all" || status === filter ? "grid" : "none"
         })
     }
 
-    // Update Stats
     updateStats() {
         const totalTasks = document.querySelectorAll(".task-card").length
-        const pendingTasks = document.querySelectorAll(".task-card").length // Simplified
+        const pendingTasks = document.querySelectorAll('.task-card[data-status="To Do"], .task-card[data-status="In Progress"]').length
 
-        const totalTasksEl = document.getElementById("totalTasks")
-        const pendingTasksEl = document.getElementById("pendingTasks")
+        const totalEl = document.getElementById("totalTasks")
+        const pendingEl = document.getElementById("pendingTasks")
 
-        if (totalTasksEl)
-            totalTasksEl.textContent = totalTasks
-        if (pendingTasksEl)
-            pendingTasksEl.textContent = pendingTasks
+        if (totalEl) totalEl.textContent = totalTasks
+        if (pendingEl) pendingEl.textContent = pendingTasks
     }
 
-    // Update Board Counters
     updateBoardCounters() {
-        document.querySelectorAll(".board-card").forEach((board) => {
-            const visibleTasks = board.querySelectorAll('.task-card:not([style*="display: none"])')
+        document.querySelectorAll(".board-card").forEach(board => {
+            const visibleTasks = board.querySelectorAll('.task-card:not([style*="display: none"])').length
             const counter = board.querySelector(".task-count")
             if (counter) {
-                counter.textContent = visibleTasks.length
+                counter.textContent = visibleTasks
             }
         })
     }
 }
 
-// Initialize when DOM is loaded
+// Initialize after DOM load
 document.addEventListener("DOMContentLoaded", () => {
-    new TemplateDetailManager()
+    new TaskManager()
+    console.log("✅ TaskScript.js initialized.")
 })
 
- document.addEventListener('DOMContentLoaded', function () {
-            // Khởi tạo dark mode từ localStorage
-            const savedTheme = localStorage.getItem('theme') || 'light-mode';
-            const darkModeToggle = document.getElementById('darkModeToggle');
+<script>
+function toggleBoardMenu(btn) {
+    // Đóng tất cả menu khác
+    document.querySelectorAll('.board-dropdown-menu').forEach(menu => {
+        menu.style.display = 'none';
+    });
 
-            if (savedTheme === 'dark-mode') {
-                document.body.classList.add('dark-mode');
-                if (darkModeToggle) darkModeToggle.checked = true;
-            } else {
-                document.body.classList.remove('dark-mode');
-                if (darkModeToggle) darkModeToggle.checked = false;
-            }
+    // Mở menu hiện tại
+    const dropdown = btn.nextElementSibling;
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
 
-            // Toggle dark mode
-            if (darkModeToggle) {
-                darkModeToggle.addEventListener('change', function () {
-                    const isDark = darkModeToggle.checked;
-                    document.body.classList.toggle('dark-mode', isDark);
-                    localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
-                });
-            }
-
-            console.log("✅ Dark mode initialized in Home.jsp");
+// Đóng nếu click ngoài menu
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.board-options')) {
+        document.querySelectorAll('.board-dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
         });
-
+    }
+});
+</script>
