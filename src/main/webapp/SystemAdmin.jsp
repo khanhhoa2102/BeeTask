@@ -17,7 +17,7 @@
                 <div class="admin-info">
                     <i class="fas fa-user-shield avatar"></i>
                     <p>Admin</p>
-                    <small>Quản trị hệ thống</small>
+                    <small>System administration</small>
                 </div>
                 <ul class="nav-links">
                     <li class="active"><i class="fas fa-chart-line"></i> Dashboard</li>
@@ -28,13 +28,13 @@
 
             <!-- Main -->
             <main class="main-content">
-                <h1>Bảng điều khiển</h1>
+                <h1>Dashboard</h1>
 
                 <div class="stats">
                     <div class="stat-card">
                         <i class="fas fa-users"></i>
                         <div>
-                            <h4>Tổng người dùng</h4>
+                            <h4>Total user</h4>
                             <p id="total-users">--</p>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                     <div class="stat-card">
                         <i class="fas fa-chart-pie"></i>
                         <div>
-                            <h4>Lượt truy cập</h4>
+                            <h4>Visitors</h4>
                             <p id="visits">--</p>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                     <div class="stat-card">
                         <i class="fas fa-user-lock"></i>
                         <div>
-                            <h4>Tài khoản bị khóa</h4>
+                            <h4>The account is locked</h4>
                             <p id="locked-users">--</p>
                         </div>
                     </div>
@@ -60,11 +60,11 @@
 
                 <div class="charts-row">
                     <div class="chart-section">
-                        <h2>Số người dùng mới theo tuần</h2>
+                        <h2>Number of new users by week</h2>
                         <canvas id="weeklyUsersChart"></canvas>
                     </div>
                     <div class="chart-section">
-                        <h2>Lượt truy cập theo giờ</h2>
+                        <h2>Time visits</h2>
                         <canvas id="hourlyVisitsChart"></canvas>
                     </div>
                 </div>

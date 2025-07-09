@@ -86,6 +86,9 @@
                             <a href="#" class="dropdown-item has-arrow">
                                 <span>Account Settings</span>
                             </a>
+                            <a href="${pageContext.request.contextPath}/VIP.jsp" class="dropdown-item">
+                                <span>Get VIP</span>
+                            </a>
                         </div>
 
                         <!-- Workspace -->

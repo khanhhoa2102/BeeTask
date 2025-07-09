@@ -88,6 +88,7 @@ public class TaskDAO {
         return null;
     }
 
+
     // Delete task
     public void delete(int taskId) {
         String sql = "DELETE FROM Tasks WHERE TaskId = ?";
@@ -190,6 +191,7 @@ public class TaskDAO {
         }
         
         return taskMap;
+
     }
 
     // Helper method to map ResultSet to Task object

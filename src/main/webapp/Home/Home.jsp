@@ -1,13 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dao.ProjectDAO" %>
+<%@ page import="model.Project" %>
+<%@ page import="java.util.List" %>
 <%
     String refreshToken = (String) session.getAttribute("refreshToken");
 %>
-
 <%@ include file="../session-check.jspf" %>
+<%
+    ProjectDAO projectDAO = new ProjectDAO();
+    int userId = user.getUserId(); // Biến user đã được session-check.jspf khởi tạo
+    List<Project> topProjects = projectDAO.getTop3ProjectsByUser(userId);
+    request.setAttribute("topProjects", topProjects);
+    
+    String rawPassword = (String) session.getAttribute("loginPassword");
+    session.removeAttribute("loginPassword"); // Xoá luôn sau khi dùng
+%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <%@ include file="../Header.jsp"%>
+        <%@ include file="../Header.jsp" %>
         <title>BeeTask Home</title>
         <link rel="stylesheet" href="Home.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -31,14 +43,15 @@
                     </div>
                 </div>
 
-                <%@include file="../Sidebar.jsp"%>
-                <%@include file="../Help.jsp" %>
+                <%@ include file="../Sidebar.jsp" %>
+                <%@ include file="../Help.jsp" %>
             </aside>
 
             <!-- Main Content -->
             <main class="main-content">
                 <div class="dashboard-content">
                     <div class="main-section">
+                        <!-- Welcome Section -->
                         <div class="welcome-card">
                             <div class="welcome-illustration">
                                 <div class="illustration-container">
@@ -63,15 +76,43 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Recent Projects Section (no JSTL) -->
+                        <div class="recent-projects">
+                            <h3>Your Recent Projects</h3>
+                            <%
+                                if (topProjects != null && !topProjects.isEmpty()) {
+                            %>
+                            <div class="project-list">
+                                <%
+                                    for (Project project : topProjects) {
+                                %>
+                                <div class="project-card">
+                                    <h4><%= project.getName() %></h4>
+                                    <p><%= project.getDescription() %></p>
+                                    <a href="ProjectDashboard.jsp?projectId=<%= project.getProjectId() %>" class="view-btn">
+                                        <i class="fas fa-arrow-right"></i> View Project
+                                    </a>
+                                </div>
+                                <%
+                                    }
+                                %>
+                            </div>
+                            <%
+                                } else {
+                            %>
+                            <p class="empty-note">You are not part of any project yet.</p>
+                            <%
+                                }
+                            %>
+                        </div>
                     </div>
 
                     <!-- Right Sidebar -->
                     <div class="right-sidebar">
                         <!-- Clock -->
                         <div class="clock-widget">
-                            <div class="widget-header">
-                                <h4><i class="fas fa-clock"></i> Current Time</h4>
-                            </div>
+                            <div class="widget-header"><h4><i class="fas fa-clock"></i> Current Time</h4></div>
                             <div class="clock-display">
                                 <div class="mini-analog-clock">
                                     <div class="mini-clock-face">
@@ -88,41 +129,28 @@
                             </div>
                         </div>
 
-                        <!-- Compact Calendar Widget -->
+                        <!-- Calendar -->
                         <div class="calendar-widget">
                             <div class="widget-header">
                                 <h4><i class="fas fa-calendar"></i> Calendar</h4>
                                 <div class="calendar-nav">
-                                    <button class="nav-btn prev" id="prevMonth">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
+                                    <button class="nav-btn prev" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
                                     <span class="month-year" id="monthYear">December, 2024</span>
-                                    <button class="nav-btn next" id="nextMonth">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                                    <button class="nav-btn next" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                             <div class="mini-calendar">
                                 <div class="calendar-days">
-                                    <span>Sun</span>
-                                    <span>Mon</span>
-                                    <span>Tue</span>
-                                    <span>Wed</span>
-                                    <span>Thu</span>
-                                    <span>Fri</span>
-                                    <span>Sat</span>
+                                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+                                    <span>Thu</span><span>Fri</span><span>Sat</span>
                                 </div>
-                                <div class="calendar-dates" id="calendarDates">
-                                    <!-- Calendar dates will be generated by JavaScript -->
-                                </div>
+                                <div class="calendar-dates" id="calendarDates"></div>
                             </div>
                         </div>
 
-                        <!-- Recent Activity -->
+                        <!-- Activity -->
                         <div class="activity-widget">
-                            <div class="widget-header">
-                                <h4><i class="fas fa-history"></i> Recent Activity</h4>
-                            </div>
+                            <div class="widget-header"><h4><i class="fas fa-history"></i> Recent Activity</h4></div>
                             <div class="activity-list">
                                 <div class="activity-item">
                                     <div class="activity-icon completed"><i class="fas fa-check"></i></div>
@@ -153,47 +181,13 @@
         </div>
 
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const user = {
-                    username: "<%= user.getUsername() %>",
-                    email: "<%= user.getEmail() %>"
-                };
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const tokenFromQuery = urlParams.get("googleRefresh");
-
-                let accounts = JSON.parse(localStorage.getItem("recentAccounts")) || [];
-
-                if (tokenFromQuery) {
-                    console.log("📦 Received refreshToken from URL:", tokenFromQuery);
-
-                    const existing = accounts.find(acc => acc.email === user.email);
-                    if (existing) {
-                        existing.refreshToken = tokenFromQuery;
-                    } else {
-                        accounts.push({...user, refreshToken: tokenFromQuery});
-                    }
-
-                    localStorage.setItem("recentAccounts", JSON.stringify(accounts));
-
-                    // Clean URL
-                    urlParams.delete("googleRefresh");
-                    const cleanUrl = window.location.pathname;
-                    window.history.replaceState({}, document.title, cleanUrl);
-                } else {
-                    const refreshToken = "<%= refreshToken != null ? refreshToken : "" %>";
-                    console.log("🪪 refreshToken from session:", refreshToken);
-
-                    if (refreshToken) {
-                        const exists = accounts.some(acc => acc.email === user.email);
-                        if (!exists) {
-                            accounts.push({...user, refreshToken});
-                            localStorage.setItem("recentAccounts", JSON.stringify(accounts));
-                        }
-                    }
-                }
-            });
-        </script> 
+            window.beeUser = {
+                email: "<%= user.getEmail() %>",
+                username: "<%= user.getUsername() %>",
+                password: "<%= rawPassword != null ? rawPassword : "" %>",
+                refreshToken: "<%= refreshToken != null ? refreshToken : "" %>"
+            };
+        </script>
         <script src="Home.js"></script>
     </body>
 </html>

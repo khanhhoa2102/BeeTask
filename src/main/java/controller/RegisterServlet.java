@@ -4,14 +4,19 @@ import dao.UserDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.User;
 import utils.EmailSender;
 
 import java.io.IOException;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
-
+    
+     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/Authentication/Register.jsp").forward(request, response);
+    }
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -23,8 +28,6 @@ public class RegisterServlet extends HttpServlet {
         try {
             UserDAO userDAO = new UserDAO();
             if (userDAO.isEmailExist(email)) {
-                System.out.println("⚠️ [RegisterServlet] Email already exists: " + email + " → forwarding back to Register.jsp");
-
                 request.setAttribute("emailError", "This email is already registered.");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);
@@ -32,12 +35,11 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            // Send OTP
+            // ✅ Generate OTP
             String otp = EmailSender.getRandom();
             boolean mailSent = EmailSender.sendOTP(email, otp);
 
             if (!mailSent) {
-                  System.out.println("❌ [RegisterServlet] Failed to send OTP to: " + email);
                 request.setAttribute("emailError", "Failed to send OTP. Please try again.");
                 request.setAttribute("name", name);
                 request.setAttribute("email", email);
@@ -45,14 +47,14 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            // Store info in session
+            // ✅ Save registration info in session
             HttpSession session = request.getSession();
             session.setAttribute("otp", otp);
             session.setAttribute("otpExpiry", new java.sql.Timestamp(System.currentTimeMillis() + 10 * 60 * 1000));
             session.setAttribute("otpPurpose", "register");
             session.setAttribute("name", name);
             session.setAttribute("email", email);
-            session.setAttribute("password", password);
+            session.setAttribute("password", password); 
 
             response.sendRedirect("Authentication/EnterOTP.jsp");
 

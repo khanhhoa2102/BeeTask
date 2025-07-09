@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 // Statistic.js - Enhanced Project Overview Table Functionality
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -474,3 +481,6 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+
+
