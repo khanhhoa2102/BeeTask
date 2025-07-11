@@ -1,4 +1,3 @@
-
 package model;
 
 import java.sql.Timestamp;
@@ -8,18 +7,24 @@ public class Note {
     private int userId;
     private String title;
     private String content;
-    private String tag;
     private Timestamp createdAt;
+    private Timestamp deadline;
+    private int labelId;
+    private String labelName;   // Tên nhãn (từ Labels.Name)
+    private String labelColor;  // Màu nhãn (từ Labels.Color)
 
-    public Note(int noteId, int userId, String title, String content, String tag, Timestamp createdAt) {
-        this.noteId = noteId;
-        this.userId = userId;
+    // ✅ Constructor mặc định
+    public Note() {}
+
+    // ✅ Constructor tiện dụng khi tạo mới ghi chú
+    public Note(String title, String content, int userId, int labelId) {
         this.title = title;
         this.content = content;
-        this.tag = tag;
-        this.createdAt = createdAt;
+        this.userId = userId;
+        this.labelId = labelId;
     }
 
+    // Getters & Setters
     public int getNoteId() {
         return noteId;
     }
@@ -52,14 +57,6 @@ public class Note {
         this.content = content;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -68,10 +65,35 @@ public class Note {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public String toString() {
-        return "Note{" + "noteId=" + noteId + ", userId=" + userId + ", title=" + title + ", content=" + content + ", tag=" + tag + ", createdAt=" + createdAt + '}';
+    public Timestamp getDeadline() {
+        return deadline;
     }
 
-    
+    public void setDeadline(Timestamp deadline) {
+        this.deadline = deadline;
+    }
+
+    public int getLabelId() {
+        return labelId;
+    }
+
+    public void setLabelId(int labelId) {
+        this.labelId = labelId;
+    }
+
+    public String getLabelName() {
+        return labelName;
+    }
+
+    public void setLabelName(String labelName) {
+        this.labelName = labelName;
+    }
+
+    public String getLabelColor() {
+        return labelColor;
+    }
+
+    public void setLabelColor(String labelColor) {
+        this.labelColor = labelColor;
+    }
 }

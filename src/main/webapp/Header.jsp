@@ -14,9 +14,6 @@
 <div class="header">
     <div class="header-content-wrapper">
         <div class="header-left">
-            <button class="icon-btn">
-                <img src="../Asset/Longlogo.png" alt="Logo">
-            </button>
         </div>
 
         <div class="header-center">
@@ -80,14 +77,11 @@
 
                         <!-- Account Section -->
                         <div class="dropdown-section">
-                            <a href="${pageContext.request.contextPath}/Authentication/SwitchAccount.jsp" class="dropdown-item">
+                            <a href="../SwitchAccount.jsp" class="dropdown-item">
                                 <span>Switch Account</span>
                             </a>
-                            <a href="#" class="dropdown-item has-arrow">
+                            <a href="${pageContext.request.contextPath}/account/settings" class="dropdown-item has-arrow">
                                 <span>Account Settings</span>
-                            </a>
-                            <a href="${pageContext.request.contextPath}/VIP.jsp" class="dropdown-item">
-                                <span>Get VIP</span>
                             </a>
                         </div>
 
