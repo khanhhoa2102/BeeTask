@@ -1,4 +1,4 @@
-package controller;
+package controller.admin;
 
 import dao.UserManagementDao;
 import model.User;
@@ -36,7 +36,7 @@ public class UserManagementServlet extends HttpServlet {
         req.setAttribute("lockedUsers", lockedUsers);
         req.setAttribute("keyword", keyword); // để hiển thị lại từ khóa khi tìm kiếm
 
-        req.getRequestDispatcher("UserManagement.jsp").forward(req, resp);
+        req.getRequestDispatcher("/Admin/UserManagement.jsp").forward(req, resp);
     }
 
     @Override

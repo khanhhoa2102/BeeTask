@@ -1,30 +1,37 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html lang="vi">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Admin Dashboard</title>
-        <link rel="stylesheet" href="SystemAdmin.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
-    <body>
-        <div class="admin-container">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <h2>SystemAdmin</h2>
-                <div class="admin-info">
-                    <i class="fas fa-user-shield avatar"></i>
-                    <p>Admin</p>
-                    <small>System administration</small>
-                </div>
-                <ul class="nav-links">
-                    <li class="active"><i class="fas fa-chart-line"></i> Dashboard</li>
-                   <li><a href="${pageContext.request.contextPath}/UserManagementServlet">User Management</a></li>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.*, model.ProjectOverview, model.User" %>
+<%@ include file="../session-check.jspf" %>
 
-                </ul>
-            </aside>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%@ include file="HeaderAdmin.jsp" %>
+    <title>All Projects - Admin</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Admin/SystemAdmin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">
+                    <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
+                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+                    <% } else { %>
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ccc;"></div>
+                    <% } %>
+                </div>
+                <div class="info">
+                    <span class="username"><%= user.getUsername() %></span>
+                    <span class="email"><%= user.getEmail() %></span>
+                </div>
+            </div>
+
+            <%@ include file="SidebarAdmin.jsp" %>
+            <%@ include file="../Help.jsp" %>
+        </aside>
 
             <!-- Main -->
             <main class="main-content">

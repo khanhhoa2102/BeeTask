@@ -6,7 +6,7 @@ public class ProjectOverview {
     private String projectDescription;
     private String projectCreatedBy;
     private String projectCreatedAt;
-
+private boolean isLocked;
     private int userId;
     private String username;
     private String role;
@@ -20,26 +20,30 @@ public class ProjectOverview {
     private String taskStatus;
 
     public ProjectOverview(int projectId, String projectName, String projectDescription, String projectCreatedBy, String projectCreatedAt,
-                           int userId, String username, String role,
-                           int taskId, String taskTitle, String taskDescription, String dueDate, String taskCreatedAt, String taskCreatedBy, String taskStatus) {
-        this.projectId = projectId;
-        this.projectName = projectName;
-        this.projectDescription = projectDescription;
-        this.projectCreatedBy = projectCreatedBy;
-        this.projectCreatedAt = projectCreatedAt;
+                       int userId, String username, String role,
+                       int taskId, String taskTitle, String taskDescription, String dueDate, String taskCreatedAt, String taskCreatedBy, String taskStatus,
+                       boolean isLocked) {
+    this.projectId = projectId;
+    this.projectName = projectName;
+    this.projectDescription = projectDescription;
+    this.projectCreatedBy = projectCreatedBy;
+    this.projectCreatedAt = projectCreatedAt;
 
-        this.userId = userId;
-        this.username = username;
-        this.role = role;
+    this.userId = userId;
+    this.username = username;
+    this.role = role;
 
-        this.taskId = taskId;
-        this.taskTitle = taskTitle;
-        this.taskDescription = taskDescription;
-        this.dueDate = dueDate;
-        this.taskCreatedAt = taskCreatedAt;
-        this.taskCreatedBy = taskCreatedBy;
-        this.taskStatus = taskStatus;
-    }
+    this.taskId = taskId;
+    this.taskTitle = taskTitle;
+    this.taskDescription = taskDescription;
+    this.dueDate = dueDate;
+    this.taskCreatedAt = taskCreatedAt;
+    this.taskCreatedBy = taskCreatedBy;
+    this.taskStatus = taskStatus;
+
+    this.isLocked = isLocked;
+}
+
 
     public int getProjectId() {
         return projectId;
@@ -101,24 +105,39 @@ public class ProjectOverview {
         return taskStatus;
     }
 
+    
+    
+    public boolean isLocked() {
+    return isLocked;
+}
+
+public void setLocked(boolean isLocked) {
+    this.isLocked = isLocked;
+}
+
+    
+    
+    
     @Override
-    public String toString() {
-        return "ProjectOverview{" +
-                "projectId=" + projectId +
-                ", projectName='" + projectName + '\'' +
-                ", projectDescription='" + projectDescription + '\'' +
-                ", projectCreatedBy='" + projectCreatedBy + '\'' +
-                ", projectCreatedAt='" + projectCreatedAt + '\'' +
-                ", userId=" + userId +
-                ", username='" + username + '\'' +
-                ", role='" + role + '\'' +
-                ", taskId=" + taskId +
-                ", taskTitle='" + taskTitle + '\'' +
-                ", taskDescription='" + taskDescription + '\'' +
-                ", dueDate='" + dueDate + '\'' +
-                ", taskCreatedAt='" + taskCreatedAt + '\'' +
-                ", taskCreatedBy='" + taskCreatedBy + '\'' +
-                ", taskStatus='" + taskStatus + '\'' +
-                '}';
-    }
+public String toString() {
+    return "ProjectOverview{" +
+            "projectId=" + projectId +
+            ", projectName='" + projectName + '\'' +
+            ", projectDescription='" + projectDescription + '\'' +
+            ", projectCreatedBy='" + projectCreatedBy + '\'' +
+            ", projectCreatedAt='" + projectCreatedAt + '\'' +
+            ", userId=" + userId +
+            ", username='" + username + '\'' +
+            ", role='" + role + '\'' +
+            ", taskId=" + taskId +
+            ", taskTitle='" + taskTitle + '\'' +
+            ", taskDescription='" + taskDescription + '\'' +
+            ", dueDate='" + dueDate + '\'' +
+            ", taskCreatedAt='" + taskCreatedAt + '\'' +
+            ", taskCreatedBy='" + taskCreatedBy + '\'' +
+            ", taskStatus='" + taskStatus + '\'' +
+            ", isLocked=" + isLocked +
+            '}';
+}
+
 }
