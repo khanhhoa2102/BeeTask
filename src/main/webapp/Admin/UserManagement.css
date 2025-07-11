@@ -1,0 +1,386 @@
+/** {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+
+.admin-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.admin-info p {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.admin-info small {
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-links li {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #334155;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links li.active,
+.nav-links li:hover {
+    background-color: #f97316;
+    color: white;
+}
+
+.nav-links li.active a {
+    color: white;
+}
+
+ === Main Content === 
+.main-content {
+    flex: 1;
+    padding: 30px;
+    background: linear-gradient(135deg, #0f172a, #1f2937);
+    overflow-y: auto;
+}
+
+.main-content h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+ === Search Box === 
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-box input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    color: white;
+}
+
+.search-box button {
+    padding: 8px 16px;
+    background-color: #f97316;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+ === Forms === 
+form input[type="text"],
+form select {
+    padding: 8px;
+    margin-right: 10px;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    color: white;
+}
+
+form button {
+    padding: 8px 16px;
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+ === Section spacing === 
+#account-actions,
+#locked,
+#all-users {
+    margin-bottom: 30px;
+}
+
+ === Tables === 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #334155;
+}
+
+table th {
+    background-color: #334155;
+    color: #f8fafc;
+}
+
+table tr:hover {
+    background-color: #475569;
+}*/
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #ffffff; /* Trắng */
+    color: #1e293b; /* Xám đậm */
+}
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.admin-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.admin-info p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+.admin-info small {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-links li {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f1f5f9; /* Xám nhạt */
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #1e293b; /* Xám đậm */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links li.active,
+.nav-links li:hover {
+    background-color: #f97316;
+    color: white;
+}
+
+.nav-links li.active a {
+    color: white;
+}
+
+/* === Main Content === */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0); /* Trắng xanh xám */
+    overflow-y: auto;
+}
+
+.main-content h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #0f172a;
+}
+
+/* === Search Box === */
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-box input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #0f172a;
+}
+
+.search-box button {
+    padding: 8px 16px;
+    background-color: #f97316;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* === Forms === */
+form input[type="text"],
+form select {
+    padding: 8px;
+    margin-right: 10px;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    color: #0f172a;
+}
+
+form button {
+    padding: 8px 16px;
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* === Section spacing === */
+#account-actions,
+#locked,
+#all-users {
+    margin-bottom: 30px;
+}
+
+/* === Tables === */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table th {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+table tr:hover {
+    background-color: #e2e8f0;
+}
+
+body.dark-mode {
+    background-color: #0f172a;
+    color: #e2e8f0;
+}
+
+body.dark-mode .admin-info p,
+body.dark-mode .main-content h1,
+body.dark-mode .nav-links li a,
+body.dark-mode .search-box input,
+body.dark-mode form input,
+body.dark-mode form select {
+    color: #e2e8f0;
+}
+
+body.dark-mode .main-content {
+    background: linear-gradient(135deg, #0f172a, #1f2937);
+}
+
+body.dark-mode .nav-links li {
+    background-color: #334155;
+}
+
+body.dark-mode .nav-links li.active,
+body.dark-mode .nav-links li:hover {
+    background-color: #f97316;
+    color: white;
+}
+
+body.dark-mode .nav-links li a {
+    color: #f8fafc;
+}
+
+body.dark-mode .search-box input[type="text"],
+body.dark-mode form input[type="text"],
+body.dark-mode form select {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+body.dark-mode table {
+    background-color: #1e293b;
+}
+
+body.dark-mode table th {
+    background-color: #334155;
+    color: #f8fafc;
+}
+
+body.dark-mode table td {
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode table tr:hover {
+    background-color: #475569;
+}
