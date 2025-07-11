@@ -98,27 +98,25 @@
 </head>
 <body class="theme-light dark-mode"> 
     <div class="container">
-        <aside class="sidebar">
-            <% if (user != null) { %>
-            <div class="user-profile">
-                <div class="avatar">
-                    <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
-                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar">
-                    <% } else { %>
-                        <div class="avatar-placeholder">
-                            <i class="fas fa-user"></i>
-                        </div>
-                    <% } %>
+        <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="user-profile">
+                    <div class="avatar">
+                        <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
+                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+                        <% } else { %>
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ccc;"></div>
+                        <% } %>
+                    </div>
+                    <div class="info">
+                        <span class="username"><%= user.getUsername() %></span>
+                        <span class="email"><%= user.getEmail() %></span>
+                    </div>
                 </div>
-                <div class="info">
-                    <span class="username"><%= user.getUsername() %></span>
-                    <span class="email"><%= user.getEmail() %></span>
-                </div>
-            </div>
-            <% } %>
-            <%@include file="../Sidebar.jsp"%>
-            <%@include file="../Help.jsp" %>
-        </aside>
+
+                <%@ include file="../Sidebar.jsp" %>
+                <%@ include file="../Help.jsp" %>
+            </aside>
         
         <main class="main-content">
             <div class="template-header">
@@ -534,28 +532,26 @@
         
         // Edit Task Functions
         function openEditTaskModal(taskId) {
-            // Fetch task data from server
             fetch('task?action=getTask&taskId=' + taskId)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('editTaskId').value = data.taskId;
-                    document.getElementById('editTaskTitle').value = data.title;
-                    document.getElementById('editTaskDescription').value = data.description;
-                    document.getElementById('editTaskDueDate').value = data.dueDate;
-                    document.getElementById('editTaskPriority').value = data.priority;
-                    
-                    // Set status based on statusId
-                    const statusSelect = document.getElementById('editTaskStatus');
-                    const statusMap = {1: 'To Do', 2: 'In Progress', 3: 'Done'};
-                    statusSelect.value = statusMap[data.statusId] || 'To Do';
-                    
-                    document.getElementById('editTaskModal').style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error fetching task data:', error);
-                    alert('Error loading task data');
-                });
-        }
+              .then(response => response.json())
+              .then(data => {
+                document.getElementById('editTaskId').value = data.taskId;
+                document.getElementById('editTaskTitle').value = data.title;
+                document.getElementById('editTaskDescription').value = data.description;
+                document.getElementById('editTaskDueDate').value = data.dueDate;
+                document.getElementById('editTaskPriority').value = data.priority;
+
+                const statusMap = {1: 'To Do', 2: 'In Progress', 3: 'Done'};
+                const statusSelect = document.getElementById('editTaskStatus');
+                statusSelect.value = statusMap[data.statusId] || 'To Do';
+
+                document.getElementById('editTaskModal').style.display = 'block';
+              })
+              .catch(error => {
+                console.error('Error loading task:', error);
+                alert('Failed to load task for editing.');
+              });
+          }
         
         function closeEditTaskModal() {
             document.getElementById('editTaskModal').style.display = 'none';
