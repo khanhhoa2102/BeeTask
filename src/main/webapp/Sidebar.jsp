@@ -21,6 +21,11 @@
             <i class="fas fa-calendar-alt"></i><span>Calendar</span>
         </a>
     </li>
+    <li <% if (uri.endsWith("/Note.jsp")) { %> class ="active" <% } %>>
+        <a href="${pageContext.request.contextPath}/notes">
+            <i class="fas fa-calendar-alt"></i><span>Note</span>
+        </a>
+    </li>
     <li <% if (uri.endsWith("/leaderstaticservlet")) { %> class="active" <% } %>>
         <a href="${pageContext.request.contextPath}/leaderstaticservlet">
             <i class="fas fa-chart-bar"></i><span>Statistics</span>

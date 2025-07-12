@@ -1,0 +1,283 @@
+/* ===== Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== Base Styles ===== */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8f9fa;
+  color: #2d3748;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.dark-theme {
+  background-color: #1a202c;
+  color: #e2e8f0;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  background: inherit;
+}
+
+/* ===== Header ===== */
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.notes-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+}
+
+.add-note-btn {
+  background: #3182ce;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s ease;
+}
+
+.add-note-btn:hover {
+  background: #2b6cb0;
+}
+
+/* ===== Notes Layout Dọc ===== */
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== Note Item ===== */
+.note-item {
+  width: 100%;
+  background: #ffffff;
+  color: #2d3748;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  transition: box-shadow 0.2s ease;
+}
+
+.note-item:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+body.dark-theme .note-item {
+  background: #2d3748;
+  color: #f1f5f9;
+  border-color: #4a5568;
+}
+
+/* ===== Note Content ===== */
+.note-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+
+.note-description {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+body.dark-theme .note-description {
+  color: #a0aec0;
+}
+
+/* ===== Note Metadata ===== */
+.note-meta {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+body.dark-theme .note-meta {
+  color: #cbd5e0;
+}
+
+.note-labels {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.note-label {
+  background-color: #edf2f7;
+  color: #2d3748;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body.dark-theme .note-label {
+  background-color: #4a5568;
+  color: #f1f5f9;
+}
+
+.label-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ===== Note Actions (3 chấm) ===== */
+.note-actions {
+  margin-left: auto;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 18px;
+  color: #718096;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.menu-btn:hover {
+  background: #f0f0f0;
+}
+
+body.dark-theme .menu-btn {
+  color: #cbd5e0;
+}
+
+body.dark-theme .menu-btn:hover {
+  background: #4a5568;
+}
+
+/* ===== Context Menu ===== */
+.context-menu {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  padding: 8px 0;
+  min-width: 160px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95) translateY(-10px);
+  transition: all 0.2s ease;
+}
+
+.context-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateY(0);
+}
+
+.context-menu-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s ease;
+}
+
+.context-menu-item:hover {
+  background-color: #f7fafc;
+}
+
+.context-menu-item.danger {
+  color: #e53e3e;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 8px 0;
+}
+
+body.dark-theme .context-menu {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+body.dark-theme .context-menu-item {
+  color: #f1f5f9;
+}
+
+body.dark-theme .context-menu-item:hover {
+  background-color: #4a5568;
+}
+
+/* ===== Notification ===== */
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 0.875rem;
+  color: white;
+  z-index: 9999;
+  opacity: 1;
+  animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.notification.success {
+  background-color: #38a169;
+}
+
+.notification.error {
+  background-color: #e53e3e;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(10px); }
+}
