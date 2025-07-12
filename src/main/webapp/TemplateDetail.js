@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ TaskScript.js initialized.")
 })
 
-<script>
+
 function toggleBoardMenu(btn) {
     // Đóng tất cả menu khác
     document.querySelectorAll('.board-dropdown-menu').forEach(menu => {
@@ -126,4 +126,3 @@ document.addEventListener('click', function(e) {
         });
     }
 });
-</script>

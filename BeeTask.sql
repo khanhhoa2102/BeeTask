@@ -1,5 +1,28 @@
 ﻿use BeeTask
 
+-- lệnh tạo thêm thuộc tình để khóa và mở khóa dự án 
+-- Chạy 3 lệnh dưới đây 
+ALTER TABLE Projects
+ADD IsLocked BIT DEFAULT 0;
+
+
+UPDATE Projects
+SET IsLocked = 0
+WHERE IsLocked IS NULL;
+
+
+ALTER TABLE Projects
+ALTER COLUMN IsLocked BIT NOT NULL;
+
+
+
+
+
+
+
+
+
+
 -- ========== USERS ==========
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY,
