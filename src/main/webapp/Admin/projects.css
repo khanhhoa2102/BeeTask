@@ -1,0 +1,37 @@
+.main-content {
+    margin-left: 260px; /* Space for sidebar */
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+.project-card {
+    background: var(--card-bg);
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.project-card h3 {
+    margin-top: 0;
+}
+
+:root {
+    --bg-color: #f9f9f9;
+    --text-color: #333;
+    --card-bg: #fff;
+}
+
+/* Dark mode support (if body.dark-mode is used) */
+body.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #eee;
+    --card-bg: #2c2c2c;
+}

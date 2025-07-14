@@ -14,6 +14,9 @@
 <div class="header">
     <div class="header-content-wrapper">
         <div class="header-left">
+            <button class="icon-btn">
+                <img src="../Asset/Longlogo.png" alt="Logo">
+            </button>
         </div>
 
         <div class="header-center">
@@ -77,11 +80,14 @@
 
                         <!-- Account Section -->
                         <div class="dropdown-section">
-                            <a href="../SwitchAccount.jsp" class="dropdown-item">
+                            <a href="${pageContext.request.contextPath}/Authentication/SwitchAccount.jsp" class="dropdown-item">
                                 <span>Switch Account</span>
                             </a>
-                            <a href="${pageContext.request.contextPath}/account/settings" class="dropdown-item has-arrow">
+                            <a href="#" class="dropdown-item has-arrow">
                                 <span>Account Settings</span>
+                            </a>
+                            <a href="${pageContext.request.contextPath}/VIP.jsp" class="dropdown-item">
+                                <span>Get VIP</span>
                             </a>
                         </div>
 
@@ -112,4 +118,4 @@
 <script>
     const contextPath = "${pageContext.request.contextPath}";
 </script>
-<script src="${pageContext.request.contextPath}/Header.js"></script>
+<script src="${pageContext.request.contextPath}/Admin/HeaderAdmin.js"></script>

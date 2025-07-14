@@ -26,11 +26,25 @@
             <i class="fas fa-calendar-alt"></i><span>Calendar</span>
         </a>
     </li>
+    <li <% if (uri.endsWith("/Note.jsp")) { %> class ="active" <% } %>>
+        <a href="${pageContext.request.contextPath}/notes">
+            <i class="fas fa-calendar-alt"></i><span>Note</span>
+        </a>
+    </li>
     <li <% if (uri.endsWith("/leaderstaticservlet")) { %> class="active" <% } %>>
         <a href="${pageContext.request.contextPath}/leaderstaticservlet">
             <i class="fas fa-chart-bar"></i><span>Statistics</span>
         </a>
     </li>
+
+    <% if (user != null && "Admin".equalsIgnoreCase(user.getRole())) { %>
+        <li <% if (uri.endsWith("/SystemAdmin.jsp")) { %> class="active" <% } %>> 
+            <a href="${pageContext.request.contextPath}/Admin/SystemAdmin.jsp">
+                <i class="fas fa-chart-line"></i><span>Administrator</span>
+            </a>
+        </li>
+    <% } %>
+    
     <li <% if (uri.endsWith("/Setting.jsp")) { %> class="active" <% } %>>
         <a href="${pageContext.request.contextPath}/Home/Setting.jsp">
             <i class="fas fa-cog"></i><span>Setting</span>
