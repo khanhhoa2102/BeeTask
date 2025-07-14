@@ -430,13 +430,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.closeTaskDetailModal = () => {
     document.getElementById("taskDetailModal").style.display = "none"
   }
-  
-    window.openEditTaskModal = (taskId) => {
-    // This function is defined in the JSP file
-    if (typeof openEditTaskModal === 'function') {
-      openEditTaskModal(taskId)
-    }
-  }
 
   window.closeEditTaskModal = () => {
     document.getElementById("editTaskModal").style.display = "none"
