@@ -44,17 +44,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Sidebar toggle functionality
-    const toggleBtn = document.querySelector('.toggle-btn');
-    const sidebar = document.querySelector('.sidebar');
-    const container = document.querySelector('.container');
+    const sidebar = document.querySelector(".sidebar");
+    const toggleButtons = document.querySelectorAll(".toggle-btn, .sidebar-toggle");
 
-    if (toggleBtn && sidebar && container) {
-        toggleBtn.addEventListener('click', function () {
-            sidebar.classList.toggle('collapsed');
-            container.classList.toggle('sidebar-collapsed');
+    if (!sidebar)
+        return;
+
+    // Apply saved state
+    const savedState = localStorage.getItem('sidebarState') || 'expanded';
+    sidebar.classList.toggle('collapsed', savedState === 'collapsed');
+
+    toggleButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            const isCollapsed = sidebar.classList.contains("collapsed");
+            localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
         });
-    }
+    });
 
     // Other button functionalities
     const bookmarkBtn = document.getElementById('bookmarkBtn');

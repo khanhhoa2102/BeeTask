@@ -36,8 +36,7 @@
             <i class="fas fa-chart-bar"></i><span>Statistics</span>
         </a>
     </li>
-
-    <% if (user != null && "Admin".equalsIgnoreCase(user.getRole())) { %>
+    <% if (headerUser != null && "Admin".equalsIgnoreCase(headerUser.getRole())) { %>
         <li <% if (uri.endsWith("/SystemAdmin.jsp")) { %> class="active" <% } %>> 
             <a href="${pageContext.request.contextPath}/Admin/SystemAdmin.jsp">
                 <i class="fas fa-chart-line"></i><span>Administrator</span>
