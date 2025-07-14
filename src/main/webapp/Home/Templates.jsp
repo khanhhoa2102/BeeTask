@@ -18,25 +18,8 @@
 </head>
 <body>
 <div class="container">
-    <aside class="sidebar">
-        <div class="user-profile">
-            <div class="avatar">
-                <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
-                    <img src="<%= user.getAvatarUrl() %>" alt="Avatar">
-                <% } else { %>
-                    <div class="avatar-placeholder">
-                        <i class="fas fa-user"></i>
-                    </div>
-                <% } %>
-            </div>
-            <div class="info">
-                <span class="username"><%= user.getUsername() %></span>
-                <span class="email"><%= user.getEmail() %></span>
-            </div>
-        </div>
-        <%@include file="../Sidebar.jsp"%>
-        <%@include file="../Help.jsp" %>
-    </aside>
+        
+    <%@include file="../Sidebar.jsp"%>
 
     <div class="main-content">
         <div class="page-header">
