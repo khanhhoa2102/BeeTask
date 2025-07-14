@@ -10,25 +10,9 @@
     </head>
     <body>
         <div class="container">
-            <aside class="sidebar">
-                <div class="user-profile">
-                    <div class="avatar">
-                        <% if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
-                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
-                        <% } else { %>
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ccc;"></div>
-                        <% } %>
-                    </div>
-                    <div class="info">
-                        <span class="username"><%= user.getUsername() %></span>
-                        <span class="email"><%= user.getEmail() %></span>
-                    </div>
-                </div>
-
-                <%@include file="../Sidebar.jsp"%>
-                <%@include file="../Help.jsp" %>
-            </aside>
             
+            <%@include file="../Sidebar.jsp"%>
+           
             <main class="main-content">
                 
                 <div class="project-header-bar">

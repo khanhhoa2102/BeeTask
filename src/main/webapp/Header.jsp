@@ -80,7 +80,7 @@
 
                         <!-- Account Section -->
                         <div class="dropdown-section">
-                            <a href="../SwitchAccount.jsp" class="dropdown-item">
+                            <a href="${pageContext.request.contextPath}/Authentication/SwitchAccount.jsp" class="dropdown-item">
                                 <span>Switch Account</span>
                             </a>
                             <a href="${pageContext.request.contextPath}/account/settings" class="dropdown-item has-arrow">

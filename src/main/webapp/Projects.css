@@ -107,7 +107,6 @@ body:not(.dark-mode) .email {
 /* Main Content */
 .main-content {
   flex: 1;
-  margin-left: 280px;
   transition: margin-left 0.3s ease;
 }
 
@@ -273,7 +272,6 @@ body:not(.dark-mode) .btn.secondary:hover {
 .content {
   padding: 2rem;
   max-width: 1400px;
-  margin: 0 auto;
 }
 
 /* Projects Section */
