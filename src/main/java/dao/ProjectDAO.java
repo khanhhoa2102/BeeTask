@@ -243,4 +243,25 @@ public class ProjectDAO {
 
         return list;
     }
+    
+        public int insertAndReturnId(Project project) throws SQLException {
+        String sql = "INSERT INTO Projects (Name, Description, CreatedBy, CreatedAt) VALUES (?, ?, ?, GETDATE())";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, project.getName());
+            stmt.setString(2, project.getDescription());
+            stmt.setInt(3, project.getCreatedBy());
+
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        throw new SQLException("Unable to retrieve generated project ID");
+    }
 }
