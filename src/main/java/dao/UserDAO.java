@@ -139,6 +139,7 @@ public class UserDAO {
         user.setEmailVerified(rs.getBoolean("IsEmailVerified"));
         user.setActive(rs.getBoolean("IsActive"));
         user.setCreatedAt(rs.getTimestamp("CreatedAt"));
+        user.setRole(rs.getString("Role"));
         return user;
     }
 
@@ -154,4 +155,12 @@ public class UserDAO {
         return false;
     }
 
+    public boolean updateRole(int userId) throws Exception{
+        String sql = "UPDATE Users SET Role = 'Premium' WHERE UserId = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
 }

@@ -56,10 +56,6 @@
                 </table>
             </main>
         </div>
-        <script>
-            const contextPath = "${pageContext.request.contextPath}";
-        </script>
         <script src="${pageContext.request.contextPath}/ManageNotification.js"></script>
-        
     </body>
 </html>

@@ -52,7 +52,7 @@ public class ExportPdfServlet extends HttpServlet {
 
         // Check user login
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = (User)session.getAttribute("user");
 
         if (user == null) {
             response.sendRedirect(request.getContextPath() + "/Authentication/Login.jsp");
@@ -63,9 +63,10 @@ public class ExportPdfServlet extends HttpServlet {
         String userSystemRole = user.getRole(); // "User", "Premium", etc.
 
         // Block export if not Premium
-        if (!"Premium".equalsIgnoreCase(userSystemRole)) {
-            request.setAttribute("errorMessage", "You need to upgrade to Premium to export PDF reports.");
-            request.getRequestDispatcher("/Home/Statistic.jsp").forward(request, response);
+        if (userSystemRole.trim().equalsIgnoreCase("User")) {
+            //request.setAttribute("errorMessage", "You need to upgrade to Premium to export PDF reports.");
+            //request.getRequestDispatcher("/Home/Statistic.jsp").forward(request, response);
+            request.getRequestDispatcher("/VIP.jsp").forward(request, response);
             return;
         }
 

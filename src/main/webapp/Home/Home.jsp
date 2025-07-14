@@ -21,7 +21,7 @@
     <head>
         <%@ include file="../Header.jsp" %>
         <title>BeeTask Home</title>
-        <link rel="stylesheet" href="Home.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Home/Home.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     </head>
 

@@ -5,30 +5,25 @@
 
 package controller;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import vn.payos.PayOS;
-import vn.payos.type.CheckoutResponseData;
-import vn.payos.type.ItemData;
-import vn.payos.type.PaymentData;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import org.json.JSONObject;
+import dao.NotificationDAO;
+import model.Notification;
+import dao.UserDAO;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import java.util.stream.Collectors;
+import java.sql.Timestamp;
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="PayOSServlet", urlPatterns={"/payment"})
-public class PayOSServlet extends HttpServlet {
+@WebServlet(name="WebhookServlet", urlPatterns={"/webhook"})
+public class WebhookServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -45,58 +40,49 @@ public class PayOSServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PayOSServlet</title>");  
+            out.println("<title>Servlet WebhookServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PayOSServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet WebhookServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
     
-    private static final String CLIENT_ID = "82ecff05-52b9-4f85-adc1-378ecec04ad5";
-    private static final String API_KEY = "e8739a2a-d42a-4191-b40e-88ec2a9c59d7";
-    private static final String CHECKSUM_KEY = "c0b198c9ac287c53c0cbcc33ba942e4cf8615fe99e0a4177b04acc6f057322e6";
-
-    private final PayOS payOS = new PayOS(CLIENT_ID, API_KEY, CHECKSUM_KEY);
-
+    
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String domain = "http://localhost:8080/BeeTask"; // Adjust to your project path
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        // Generate a unique order code
-        Long orderCode = System.currentTimeMillis() / 1000;
+        // Step 1: Read raw request body
+        String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println("🔔 Webhook received:\n" + body);
 
-        // Build item information
-        ItemData itemData = ItemData.builder()
-                .name("Nâng cấp tài khoản VIP")
-                .quantity(1)
-                .price(2000)
-                .build();
+        // Step 2: Parse JSON
+        JSONObject root = new JSONObject(body);
+        JSONObject data = root.getJSONObject("data");
 
-        HttpSession session = request.getSession();
-        int id = (int)session.getAttribute("userId");
-        // Build payment information
-        PaymentData paymentData = PaymentData.builder()
-                .orderCode(orderCode)
-                .amount(2000)
-                .description("Thanh toán đơn hàng - ID: " + id)
-                .returnUrl(domain + "/refreshuser")
-                .cancelUrl(domain + "/Home/Home.jsp")
-                .item(itemData)
-                .build();
+        // Step 4: Extract payment data
+        long orderCode = data.getLong("orderCode");
+        String statusCode = data.getString("code"); // "00" = success
+        String desc = data.optString("description");
 
-        // Create payment link via PayOS
-        CheckoutResponseData result = null;
-        try {
-            result = payOS.createPaymentLink(paymentData);
-        } catch (Exception ex) {
-            Logger.getLogger(PayOSServlet.class.getName()).log(Level.SEVERE, null, ex);
+        if ("00".equals(statusCode) && orderCode!=123) {
+            try{
+                int id = Integer.parseInt(desc.split(" ")[5]);
+                System.out.println("✅ Order " + orderCode + " marked as PAID: " + desc);
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                new NotificationDAO().addNotification(new Notification(0, id, "You have become a premium user", false, timestamp));
+                new UserDAO().updateRole(id);
+            } catch(Exception e){
+
+            }
+        } else {
+            System.out.println("⚠️ Payment failed or pending. Code: " + statusCode + " - " + desc);
         }
 
-        // Redirect user to PayOS checkout page
-        response.setStatus(HttpServletResponse.SC_SEE_OTHER); // 303 See Other
-        response.setHeader("Location", result.getCheckoutUrl());
+        // Step 5: Acknowledge webhook
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

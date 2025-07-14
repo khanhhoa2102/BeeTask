@@ -367,25 +367,7 @@ function initializeDarkMode() {
     cachedElements.darkModeToggle.addEventListener('change', debouncedThemeChange, {passive: true});
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const sidebar = document.querySelector(".sidebar");
-    const toggleButtons = document.querySelectorAll(".toggle-btn, .sidebar-toggle");
 
-    if (!sidebar)
-        return;
-
-    // Apply saved state
-    const savedState = localStorage.getItem('sidebarState') || 'expanded';
-    sidebar.classList.toggle('collapsed', savedState === 'collapsed');
-
-    toggleButtons.forEach(btn => {
-        btn.addEventListener("click", function () {
-            sidebar.classList.toggle("collapsed");
-            const isCollapsed = sidebar.classList.contains("collapsed");
-            localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
-        });
-    });
-});
 
 document.addEventListener('DOMContentLoaded', function () {
     // Khởi tạo dark mode từ localStorage

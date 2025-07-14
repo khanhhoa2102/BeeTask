@@ -14,6 +14,9 @@
 <div class="header">
     <div class="header-content-wrapper">
         <div class="header-left">
+            <button class="icon-btn">
+                <img src="${pageContext.request.contextPath}/Asset/Longlogo.png" alt="Logo">
+            </button>
         </div>
 
         <div class="header-center">
@@ -83,6 +86,11 @@
                             <a href="${pageContext.request.contextPath}/account/settings" class="dropdown-item has-arrow">
                                 <span>Account Settings</span>
                             </a>
+                            <% if(headerUser.getRole().equalsIgnoreCase("User")) {%>
+                            <a href="${pageContext.request.contextPath}/VIP.jsp" class="dropdown-item">
+                                <span>Get VIP</span>
+                            </a>
+                            <%}%>
                         </div>
 
                         <!-- Workspace -->
