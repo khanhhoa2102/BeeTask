@@ -1,4 +1,4 @@
-﻿use BeeTask
+use BeeTask
 
 -- lệnh tạo thêm thuộc tình để khóa và mở khóa dự án 
 -- Chạy 3 lệnh dưới đây 
@@ -13,15 +13,6 @@ WHERE IsLocked IS NULL;
 
 ALTER TABLE Projects
 ALTER COLUMN IsLocked BIT NOT NULL;
-
-
-
-
-
-
-
-
-
 
 -- ========== USERS ==========
 CREATE TABLE Users (
@@ -159,6 +150,8 @@ CREATE TABLE Boards (
     CreatedAt DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_Boards_Projects FOREIGN KEY (ProjectId) REFERENCES Projects(ProjectId)
 );
+ALTER TABLE Boards
+ADD Position INT;
 
 -- ========== BOARD MEMBERS ==========
 CREATE TABLE BoardMembers (
@@ -196,6 +189,10 @@ CREATE TABLE Tasks (
     CONSTRAINT FK_Tasks_TaskStatuses FOREIGN KEY (StatusId) REFERENCES TaskStatuses(StatusId),
     CONSTRAINT FK_Tasks_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
 );
+ALTER TABLE Tasks
+ADD 
+    Position INT,
+    Priority NVARCHAR(50);
 
 -- =========== TASK APPROVE ============
 CREATE TABLE TaskApprovals (
