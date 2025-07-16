@@ -6,6 +6,7 @@ import model.Project;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.User;
 
 public class ProjectDAO {
 
@@ -13,8 +14,7 @@ public class ProjectDAO {
     public Project getProjectById(int projectId) {
         String sql = "SELECT * FROM Projects WHERE ProjectId = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, projectId);
             ResultSet rs = stmt.executeQuery();
@@ -45,8 +45,7 @@ public class ProjectDAO {
     public void insert(Project project) {
         String sql = "INSERT INTO Projects (Name, Description, CreatedBy, CreatedAt) VALUES (?, ?, ?, GETDATE())";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, project.getName());
             stmt.setString(2, project.getDescription());
@@ -65,8 +64,7 @@ public class ProjectDAO {
     public void update(Project project) {
         String sql = "UPDATE Projects SET Name = ?, Description = ? WHERE ProjectId = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, project.getName());
             stmt.setString(2, project.getDescription());
@@ -126,8 +124,7 @@ public class ProjectDAO {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT * FROM Projects ORDER BY CreatedAt DESC";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             ResultSet rs = stmt.executeQuery();
 
@@ -155,13 +152,12 @@ public class ProjectDAO {
     // Get projects by user ID (Task1)
     public List<Project> getProjectsByUserId(int userId) {
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT DISTINCT p.* FROM Projects p " +
-                     "LEFT JOIN ProjectMembers pm ON p.ProjectId = pm.ProjectId " +
-                     "WHERE p.CreatedBy = ? OR pm.UserId = ? " +
-                     "ORDER BY p.CreatedAt DESC";
+        String sql = "SELECT DISTINCT p.* FROM Projects p "
+                + "LEFT JOIN ProjectMembers pm ON p.ProjectId = pm.ProjectId "
+                + "WHERE p.CreatedBy = ? OR pm.UserId = ? "
+                + "ORDER BY p.CreatedAt DESC";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             stmt.setInt(2, userId);
@@ -191,24 +187,23 @@ public class ProjectDAO {
     // Get top 3 projects by user (main)
     public List<Project> getTop3ProjectsByUser(int userId) throws SQLException {
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT TOP 3 p.ProjectId, p.Name, p.Description, p.CreatedBy, p.CreatedAt " +
-                     "FROM Projects p " +
-                     "INNER JOIN ProjectMembers pm ON p.ProjectId = pm.ProjectId " +
-                     "WHERE pm.UserId = ? " +
-                     "ORDER BY p.CreatedAt DESC";
+        String sql = "SELECT TOP 3 p.ProjectId, p.Name, p.Description, p.CreatedBy, p.CreatedAt "
+                + "FROM Projects p "
+                + "INNER JOIN ProjectMembers pm ON p.ProjectId = pm.ProjectId "
+                + "WHERE pm.UserId = ? "
+                + "ORDER BY p.CreatedAt DESC";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Project p = new Project(
-                        rs.getInt("ProjectId"),
-                        rs.getString("Name"),
-                        rs.getString("Description"),
-                        rs.getInt("CreatedBy"),
-                        rs.getTimestamp("CreatedAt")
+                            rs.getInt("ProjectId"),
+                            rs.getString("Name"),
+                            rs.getString("Description"),
+                            rs.getInt("CreatedBy"),
+                            rs.getTimestamp("CreatedAt")
                     );
                     projects.add(p);
                 }
@@ -225,17 +220,15 @@ public class ProjectDAO {
         List<Project> list = new ArrayList<>();
         String sql = "SELECT * FROM Projects";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Project project = new Project(
-                    rs.getInt("ProjectId"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getInt("CreatedBy"),
-                    rs.getTimestamp("CreatedAt")
+                        rs.getInt("ProjectId"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getInt("CreatedBy"),
+                        rs.getTimestamp("CreatedAt")
                 );
                 list.add(project);
             }
@@ -243,12 +236,11 @@ public class ProjectDAO {
 
         return list;
     }
-    
-        public int insertAndReturnId(Project project) throws SQLException {
+
+    public int insertAndReturnId(Project project) throws SQLException {
         String sql = "INSERT INTO Projects (Name, Description, CreatedBy, CreatedAt) VALUES (?, ?, ?, GETDATE())";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, project.getName());
             stmt.setString(2, project.getDescription());
@@ -264,4 +256,34 @@ public class ProjectDAO {
 
         throw new SQLException("Unable to retrieve generated project ID");
     }
+
+    public List<User> getMembersByProjectId(int projectId) {
+        List<User> members = new ArrayList<>();
+
+        String sql = "SELECT u.UserId, u.Username, u.Email, pm.Role "
+                + "FROM ProjectMembers pm "
+                + "JOIN Users u ON pm.UserId = u.UserId "
+                + "WHERE pm.ProjectId = ?";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, projectId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserId"));
+                user.setUsername(rs.getString("Username"));
+                user.setEmail(rs.getString("Email"));
+                user.setRole(rs.getString("Role"));
+                members.add(user);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return members;
+    }
+
 }

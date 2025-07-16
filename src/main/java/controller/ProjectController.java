@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @WebServlet("/project")
 public class ProjectController extends HttpServlet {
+
     private final ProjectDAO projectDAO = new ProjectDAO();
 
     @Override
@@ -77,4 +78,42 @@ public class ProjectController extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("projectId"));
         projectDAO.delete(id);
     }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String action = request.getParameter("action");
+
+        if ("getMembers".equals(action)) {
+            String rawProjectId = request.getParameter("projectId");
+
+            try {
+                int projectId = Integer.parseInt(rawProjectId);
+
+                // Lấy danh sách thành viên từ DAO
+                var members = projectDAO.getMembersByProjectId(projectId); // Bạn cần tạo hàm này
+
+                // Trả JSON về client
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                new com.google.gson.Gson().toJson(members, response.getWriter());
+
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
 }

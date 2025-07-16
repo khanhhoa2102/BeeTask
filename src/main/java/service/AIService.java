@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import config.AppConfig;
 import model.ai.AISuggestionRequest;
 import model.ai.AISuggestionResponse;
-
+import com.google.gson.GsonBuilder;
+import utils.LocalDateTimeAdapter;
+import java.time.LocalDateTime;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,11 +16,13 @@ import java.nio.charset.StandardCharsets;
 public class AIService {
 
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
-   private static final String API_KEY = AppConfig.get("openrouter.api.key");
-    private static final String MODEL_NAME = "mistralai/mistral-7b-instruct:free";
+    private static final String API_KEY = AppConfig.get("openrouter.api_key");
+    private static final String MODEL_NAME = AppConfig.get("openrouter.model");
 
     public AISuggestionResponse sendSchedulingRequest(AISuggestionRequest request) throws IOException {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
 
         // Step 1: Convert user input to JSON
         String userJson = gson.toJson(request);
@@ -26,7 +30,42 @@ public class AIService {
         // Step 2: Build message payload
         JsonObject messageSystem = new JsonObject();
         messageSystem.addProperty("role", "system");
-        messageSystem.addProperty("content", "You are an AI assistant that generates optimized task schedules. Reply ONLY with valid JSON in the format: { \"schedules\": [...] }");
+//        messageSystem.addProperty("content",
+//                "You are an AI assistant that generates optimized task schedules. "
+//                + "Return your response as JSON ONLY in this format (strict ISO 8601 date format - e.g. 2025-07-20T18:00:00):\n"
+//                + "{ \"schedules\": [\n"
+//                + "  {\n"
+//                + "    \"title\": \"Task name\",\n"
+//                + "    \"difficulty\": 1,\n"
+//                + "    \"dueDate\": \"2025-07-20T18:00:00\",\n"
+//                + "    \"start\": \"2025-07-18T08:00:00\",\n"
+//                + "    \"end\": \"2025-07-18T10:00:00\",\n"
+//                + "    \"priority\": \"High\",\n"
+//                + "    \"confidence\": 0.85,\n"
+//                + "    \"shortDescription\": \"This task is important and fits best in your morning schedule.\"\n"
+//                + "  },\n"
+//                + "  ...\n"
+//                + "]}");
+        messageSystem.addProperty("content",
+                "You are an AI assistant that helps schedule tasks. "
+                + "Given exactly ONE task and a list of calendar events, "
+                + "your job is to suggest the best start and end time for **THAT ONE TASK ONLY**, considering the user's calendar."
+                + "You MUST return a JSON response in this format:\n"
+                + "{ \"schedules\": [\n"
+                + "  {\n"
+                + "    \"title\": \"Task name\",\n"
+                + "    \"description\": \"(optional short text)\",\n"
+                + "    \"difficulty\": 1,\n"
+                + "    \"dueDate\": \"2025-07-20T18:00:00\",\n"
+                + "    \"start\": \"2025-07-18T08:00:00\",\n"
+                + "    \"end\": \"2025-07-18T10:00:00\",\n"
+                + "    \"priority\": \"High\",\n"
+                + "    \"confidence\": 0.85,\n"
+                + "    \"shortDescription\": \"This task is important and fits best in your morning schedule.\"\n"
+                + "  }\n"
+                + "]}\n"
+                + "**Do NOT return any suggestion for other tasks or calendar events. Only return 1 schedule object.**"
+        );
 
         JsonObject messageUser = new JsonObject();
         messageUser.addProperty("role", "user");
@@ -107,4 +146,21 @@ public class AIService {
 
         return content;
     }
+
+    public static void main(String[] args) {
+        System.out.println("🔧 Testing AIService API Key loading...");
+
+        if (API_KEY == null || API_KEY.isBlank()) {
+            System.out.println("❌ API_KEY is missing or empty!");
+        } else {
+            System.out.println("✅ API_KEY loaded: " + API_KEY.substring(0, Math.min(10, API_KEY.length())) + "...");
+        }
+
+        if (MODEL_NAME == null || MODEL_NAME.isBlank()) {
+            System.out.println("❌ MODEL_NAME is missing or empty!");
+        } else {
+            System.out.println("✅ MODEL_NAME loaded: " + MODEL_NAME);
+        }
+    }
+
 }

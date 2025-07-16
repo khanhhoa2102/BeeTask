@@ -2,65 +2,57 @@
 <%@ page import="model.Project, model.Board, model.Task, model.User" %>
 <%@ page import="dao.ProjectDAO, dao.BoardDAO, dao.TaskDAO, dao.TaskStatusDAO" %>
 <%@ page import="java.util.*" %>
-
 <%
     User user = (User) session.getAttribute("user");
     String rawId = request.getParameter("projectId");
     int projectId = -1;
-
     // Debug information
     System.out.println("=== TASK.JSP DEBUG ===");
     System.out.println("User: " + (user != null ? user.getUsername() : "null"));
     System.out.println("Raw Project ID: " + rawId);
-
     if (user == null) {
         System.out.println("User not logged in, redirecting to login");
         response.sendRedirect("/BeeTask/Authentication/Login.jsp");
         return;
     }
-
     if (rawId == null || rawId.trim().isEmpty()) {
         System.out.println("Missing project ID, redirecting to error page");
         response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=Missing Project ID");
         return;
     }
-
     ProjectDAO projectDAO = new ProjectDAO();
     BoardDAO boardDAO = new BoardDAO();
     TaskDAO taskDAO = new TaskDAO();
     TaskStatusDAO statusDAO = new TaskStatusDAO();
-
     Project project = null;
     List<Board> boards = new ArrayList<>();
     Map<Integer, List<Task>> tasksMap = new HashMap<>();
     Map<Integer, String> statusMap = new HashMap<>();
-
     try {
         projectId = Integer.parseInt(rawId);
         System.out.println("Parsed Project ID: " + projectId);
-        
+
         // Load status map first
         statusMap = statusDAO.getAllStatuses();
         System.out.println("Status map loaded: " + statusMap.size() + " statuses");
-        
+
         // Load project
         project = projectDAO.getProjectById(projectId);
         System.out.println("Project loaded: " + (project != null ? project.getName() : "null"));
-
         if (project != null) {
             // Load boards
             boards = boardDAO.getBoardsByProjectId(projectId);
             System.out.println("Boards loaded: " + boards.size());
-            
+
             // Load tasks
             tasksMap = taskDAO.getTasksByProjectIdGrouped(projectId);
             System.out.println("Tasks map size: " + tasksMap.size());
-            
+
             // Debug each board's tasks
             for (Board board : boards) {
                 List<Task> boardTasks = tasksMap.get(board.getBoardId());
-                System.out.println("Board '" + board.getName() + "' (ID: " + board.getBoardId() + ") has " + 
-                    (boardTasks != null ? boardTasks.size() : 0) + " tasks");
+                System.out.println("Board '" + board.getName() + "' (ID: " + board.getBoardId() + ") has " +
+                     (boardTasks != null ? boardTasks.size() : 0) + " tasks");
                 if (boardTasks != null) {
                     for (Task task : boardTasks) {
                         String statusName = statusMap.get(task.getStatusId());
@@ -83,10 +75,9 @@
         response.sendRedirect("/BeeTask/ErrorPage.jsp?msg=" + e.getMessage());
         return;
     }
-    
+
     System.out.println("=== END DEBUG ===");
 %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,11 +87,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="theme-light dark-mode"> 
-    <div class="container">
-
+<body class="theme-light dark-mode">
+     <div class="container">
         <%@ include file="../Sidebar.jsp" %>
-        
+
         <main class="main-content">
             <div class="template-header">
                 <div class="header-content">
@@ -112,6 +102,10 @@
                         <p class="project-subtitle">Task Management Dashboard</p>
                     </div>
                     <div class="header-actions">
+                        <button onclick="openProjectMembersModal()" class="btn btn-secondary">
+                            <i class="fas fa-users"></i>
+                            Project Members
+                        </button>
                         <button onclick="openAddBoardModal()" class="btn btn-primary">
                             <i class="fas fa-plus"></i>
                             Add Board
@@ -146,7 +140,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="boards-container grid-view" id="boardsContainer">
                     <% for (Board board : boards) {
                         List<Task> tasks = tasksMap.get(board.getBoardId());
@@ -154,7 +147,7 @@
                         int completedTasks = 0;
                         if (tasks != null) {
                             for (Task task : tasks) {
-                                String statusName = statusMap.get(task.getStatusId());
+                                 String statusName = statusMap.get(task.getStatusId());
                                 if (statusName == null) statusName = "Unknown";
                                 if ("Done".equals(statusName)) {
                                     completedTasks++;
@@ -186,35 +179,41 @@
                                     </button>
                                     <div class="board-dropdown">
                                         <button onclick="editBoard(<%= board.getBoardId() %>, '<%= board.getName() %>')">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i> Edit Board
                                         </button>
                                         <button onclick="duplicateBoard(<%= board.getBoardId() %>)">
-                                            <i class="fas fa-copy"></i> Duplicate
+                                            <i class="fas fa-copy"></i> Duplicate Board
                                         </button>
                                         <hr>
-                                        <form action="board" method="post" style="display:inline;">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="listId" value="<%= board.getBoardId() %>">
-                                            <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                                            <button type="submit" class="delete-btn" onclick="return confirm('Delete this board and all its tasks?')">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
-                                        </form>
+                                        <button onclick="sortBoardTasks(<%= board.getBoardId() %>, 'dueDate')">
+                                            <i class="fas fa-calendar-alt"></i> Sort by Due Date
+                                        </button>
+                                        <button onclick="sortBoardTasks(<%= board.getBoardId() %>, 'priority')">
+                                            <i class="fas fa-flag"></i> Sort by Priority
+                                        </button>
+                                        <hr>
+                                        <button class="delete-btn" onclick="taskManager.deleteBoard(<%= board.getBoardId() %>)">
+                                            <i class="fas fa-trash"></i> Delete Board
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="board-content">
                             <div class="board-tasks" data-board-id="<%= board.getBoardId() %>">
                                 <% if (tasks != null && !tasks.isEmpty()) {
-                                    for (Task task : tasks) { 
-                                        String statusName = statusMap.get(task.getStatusId());
+                                    for (Task task : tasks) {
+                                         String statusName = statusMap.get(task.getStatusId());
                                         if (statusName == null) statusName = "Unknown";
                                 %>
-                                <div class="task-card priority-<%= task.getPriority().toLowerCase() %>" 
-                                     data-task-id="<%= task.getTaskId() %>" 
-                                     onclick="openTaskDetailPopup('<%= task.getTaskId() %>', '<%= task.getTitle().replace("'", "\\'") %>', '<%= task.getDescription().replace("'", "\\'") %>', '<%= task.getDueDate() %>', '<%= task.getPriority() %>', '<%= statusName %>')">
+                                <div class="task-card priority-<%= task.getPriority().toLowerCase() %>"
+                                      data-task-id="<%= task.getTaskId() %>"
+                                      data-task-title="<%= task.getTitle().replace("'", "\\'") %>"
+                                      data-task-description="<%= task.getDescription().replace("'", "\\'") %>"
+                                      data-task-duedate="<%= task.getDueDate() != null ? task.getDueDate() : "" %>"
+                                      data-task-priority="<%= task.getPriority() %>"
+                                      data-task-status="<%= statusName %>"
+                                      onclick="openTaskDetailPopup('<%= task.getTaskId() %>', '<%= task.getTitle().replace("'", "\\'") %>', '<%= task.getDescription().replace("'", "\\'") %>', '<%= task.getDueDate() %>', '<%= task.getPriority() %>', '<%= statusName %>')">
                                     <div class="task-priority-indicator"></div>
                                     <div class="task-content">
                                         <h4 class="task-title"><%= task.getTitle() %></h4>
@@ -238,8 +237,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <% } 
-                                } else { %>
+                                <% }
+                                 } else { %>
                                 <div class="empty-board">
                                     <i class="fas fa-tasks"></i>
                                     <p>No tasks yet</p>
@@ -249,7 +248,7 @@
                                 </div>
                                 <% } %>
                             </div>
-                            
+
                             <button onclick="openAddTaskModal(<%= board.getBoardId() %>)" class="add-task-button">
                                 <i class="fas fa-plus"></i>
                                 <span>Add a task</span>
@@ -257,7 +256,6 @@
                         </div>
                     </div>
                     <% } %>
-
                     <!-- Add Board Card -->
                     <div class="board-card add-board-card" onclick="openAddBoardModal()">
                         <div class="add-board-content">
@@ -280,6 +278,7 @@
                         <button class="filter-btn" data-filter="done">Done</button>
                     </div>
                 </div>
+
                 <div class="overview-table">
                     <div class="table-header">
                         <div class="col-header">Task</div>
@@ -287,17 +286,25 @@
                         <div class="col-header">Due Date</div>
                         <div class="col-header">Priority</div>
                         <div class="col-header">Status</div>
+                        <div class="col-header">AI Suggestion</div>
                     </div>
                     <div class="table-body">
                         <% for (Board board : boards) {
                             List<Task> tasks = tasksMap.get(board.getBoardId());
                             if (tasks != null) {
-                                for (Task task : tasks) { 
-                                    String statusName = statusMap.get(task.getStatusId());
+                                for (Task task : tasks) {
+                                     String statusName = statusMap.get(task.getStatusId());
                                     if (statusName == null) statusName = "Unknown";
                         %>
-                        <div class="table-row" data-status="<%= statusName.toLowerCase().replace(" ", "") %>">
-                            <div class="task-info">
+                        <div class="table-row" data-status="<%= statusName.toLowerCase().replace(" ", "") %>"
+                             data-task-id="<%= task.getTaskId() %>"
+                             data-task-title="<%= task.getTitle().replace("'", "\\'") %>"
+                             data-task-description="<%= task.getDescription().replace("'", "\\'") %>"
+                             data-task-duedate="<%= task.getDueDate() != null ? task.getDueDate() : "" %>"
+                             data-task-priority="<%= task.getPriority() %>"
+                             data-task-status="<%= statusName %>">
+                            <div class="task-info"
+                                 onclick="openTaskDetailPopup('<%= task.getTaskId() %>', '<%= task.getTitle().replace("'", "\\'") %>', '<%= task.getDescription().replace("'", "\\'") %>', '<%= task.getDueDate() %>', '<%= task.getPriority() %>', '<%= statusName %>')">
                                 <div class="task-indicator"></div>
                                 <div class="task-details">
                                     <h4><%= task.getTitle() %></h4>
@@ -322,6 +329,20 @@
                                     <i class="fas fa-circle"></i>
                                     <%= statusName %>
                                 </span>
+                            </div>
+                            <div class="ai-suggestion-col">
+                                <% if ("To Do".equals(statusName)) { %>
+                                <button class="btn btn-primary btn-sm ai-suggest-btn"
+                                        data-task-id="<%= task.getTaskId() %>"
+                                        data-task-title="<%= task.getTitle().replace("'", "\\'") %>"
+                                        data-task-desc="<%= task.getDescription().replace("'", "\\'") %>"
+                                        data-task-due="<%= task.getDueDate() != null ? task.getDueDate() : "" %>"
+                                        data-task-priority="<%= task.getPriority() %>">
+                                    <i class="fas fa-lightbulb"></i> AI Suggest
+                                </button>
+                                <% } else { %>
+                                    <span class="ai-no-suggestion">N/A</span>
+                                <% } %>
                             </div>
                         </div>
                         <% } } } %>
@@ -363,8 +384,7 @@
                 <span class="close" onclick="closeAddTaskModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="addTaskForm" action="task" method="post">
-                    <input type="hidden" name="action" value="create">
+                <form id="addTaskForm" >
                     <input type="hidden" name="boardId" id="taskBoardId">
                     <div class="form-group">
                         <label><i class="fas fa-heading"></i> Title:</label>
@@ -413,7 +433,7 @@
                 <span class="close" onclick="closeEditTaskModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="editTaskForm" action="task" method="post">
+                <form id="editTaskForm">
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" name="taskId" id="editTaskId">
                     <div class="form-group">
@@ -448,7 +468,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="closeEditTaskModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update Task</button>
+                        <button type="button" class="btn btn-primary" onclick="taskManager.handleEditTask()">Update Task</button>
                     </div>
                 </form>
             </div>
@@ -462,6 +482,7 @@
                 <span class="close" onclick="closeTaskDetailModal()">&times;</span>
             </div>
             <div class="modal-body">
+                <input type="hidden" id="taskDetailId" />
                 <div class="task-detail-content">
                     <p id="taskDetailDescription"></p>
                     <div class="task-detail-meta">
@@ -484,20 +505,85 @@
                     <button type="button" class="btn btn-warning" onclick="editTaskFromDetail()">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <form action="task" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this task?')">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="taskId" id="taskDetailId">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </form>
+                    <button class="btn btn-danger" onclick="taskManager.deleteTask(document.getElementById('taskDetailId').value)">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- AI Suggestion Modal -->
+    <div id="aiSuggestionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-robot"></i> AI Suggestion for Task</h3>
+                <span class="close" onclick="closeAISuggestionModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="ai-suggestion-task-info">
+                    <h4>Current Task: <span id="aiCurrentTaskTitle"></span></h4>
+                    <p><span id="aiCurrentTaskDescription"></span></p>
+                    <div class="task-detail-meta">
+                        <div class="meta-item">
+                            <strong><i class="fas fa-calendar"></i> Due Date:</strong>
+                            <span id="aiCurrentTaskDueDate"></span>
+                        </div>
+                        <div class="meta-item">
+                            <strong><i class="fas fa-flag"></i> Priority:</strong>
+                            <span id="aiCurrentTaskPriority"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ai-suggestions-list">
+                    <h4>Suggested Details:</h4>
+                    <div class="ai-suggestion-item">
+                        <p><strong>Suggested Start Time:</strong> <span id="aiSuggestedStart"></span></p>
+                        <p><strong>Suggested End Time:</strong> <span id="aiSuggestedEnd"></span></p>
+                        <p><strong>Difficulty:</strong> <span id="aiSuggestedDifficulty"></span></p>
+                        <p><strong>Priority:</strong> <span id="aiSuggestedPriority"></span></p>
+                        <p><strong>Confidence:</strong> <span id="aiSuggestedConfidence"></span></p>
+                        <p><strong>Short Description:</strong> <span id="aiSuggestedShortDesc"></span></p>
+                        <button class="btn btn-primary btn-sm mt-3" id="applyAISuggestionBtn">
+                            <i class="fas fa-check"></i> Apply Suggestion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Members Modal -->
+    <div id="projectMembersModal" class="modal project-members-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-users"></i> Project Members</h3>
+                <span class="close" onclick="closeProjectMembersModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h4>Current Members:</h4>
+                <div class="member-list" id="projectMemberList">
+                    <!-- Members will be populated by JS -->
+                </div>
+
+                <div class="invite-section">
+                    <h4><i class="fas fa-user-plus"></i> Invite New Member:</h4>
+                    <div class="invite-form">
+                        <input type="email" id="inviteEmail" placeholder="Enter member email..." required>
+                        <button class="btn btn-primary" onclick="sendInvitation()">
+                            <i class="fas fa-paper-plane"></i> Send Invite
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.contextPath = "<%= request.getContextPath() %>";
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="${pageContext.request.contextPath}/TaskScript.js"></script>
+    <script src="<%= request.getContextPath() %>/TaskScript.js"></script>
     <script>
         function openAddBoardModal() {
             document.getElementById('addBoardModal').style.display = 'block';
@@ -512,7 +598,7 @@
         function closeAddTaskModal() {
             document.getElementById('addTaskModal').style.display = 'none';
         }
-        
+
         // Edit Task Functions
         function openEditTaskModal(taskId) {
             fetch('task?action=getTask&taskId=' + taskId)
@@ -523,11 +609,9 @@
                 document.getElementById('editTaskDescription').value = data.description;
                 document.getElementById('editTaskDueDate').value = data.dueDate;
                 document.getElementById('editTaskPriority').value = data.priority;
-
                 const statusMap = {1: 'To Do', 2: 'In Progress', 3: 'Done'};
                 const statusSelect = document.getElementById('editTaskStatus');
                 statusSelect.value = statusMap[data.statusId] || 'To Do';
-
                 document.getElementById('editTaskModal').style.display = 'block';
               })
               .catch(error => {
@@ -535,17 +619,17 @@
                 alert('Failed to load task for editing.');
               });
           }
-        
+
         function closeEditTaskModal() {
             document.getElementById('editTaskModal').style.display = 'none';
         }
-        
+
         function editTaskFromDetail() {
             const taskId = document.getElementById('taskDetailId').value;
             closeTaskDetailModal();
             openEditTaskModal(taskId);
         }
-        
+
         function openTaskDetailPopup(taskId, title, description, dueDate, priority, status) {
             document.getElementById('taskDetailId').value = taskId;
             document.getElementById('taskDetailTitle').innerText = title;
@@ -558,12 +642,39 @@
         function closeTaskDetailModal() {
             document.getElementById('taskDetailModal').style.display = 'none';
         }
+
+        // AI Suggestion Modal Functions
+        function closeAISuggestionModal() {
+            document.getElementById('aiSuggestionModal').style.display = 'none';
+        }
+
+        // Project Members Modal Functions
+        function openProjectMembersModal() {
+            window.taskManager.displayProjectMembers(); // Call the TaskManager method
+            document.getElementById('projectMembersModal').style.display = 'block';
+        }
+
+        function closeProjectMembersModal() {
+            document.getElementById('projectMembersModal').style.display = 'none';
+        }
+
+        function sendInvitation() {
+            window.taskManager.sendInvitation();
+        }
+
+        // Global functions for board menu sorting
+        function sortBoardTasks(boardId, sortBy) {
+            window.taskManager.sortBoardTasks(boardId, sortBy);
+        }
+
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 closeAddBoardModal();
                 closeAddTaskModal();
                 closeEditTaskModal();
                 closeTaskDetailModal();
+                closeAISuggestionModal();
+                closeProjectMembersModal();
             }
         }
     </script>
