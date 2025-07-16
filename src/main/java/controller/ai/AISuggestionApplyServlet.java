@@ -1,4 +1,4 @@
-package controller;
+package controller.ai;
 
 import com.google.gson.Gson;
 import dao.AIScheduleDAO;

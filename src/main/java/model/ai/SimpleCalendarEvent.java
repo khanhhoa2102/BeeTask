@@ -4,38 +4,16 @@ import java.util.Date;
 
 public class SimpleCalendarEvent {
     private String title;
-    private Date start;
-    private Date end;
+    private Date startTime;
+    private Date endTime;
 
-    public SimpleCalendarEvent() {}
-
-    public SimpleCalendarEvent(String title, Date start, Date end) {
+    public SimpleCalendarEvent(String title, Date startTime, Date endTime) {
         this.title = title;
-        this.start = start;
-        this.end = end;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Date getStart() {
-        return start;
-    }
-
-    public void setStart(Date start) {
-        this.start = start;
-    }
-
-    public Date getEnd() {
-        return end;
-    }
-
-    public void setEnd(Date end) {
-        this.end = end;
-    }
+    public String getTitle() { return title; }
+    public Date getStartTime() { return startTime; }
+    public Date getEndTime() { return endTime; }
 }

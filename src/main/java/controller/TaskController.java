@@ -12,6 +12,7 @@ import java.sql.Date;
 
 @WebServlet("/task")
 public class TaskController extends HttpServlet {
+
     private TaskDAO taskDAO;
     private TaskStatusDAO statusDAO;
 
@@ -25,7 +26,7 @@ public class TaskController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        
+
         if ("getTask".equals(action)) {
             getTaskForEdit(request, response);
         } else {
@@ -38,9 +39,9 @@ public class TaskController extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
-        
+
         System.out.println("🎯 TaskController received action: " + action);
-        
+
         try {
             switch (action) {
                 case "move":
@@ -69,27 +70,27 @@ public class TaskController extends HttpServlet {
         try {
             int taskId = Integer.parseInt(request.getParameter("taskId"));
             Task task = taskDAO.getTaskById(taskId);
-            
+
             if (task != null) {
                 // Return task data as JSON
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
-                
+
                 String json = String.format(
-                    "{\"taskId\":%d,\"title\":\"%s\",\"description\":\"%s\",\"statusId\":%d,\"priority\":\"%s\",\"dueDate\":\"%s\"}",
-                    task.getTaskId(),
-                    task.getTitle().replace("\"", "\\\""),
-                    task.getDescription().replace("\"", "\\\""),
-                    task.getStatusId(),
-                    task.getPriority(),
-                    task.getDueDate() != null ? task.getDueDate().toString() : ""
+                        "{\"taskId\":%d,\"title\":\"%s\",\"description\":\"%s\",\"statusId\":%d,\"priority\":\"%s\",\"dueDate\":\"%s\"}",
+                        task.getTaskId(),
+                        task.getTitle().replace("\"", "\\\""),
+                        task.getDescription().replace("\"", "\\\""),
+                        task.getStatusId(),
+                        task.getPriority(),
+                        task.getDueDate() != null ? task.getDueDate().toString() : ""
                 );
-                
+
                 response.getWriter().write(json);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
-            
+
         } catch (Exception e) {
             System.err.println("❌ Error getting task for edit: " + e.getMessage());
             e.printStackTrace();
@@ -99,11 +100,9 @@ public class TaskController extends HttpServlet {
 
     private void editTask(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            // Get user from session
             User user = (User) request.getSession().getAttribute("user");
             if (user == null) {
-                System.out.println("❌ User not logged in");
-                response.sendRedirect("/BeeTask/Authentication/Login.jsp");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
@@ -113,20 +112,16 @@ public class TaskController extends HttpServlet {
             String statusName = request.getParameter("status");
             String priority = request.getParameter("priority");
             String dueDateStr = request.getParameter("dueDate");
-            
-            System.out.println("✏️ Editing task: " + taskId + " - " + title);
 
-            // Get status ID from status name
             int statusId = statusDAO.getStatusId(statusName);
-            
+
             Task task = new Task();
             task.setTaskId(taskId);
             task.setTitle(title);
             task.setDescription(description != null ? description : "");
             task.setStatusId(statusId);
             task.setPriority(priority != null ? priority : "Medium");
-            
-            // Handle due date
+
             if (dueDateStr != null && !dueDateStr.trim().isEmpty()) {
                 task.setDueDate(Date.valueOf(dueDateStr));
             } else {
@@ -134,20 +129,15 @@ public class TaskController extends HttpServlet {
             }
 
             taskDAO.update(task);
-            System.out.println("✅ Task updated successfully");
-            
-            // Redirect back to the task page
-            String referer = request.getHeader("Referer");
-            if (referer != null) {
-                response.sendRedirect(referer);
-            } else {
-                response.sendRedirect("Task.jsp");
-            }
-            
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"message\": \"Task updated successfully\"}");
+
         } catch (Exception e) {
-            System.err.println("❌ Error editing task: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect("error.jsp?msg=" + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Failed to update task: " + e.getMessage() + "\"}");
         }
     }
 
@@ -158,10 +148,10 @@ public class TaskController extends HttpServlet {
             int newIndex = Integer.parseInt(request.getParameter("newIndex"));
 
             System.out.println("🔄 Moving task " + taskId + " to board " + newBoardId + " at position " + newIndex);
-            
+
             taskDAO.moveTaskToBoard(taskId, newBoardId, newIndex);
             response.setStatus(HttpServletResponse.SC_OK);
-            
+
         } catch (Exception e) {
             System.err.println("❌ Error moving task: " + e.getMessage());
             e.printStackTrace();
@@ -171,11 +161,9 @@ public class TaskController extends HttpServlet {
 
     private void createTask(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            // Get user from session
             User user = (User) request.getSession().getAttribute("user");
             if (user == null) {
-                System.out.println("❌ User not logged in");
-                response.sendRedirect("/BeeTask/Authentication/Login.jsp");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
@@ -185,12 +173,9 @@ public class TaskController extends HttpServlet {
             String statusName = request.getParameter("status");
             String priority = request.getParameter("priority");
             String dueDateStr = request.getParameter("dueDate");
-            
-            System.out.println("➕ Creating task: " + title + " for board " + boardId);
 
-            // Get status ID from status name
             int statusId = statusDAO.getStatusId(statusName);
-            
+
             Task task = new Task();
             task.setBoardId(boardId);
             task.setTitle(title);
@@ -198,27 +183,21 @@ public class TaskController extends HttpServlet {
             task.setStatusId(statusId);
             task.setPriority(priority != null ? priority : "Medium");
             task.setCreatedBy(user.getUserId());
-            
-            // Handle due date
+
             if (dueDateStr != null && !dueDateStr.trim().isEmpty()) {
                 task.setDueDate(Date.valueOf(dueDateStr));
             }
 
             taskDAO.insert(task);
-            System.out.println("✅ Task created successfully");
-            
-            // Redirect back to the task page
-            String referer = request.getHeader("Referer");
-            if (referer != null) {
-                response.sendRedirect(referer);
-            } else {
-                response.sendRedirect("Task.jsp");
-            }
-            
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"message\": \"Task created successfully\"}");
+
         } catch (Exception e) {
-            System.err.println("❌ Error creating task: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect("error.jsp?msg=" + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Failed to create task: " + e.getMessage() + "\"}");
         }
     }
 
@@ -226,21 +205,17 @@ public class TaskController extends HttpServlet {
         try {
             int taskId = Integer.parseInt(request.getParameter("taskId"));
             System.out.println("🗑️ Deleting task: " + taskId);
-            
+
             taskDAO.delete(taskId);
-            System.out.println("✅ Task deleted successfully");
-            
-            String referer = request.getHeader("Referer");
-            if (referer != null) {
-                response.sendRedirect(referer);
-            } else {
-                response.sendRedirect("Task.jsp");
-            }
-            
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"message\": \"Task deleted successfully\"}");
+
         } catch (Exception e) {
-            System.err.println("❌ Error deleting task: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect("error.jsp?msg=" + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Failed to delete task: " + e.getMessage() + "\"}");
         }
     }
 }
