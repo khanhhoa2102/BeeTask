@@ -89,6 +89,18 @@ CREATE TABLE ProjectMembers (
     CONSTRAINT FK_ProjectMembers_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 
+CREATE TABLE Invitations (
+    InvitationId INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NULL,                            
+    Email VARCHAR(255) NOT NULL,                    -- Email người nhận (duy nhất để đối chiếu)
+    ProjectId INT NOT NULL,
+    Status VARCHAR(20) DEFAULT 'Pending',           -- 'Pending', 'Accepted', 'Declined'
+    SentAt DATETIME DEFAULT GETDATE(),
+    RespondedAt DATETIME
+);
+
+
+
 -- ========== TEMPLATES ==========
 CREATE TABLE Templates (
     TemplateId INT PRIMARY KEY IDENTITY,

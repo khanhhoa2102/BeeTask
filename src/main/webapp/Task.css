@@ -43,11 +43,6 @@ body.dark-mode .main-content {
   background: rgba(0, 0, 0, 0.1);
 }
 
-/* Adjust main content margin when sidebar is collapsed */
-body.beetask-sidebar-active.beetask-sidebar-collapsed .main-content {
-  margin-left: 70px; /* Matches collapsed sidebar width */
-}
-
 /* Header Styles - Streamlined */
 .template-header {
   background: rgba(255, 255, 255, 0.9);
