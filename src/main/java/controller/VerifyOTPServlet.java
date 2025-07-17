@@ -1,6 +1,9 @@
 package controller;
 
 import context.DBConnection;
+import dao.InvitationDAO;
+import dao.NotificationDAO;
+import dao.ProjectDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,7 +13,10 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.List;
 import java.util.UUID;
+import model.Invitation;
+import model.Notification;
 
 @WebServlet(name = "VerifyOTPServlet", urlPatterns = {"/verify-code"})
 public class VerifyOTPServlet extends HttpServlet {
@@ -73,7 +79,37 @@ public class VerifyOTPServlet extends HttpServlet {
                 user.setEmailVerified(true);
                 user.setActive(true);
 
-                new UserDAO().insert(user);
+                UserDAO userDAO = new UserDAO();
+                userDAO.insert(user);
+
+                // ✅ Sau khi insert xong, lấy lại userId từ email
+                User insertedUser = userDAO.getUserByEmail(email);
+                if (insertedUser != null) {
+                    // ✅ Cập nhật các invitation có Email = email và UserId IS NULL
+                    new dao.InvitationDAO().updateUserIdForEmail(email, insertedUser.getUserId());
+
+                    InvitationDAO invitationDAO = new InvitationDAO();
+                    List<Invitation> acceptedInvites = invitationDAO.getAcceptedInvitationsWithoutMembership(insertedUser.getUserId());
+
+                    for (Invitation inv : acceptedInvites) {
+                        boolean added = new ProjectDAO().addMemberToProject(inv.getProjectId(), insertedUser.getUserId(), "Member");
+                        if (added) {
+                            System.out.println("✅ Auto-added user " + insertedUser.getUserId() + " to project " + inv.getProjectId() + " (manual register)");
+
+                            // Gửi thông báo nội bộ
+                            NotificationDAO notiDAO = new NotificationDAO();
+                            Notification noti = new Notification();
+                            noti.setUserId(insertedUser.getUserId());
+                            noti.setMessage("Bạn đã được thêm vào dự án (ID: " + inv.getProjectId() + ") sau khi xác nhận lời mời.");
+                            noti.setIsRead(false);
+                            noti.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                            notiDAO.addNotification(noti);
+                        } else {
+                            System.out.println("⚠️ Already in project or insert failed (manual register)");
+                        }
+                    }
+
+                }
 
                 // 🧹 Clean session
                 session.removeAttribute("otp");
@@ -91,7 +127,6 @@ public class VerifyOTPServlet extends HttpServlet {
                 request.setAttribute("message", "❌ Error while creating account.");
                 request.getRequestDispatcher("Authentication/EnterOTP.jsp").forward(request, response);
             }
-
         } else if ("forgot-password".equals(purpose)) {
             String resetEmail = (String) session.getAttribute("resetEmail");
             if (resetEmail == null) {

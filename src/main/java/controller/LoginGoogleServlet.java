@@ -2,17 +2,23 @@ package controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import dao.InvitationDAO;
+import dao.NotificationDAO;
+import dao.ProjectDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.GoogleUserDTO;
+import model.Invitation;
 import model.User;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
+import model.Notification;
 
 @WebServlet(name = "LoginGoogleServlet", urlPatterns = {"/LoginGoogleServlet"})
 public class LoginGoogleServlet extends HttpServlet {
@@ -46,8 +52,9 @@ public class LoginGoogleServlet extends HttpServlet {
             String googleId = googleUser.getId();
             String email = googleUser.getEmail();
 
-            // Step 3: Kiểm tra người dùng
-            User user = new UserDAO().findByGoogleId(googleId);
+            // Step 3: Kiểm tra hoặc tạo người dùng
+            UserDAO userDAO = new UserDAO();
+            User user = userDAO.findByGoogleId(googleId);
             if (user == null) {
                 user = new User();
                 user.setUsername(googleUser.getName());
@@ -59,11 +66,33 @@ public class LoginGoogleServlet extends HttpServlet {
                 user.setEmailVerified(true);
                 user.setActive(true);
                 user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-
-                new UserDAO().insert(user);
+                userDAO.insert(user);
                 System.out.println("✅ Created new Google user: " + email);
             } else {
                 System.out.println("ℹ️ Google user logged in: " + email);
+            }
+
+            // ✅ Cập nhật lời mời và thêm vào project nếu cần (luôn chạy sau khi có user)
+            InvitationDAO invitationDAO = new InvitationDAO();
+            invitationDAO.updateUserIdForEmail(email, user.getUserId());
+
+            List<Invitation> acceptedInvites = invitationDAO.getAcceptedInvitationsWithoutMembership(user.getUserId());
+            for (Invitation inv : acceptedInvites) {
+                boolean added = new ProjectDAO().addMemberToProject(inv.getProjectId(), user.getUserId(), "Member");
+                if (added) {
+                    System.out.println("✅ Auto-added user " + user.getUserId() + " to project " + inv.getProjectId() + " (post-login)");
+
+                    // ✅ Gửi thông báo nội bộ
+                    NotificationDAO notiDAO = new NotificationDAO();
+                    Notification noti = new Notification();
+                    noti.setUserId(user.getUserId());
+                    noti.setMessage("Bạn đã được thêm vào dự án (ID: " + inv.getProjectId() + ") sau khi xác nhận lời mời.");
+                    noti.setIsRead(false);
+                    noti.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                    notiDAO.addNotification(noti);
+                } else {
+                    System.out.println("⚠️ User already in project or insert failed (post-login)");
+                }
             }
 
             // Step 4: Lưu vào session

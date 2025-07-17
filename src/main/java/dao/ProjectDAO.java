@@ -286,4 +286,52 @@ public class ProjectDAO {
         return members;
     }
 
+// Hàm thêm thành viên vào project nếu chưa tồn tại
+    public boolean addMemberToProject(int projectId, int userId, String role) {
+        String checkSql = "SELECT * FROM ProjectMembers WHERE ProjectId = ? AND UserId = ?";
+        String insertSql = "INSERT INTO ProjectMembers (ProjectId, UserId, Role) VALUES (?, ?, ?)";
+
+        try (Connection conn = new DBConnection().getConnection()) {
+
+            // 1. Kiểm tra xem đã là thành viên chưa
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setInt(1, projectId);
+                checkStmt.setInt(2, userId);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        // Đã tồn tại
+                        return false;
+                    }
+                }
+            }
+
+            // 2. Nếu chưa thì thêm
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                insertStmt.setInt(1, projectId);
+                insertStmt.setInt(2, userId);
+                insertStmt.setString(3, role);
+                insertStmt.executeUpdate();
+                return true;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isUserInProject(int projectId, int userId) {
+        String sql = "SELECT 1 FROM ProjectMembers WHERE ProjectId = ? AND UserId = ?";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Trả về true nếu có bản ghi
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
