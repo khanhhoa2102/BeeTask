@@ -66,6 +66,7 @@ public class LoginGoogleServlet extends HttpServlet {
                 user.setEmailVerified(true);
                 user.setActive(true);
                 user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                user.setRole("User");
                 userDAO.insert(user);
                 System.out.println("✅ Created new Google user: " + email);
             } else {
