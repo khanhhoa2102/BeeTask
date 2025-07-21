@@ -2,7 +2,7 @@
     <% String uri = request.getRequestURI(); %>
 <ul class="menu">
     <li <% if (uri.endsWith("/SystemAdmin.jsp")) { %> class="active" <% } %>>
-        <a href="${pageContext.request.contextPath}/Admin/SystemAdmin.jsp">
+        <a href="${pageContext.request.contextPath}/admin/user-stats">
             <i class="fas fa-home"></i><span>Dashboard</span>
         </a>
     </li>
@@ -28,17 +28,17 @@
 
 
     <li <% if (uri.endsWith("/Templates.jsp")) { %> class="active" <% } %>>
-        <a href="${pageContext.request.contextPath}/Home/Templates.jsp">
+        <a href="${pageContext.request.contextPath}/Admin/Templates.jsp">
             <i class="fas fa-copy"></i><span>Templates Management</span>
         </a>
     </li>
     
     
-    <li <% if (uri.endsWith("/CalendarHome.jsp")) { %> class="active" <% } %>>
+<!--    <li <% if (uri.endsWith("/CalendarHome.jsp")) { %> class="active" <% } %>>
         <a href="${pageContext.request.contextPath}/Home/CalendarHome.jsp">
             <i class="fas fa-calendar-day"></i><span>System settings</span>
         </a>
-    </li>
+    </li>-->
     
     
     

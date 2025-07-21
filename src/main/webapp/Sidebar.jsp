@@ -595,14 +595,7 @@ body.dark-mode .beetask-toggle:focus {
                         <span class="beetask-nav-text">Statistics</span>
                     </a>
                 </li>
-                <% if (user != null && "Admin".equalsIgnoreCase(user.getRole())) { %>
-                <li class="beetask-nav-item <%= uri.endsWith("/SystemAdmin.jsp") ? "beetask-active" : "" %>">
-                    <a href="${pageContext.request.contextPath}/Admin/SystemAdmin.jsp" class="beetask-nav-link" data-tooltip="Admin">
-                        <i class="fas fa-shield-alt"></i>
-                        <span class="beetask-nav-text">Admin</span>
-                    </a>
-                </li>
-                <% } %>
+               
             </ul>
         </nav>
 

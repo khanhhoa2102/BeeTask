@@ -50,8 +50,20 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
                 session.setAttribute("loginPassword", password);
-                response.sendRedirect(request.getContextPath() + "/Home/Home.jsp");
+              
+            
+            // ✅ Chuyển hướng tùy theo vai trò
+                if ("Admin".equalsIgnoreCase(user.getRole())) {
+                    response.sendRedirect(request.getContextPath() + "/admin/user-stats");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/Home/Home.jsp");
+                }
 
+            
+            
+            
+            
+            
             } else {
                 request.setAttribute("errorMessage", "Incorrect email or password. Please try again.");
                 request.getRequestDispatcher("Authentication/Login.jsp").forward(request, response);
