@@ -57,7 +57,10 @@ public class ProjectController extends HttpServlet {
             project.setDescription(description);
             project.setCreatedBy(user.getUserId());
 
-            projectDAO.insert(project);
+            int projectId = projectDAO.insert(project);  // Lấy ID vừa insert
+            if (projectId != -1) {
+                projectDAO.addProjectMember(projectId, user.getUserId(), "Leader");  // Gán quyền Leader
+            }
         }
     }
 

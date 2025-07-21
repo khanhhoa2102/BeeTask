@@ -353,4 +353,59 @@ public class TaskDAO {
 
         System.out.println("=== END DEBUG ===");
     }
+    
+    public List<Task> getTasksByProjectId(int projectId) {
+        List<Task> tasks = new ArrayList<>();
+
+        String taskSQL = "SELECT t.TaskId, t.Title, t.Description, t.DueDate, t.CreatedAt, t.CreatedBy, " +
+                 "t.Position, t.Priority, t.StatusId, t.ListId, " +
+                 "t.BoardId, b.Name AS BoardName, " +
+                 "ts.Name AS StatusName " +
+                 "FROM Tasks t " +
+                 "INNER JOIN Boards b ON t.BoardId = b.BoardId " +
+                 "INNER JOIN TaskStatuses ts ON t.StatusId = ts.StatusId " +
+                 "WHERE b.ProjectId = ? " +
+                 "ORDER BY t.Position ASC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(taskSQL)) {
+
+            ps.setInt(1, projectId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Task task = new Task();
+                    task.setTaskId(rs.getInt("TaskId"));
+                    task.setBoardId(rs.getInt("BoardId"));
+                    task.setListId(rs.getInt("ListId"));
+                    task.setTitle(rs.getString("Title"));
+                    task.setDescription(rs.getString("Description"));
+                    task.setStatusId(rs.getInt("StatusId"));
+                    task.setDueDate(rs.getDate("DueDate"));
+                    task.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                    task.setCreatedBy(rs.getInt("CreatedBy"));
+                    task.setPosition(rs.getInt("Position"));
+                    task.setPriority(rs.getString("Priority"));
+                    tasks.add(task);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
+    }
+    
+    public int getProjectIdByTaskId(int taskId) {
+        String sql = "SELECT b.ProjectId FROM Tasks t INNER JOIN Boards b ON t.BoardId = b.BoardId WHERE t.TaskId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, taskId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt("ProjectId");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }

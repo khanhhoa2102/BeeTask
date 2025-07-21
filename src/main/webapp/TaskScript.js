@@ -362,25 +362,53 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         duplicateBoard(boardId) {
-            if (confirm("Duplicate this board with all its tasks?")) {
-                fetch("board?action=duplicate", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: `boardId=${boardId}`,
+            if (!confirm("Duplicate this board and all its tasks?")) return;
+
+            fetch("board?action=duplicate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `boardId=${boardId}`,
+            })
+                .then((response) => {
+                    if (!response.ok) throw new Error("Failed to duplicate board");
+                    return response.text(); // Bạn có thể dùng JSON nếu muốn trả thêm thông tin
                 })
-                        .then((response) => {
-                            if (response.ok) {
-                                location.reload() // Refresh to show new board
-                            } else {
-                                this.showNotification("Error duplicating board", "error")
-                            }
-                        })
-                        .catch((err) => {
-                            console.error("Error duplicating board:", err)
-                            this.showNotification("Error duplicating board", "error")
-                        })
-            }
+                .then(() => {
+                    this.showNotification("✅ Board duplicated successfully", "success");
+                    location.reload(); // Load lại để thấy board mới
+                })
+                .catch((err) => {
+                    console.error("❌ Error duplicating board:", err);
+                    this.showNotification("❌ Failed to duplicate board", "error");
+                });
         }
+        
+        sortBoardTasks(boardId, sortBy) {
+            const boardContainer = document.querySelector(`.board-card[data-board-id="${boardId}"] .board-tasks`);
+            if (!boardContainer) return;
+
+            const tasks = Array.from(boardContainer.querySelectorAll(".task-card"));
+
+            tasks.sort((a, b) => {
+                if (sortBy === "dueDate") {
+                    const dateA = new Date(a.dataset.taskDuedate || "9999-12-31");
+                    const dateB = new Date(b.dataset.taskDuedate || "9999-12-31");
+                    return dateA - dateB;
+                } else if (sortBy === "priority") {
+                    const priorityMap = { "High": 1, "Medium": 2, "Low": 3 };
+                    const aPriority = priorityMap[a.dataset.taskPriority] || 4;
+                    const bPriority = priorityMap[b.dataset.taskPriority] || 4;
+                    return aPriority - bPriority;
+                }
+                return 0;
+            });
+
+            tasks.forEach(task => boardContainer.appendChild(task)); // Reorder DOM
+            this.showNotification(`🔃 Sorted tasks by ${sortBy}`, "info");
+        }
+0
         deleteBoard(boardId) {
             console.log("🧪 deleteBoard called with ID:", boardId) // ✅ Thêm dòng này
             if (!confirm("Are you sure you want to delete this board?"))
@@ -479,6 +507,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const dueDate = formData.get("dueDate")
             const priority = formData.get("priority")
             const status = formData.get("status")
+            // LẤY DANH SÁCH USER ĐƯỢC ASSIGN
+            const assigneeSelect = document.getElementById("editTaskAssignees")
+            const assigneeIds = Array.from(assigneeSelect.selectedOptions).map(opt => opt.value)
+            const assigneeParams = assigneeIds.map(id => `assignees=${id}`).join("&")
+            
             if (!title.trim()) {
                 this.showNotification("Task title is required", "error")
                 return
@@ -486,8 +519,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch("task", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                body: `action=edit&taskId=${taskId}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&dueDate=${dueDate}&priority=${priority}&status=${encodeURIComponent(status)}`,
-            })
+                body: `action=edit&taskId=${taskId}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&dueDate=${dueDate}&priority=${priority}&status=${encodeURIComponent(status)}&${assigneeParams}`,            })
                     .then((response) => {
                         if (response.ok) {
                             this.showNotification("Task updated", "success")
@@ -561,6 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         this.showNotification("❌ Error updating task", "error")
                     })
         }
+        
         deleteTask(taskId) {
             if (!confirm("Are you sure you want to delete this task?"))
                 return

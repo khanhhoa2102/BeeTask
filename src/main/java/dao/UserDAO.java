@@ -215,4 +215,47 @@ public class UserDAO {
 
         return null;
     }
+    
+    public List<User> getUsersByProjectId(int projectId) {
+        List<User> users = new ArrayList<>();
+
+        String sql = "SELECT u.UserId, u.Username, u.Email, u.PasswordHash, " +
+                     "u.AvatarUrl, u.PhoneNumber, u.DateOfBirth, u.Gender, " +
+                     "u.Address, u.LoginProvider, u.GoogleId, u.IsEmailVerified, " +
+                     "u.IsActive, u.CreatedAt, u.Role " +
+                     "FROM Users u " +
+                     "INNER JOIN ProjectMembers pm ON u.UserId = pm.UserId " +
+                     "WHERE pm.ProjectId = ? AND u.IsActive = 1";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, projectId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User(
+                        rs.getInt("UserId"),
+                        rs.getString("Username"),
+                        rs.getString("Email"),
+                        rs.getString("PasswordHash"),
+                        rs.getString("AvatarUrl"),
+                        rs.getString("PhoneNumber"),
+                        rs.getDate("DateOfBirth"),
+                        rs.getString("Gender"),
+                        rs.getString("Address"),
+                        rs.getString("LoginProvider"),
+                        rs.getString("GoogleId"),
+                        rs.getBoolean("IsEmailVerified"),
+                        rs.getBoolean("IsActive"),
+                        rs.getTimestamp("CreatedAt"),
+                        rs.getString("Role")
+                    );
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
 }
