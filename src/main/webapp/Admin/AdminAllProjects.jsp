@@ -1,14 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*, model.ProjectOverview, model.User" %>
 <%@ include file="../session-check.jspf" %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <%@ include file="HeaderAdmin.jsp" %>
-    <title>All Projects - Admin</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Home/Statistic.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Project Management Dashboard - Admin</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Admin/Statistic.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="dashboard-body">
     <div class="dashboard-container">
@@ -27,7 +26,6 @@
                     <span class="email"><%= user.getEmail() %></span>
                 </div>
             </div>
-
             <%@ include file="SidebarAdmin.jsp" %>
             <%@ include file="../Help.jsp" %>
         </aside>
@@ -35,18 +33,16 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="calendar-box">
-                <h2>All Projects in System</h2>
-
+                <h2><i class="fas fa-tasks"></i> Project Management Dashboard</h2>
+                
                 <%
                     List<ProjectOverview> allProjects = (List<ProjectOverview>) request.getAttribute("projects");
-
                     int lockedCount = 0;
                     Map<Integer, List<ProjectOverview>> projectMap = new LinkedHashMap<>();
-
                     for (ProjectOverview po : allProjects) {
                         projectMap.computeIfAbsent(po.getProjectId(), k -> new ArrayList<>()).add(po);
                     }
-
+                    
                     // Đếm số lượng dự án bị khóa
                     Set<Integer> lockedProjects = new HashSet<>();
                     for (List<ProjectOverview> group : projectMap.values()) {
@@ -57,7 +53,10 @@
                     lockedCount = lockedProjects.size();
                 %>
 
-                <p style="color: red; margin-bottom: 15px;">Locked Projects: <strong><%= lockedCount %></strong></p>
+                <div class="status-badge locked">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong><%= lockedCount %></strong> Locked Projects
+                </div>
 
                 <%
                     if (allProjects != null && !allProjects.isEmpty()) {
@@ -65,7 +64,6 @@
                             ProjectOverview project = entry.getValue().get(0);
                             Set<String> memberNames = new LinkedHashSet<>();
                             String leader = "";
-
                             for (ProjectOverview po : entry.getValue()) {
                                 memberNames.add(po.getUsername());
                                 if ("Leader".equalsIgnoreCase(po.getRole())) {
@@ -75,13 +73,17 @@
                 %>
                 <div class="project-block">
                     <div class="project-header-card">
-                        <div class="project-icon"><i class="fas fa-project-diagram"></i></div>
+                        <div class="project-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
                         <div class="project-info">
                             <h1 class="project-title">
                                 <span class="project-id">#<%= project.getProjectId() %></span>
                                 <%= project.getProjectName() %>
                                 <% if (project.isLocked()) { %>
-                                    <span style="color: red;">(Locked)</span>
+                                    <span class="locked-indicator">
+                                        <i class="fas fa-lock"></i> LOCKED
+                                    </span>
                                 <% } %>
                             </h1>
                             <p class="project-description">
@@ -91,31 +93,29 @@
                             <div class="project-meta">
                                 <div class="meta-item">
                                     <i class="fas fa-user-plus"></i>
-                                    Created By: <strong><%= project.getProjectCreatedBy() %></strong>
+                                    <span>Created By: <strong><%= project.getProjectCreatedBy() %></strong></span>
                                 </div>
                                 <div class="meta-item">
                                     <i class="fas fa-crown"></i>
-                                    Leader: <strong><%= leader != null && !leader.isEmpty() ? leader : "N/A" %></strong>
+                                    <span>Project Leader: <strong><%= leader != null && !leader.isEmpty() ? leader : "Not Assigned" %></strong></span>
                                 </div>
                                 <div class="meta-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    Created At: <strong><%= project.getProjectCreatedAt() %></strong>
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <span>Created: <strong><%= project.getProjectCreatedAt() %></strong></span>
                                 </div>
                                 <div class="meta-item">
                                     <i class="fas fa-users"></i>
-                                    Members (<%= memberNames.size() %>): 
-                                    <strong><%= String.join(", ", memberNames) %></strong>
+                                    <span>Team Members (<%= memberNames.size() %>): <strong><%= String.join(", ", memberNames) %></strong></span>
                                 </div>
                                 <div class="meta-item">
-                                   <form method="post" action="allprojects">
-    <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-    <input type="hidden" name="isLocked" value="<%= project.isLocked() ? "false" : "true" %>">
-    <button type="submit" class="btn <%= project.isLocked() ? "btn-unlock" : "btn-lock" %>">
-        <i class="fas <%= project.isLocked() ? "fa-lock-open" : "fa-lock" %>"></i>
-        <%= project.isLocked() ? "Unlock" : "Lock" %>
-    </button>
-</form>
-
+                                    <form method="post" action="allprojects" style="margin: 0;">
+                                        <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
+                                        <input type="hidden" name="isLocked" value="<%= project.isLocked() ? "false" : "true" %>">
+                                        <button type="submit" class="btn <%= project.isLocked() ? "btn-unlock" : "btn-lock" %>">
+                                            <i class="fas <%= project.isLocked() ? "fa-unlock" : "fa-lock" %>"></i>
+                                            <%= project.isLocked() ? "Unlock Project" : "Lock Project" %>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +125,11 @@
                         } // end for
                     } else {
                 %>
-                <p>There is no project in the system.</p>
+                <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <i class="fas fa-folder-open" style="font-size: 4rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+                    <h3>No Projects Found</h3>
+                    <p>There are currently no projects in the system.</p>
+                </div>
                 <% } %>
             </div>
         </main>
