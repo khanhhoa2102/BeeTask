@@ -42,6 +42,7 @@
                         </div>
 
                         <form action="${pageContext.request.contextPath}/payment" method="post">
+                            <input type="hidden" name="amount" value="2000" />
                             <button type="submit" id="create-payment-link-btn">
                                 Tạo Link thanh toán
                             </button>

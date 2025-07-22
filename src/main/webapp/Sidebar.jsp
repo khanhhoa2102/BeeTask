@@ -520,17 +520,17 @@ body.dark-mode .beetask-toggle:focus {
         <div class="beetask-user-section">
             <div class="beetask-user-profile">
                 <div class="beetask-user-avatar">
-                    <% if (user != null && user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) { %>
+                    <% if (headerUser != null && headerUser.getAvatarUrl() != null && !headerUser.getAvatarUrl().isEmpty()) { %>
                         <img src="<%= user.getAvatarUrl() %>" alt="Avatar">
                     <% } else { %>
                         <div class="beetask-avatar-placeholder">
-                            <%= user != null ? user.getUsername().substring(0, Math.min(2, user.getUsername().length())).toUpperCase() : "U" %>
+                            <%= headerUser != null ? headerUser.getUsername().substring(0, Math.min(2, headerUser.getUsername().length())).toUpperCase() : "U" %>
                         </div>
                     <% } %>
                 </div>
                 <div class="beetask-user-info">
-                    <span class="beetask-username"><%= user != null ? user.getUsername() : "Guest" %></span>
-                    <span class="beetask-user-role"><%= user != null ? user.getRole() : "User" %></span>
+                    <span class="beetask-username"><%= headerUser != null ? headerUser.getUsername() : "Guest" %></span>
+                    <span class="beetask-user-role"><%= headerUser != null ? headerUser.getRole() : "User" %></span>
                 </div>
             </div>
         </div>
