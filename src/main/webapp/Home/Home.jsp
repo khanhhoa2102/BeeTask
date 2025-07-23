@@ -171,6 +171,6 @@
                 refreshToken: "<%= refreshToken != null ? refreshToken : "" %>"
             };
         </script>
-        <script src="Home.js"></script>
+        <script src="${pageContext.request.contextPath}/Home/Home.js"></script>
     </body>
 </html>
