@@ -136,58 +136,45 @@ public class BoardDAO {
         return board;
     }
 
-    // Duplicate board (with tasks)
-    public void duplicate(int boardId) {
+    public Board duplicate(int boardId) {
+        Board original = findById(boardId);
+        if (original == null) {
+            throw new RuntimeException("Board not found for ID: " + boardId);
+        }
+
         try {
-            connection.setAutoCommit(false);
+            // Step 1: Duplicate board
+            String insertSQL = "INSERT INTO Boards (ProjectId, Name, Description, CreatedAt, Position) "
+                    + "VALUES (?, ?, ?, GETDATE(), ?)";
+            try (PreparedStatement stmt = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setInt(1, original.getProjectId());
+                stmt.setString(2, original.getName() + " (Copy)");
+                stmt.setString(3, original.getDescription());
+                stmt.setInt(4, original.getPosition());
+                stmt.executeUpdate();
 
-            // Get original board info
-            Board originalBoard = findById(boardId);
-            if (originalBoard == null) {
-                return;
-            }
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int newBoardId = generatedKeys.getInt(1);
 
-            // Duplicate Board
-            String duplicateBoardSQL = "INSERT INTO Boards (ProjectId, Name, Description, CreatedAt, Position) "
-                    + "VALUES (?, ?, GETDATE(), ?)";
-            int newBoardId = -1;
-
-            try (PreparedStatement boardStmt = connection.prepareStatement(duplicateBoardSQL, Statement.RETURN_GENERATED_KEYS)) {
-                boardStmt.setInt(1, originalBoard.getProjectId());
-                boardStmt.setString(2, originalBoard.getName() + " (Copy)");
-                boardStmt.setInt(3, originalBoard.getPosition() + 1);
-                boardStmt.executeUpdate();
-
-                ResultSet rs = boardStmt.getGeneratedKeys();
-                if (rs.next()) {
-                    newBoardId = rs.getInt(1);
-
-                    // Duplicate tasks
-                    String duplicateTasksSQL = "INSERT INTO Tasks (BoardId, Title, Description, Status, DueDate, CreatedAt, Position, Priority) "
-                            + "SELECT ?, Title, Description, Status, DueDate, GETDATE(), Position, Priority FROM Tasks WHERE BoardId = ?";
+                    // Step 2: Duplicate tasks
+                    String duplicateTasksSQL = "INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedAt, CreatedBy, Position, Priority) "
+                            + "SELECT ?, ListId, Title, Description, StatusId, DueDate, GETDATE(), CreatedBy, Position, Priority "
+                            + "FROM Tasks WHERE BoardId = ?";
                     try (PreparedStatement taskStmt = connection.prepareStatement(duplicateTasksSQL)) {
                         taskStmt.setInt(1, newBoardId);
                         taskStmt.setInt(2, boardId);
                         taskStmt.executeUpdate();
                     }
+
+                    return findById(newBoardId);
                 }
             }
-
-            connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             e.printStackTrace();
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+            throw new RuntimeException("Error duplicating board", e);
         }
+        return null;
     }
 
     public int insertAndReturnId(Board board) {

@@ -272,12 +272,17 @@ CREATE TABLE CommentMentions (
 CREATE TABLE Notes (
     NoteId INT PRIMARY KEY IDENTITY,
     UserId INT NOT NULL,
-    Title NVARCHAR(100) NOT NULL,
-    Content NVARCHAR(MAX) NULL,
-    Tag NVARCHAR(50) NULL,
+    Title NVARCHAR(200),
+    Content NVARCHAR(MAX),
     CreatedAt DATETIME DEFAULT GETDATE(),
-    CONSTRAINT FK_Notes_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
+    UpdatedAt DATETIME NULL,
+    LabelId INT NULL,                      -- thêm LabelId FK
+    Deadline DATETIME NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (LabelId) REFERENCES Labels(LabelId)
 );
+
+
 
 -- ========== CALENDAR EVENTS ==========
 CREATE TABLE CalendarEvents (
@@ -302,9 +307,14 @@ CREATE TABLE AISchedules (
     ConfidenceScore FLOAT NULL,
     Status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
     CreatedAt DATETIME DEFAULT GETDATE(),
+    Difficulty INT NULL,
+    Priority NVARCHAR(20) NULL,
+    ShortDescription NVARCHAR(1000) NULL,  -- ✅ Đã mở rộng độ dài
     CONSTRAINT FK_AISchedules_Tasks FOREIGN KEY (TaskId) REFERENCES Tasks(TaskId),
     CONSTRAINT CHK_AISchedules_Status CHECK (Status IN ('Pending', 'Accepted', 'Rejected'))
 );
+
+
 
 -- ========== NOTIFICATIONS ==========
 CREATE TABLE Notifications (
@@ -661,36 +671,52 @@ INSERT INTO CommentMentions (CommentId, MentionedUserId) VALUES
 (16, 4), (17, 14), (19, 5), (20, 2), (22, 6),
 (23, 7), (24, 4), (26, 7), (27, 2), (28, 4);
 
--- NOTES
-INSERT INTO Notes (UserId, Title, Content, Tag) VALUES
-(1, N'Meeting Notes - Sprint Planning', N'Đã thảo luận về sprint goals và task assignments. Cần focus vào performance optimization.', N'meeting'),
-(2, N'Research Findings - User Behavior', N'Người dùng thường abandon form khi có quá nhiều fields. Cần simplify registration process.', N'research'),
-(3, N'Marketing Ideas - Q2 Campaign', N'Tập trung vào social media marketing với video content. Budget allocation: 60% Facebook, 40% Instagram.', N'marketing'),
-(4, N'Technical Debt - Database', N'Cần refactor legacy queries và optimize indexes. Estimated effort: 2 weeks.', N'technical'),
-(5, N'AI Integration - Phase 1', N'Bắt đầu với recommendation system. Cần 3 months cho research và development.', N'ai'),
-(6, N'Security Checklist', N'1. Update dependencies\n2. Review access controls\n3. Implement rate limiting\n4. Add monitoring', N'security'),
-(7, N'Design System Update', N'Cần update color palette và typography. New brand guidelines từ marketing team.', N'design'),
-(8, N'API Versioning Strategy', N'Implement semantic versioning. Maintain backward compatibility for 2 major versions.', N'api'),
-(9, N'Performance Metrics - April', N'Page load time: 2.1s (target: <2s)\nAPI response time: 150ms\nUptime: 99.9%', N'metrics'),
-(10, N'User Feedback Summary', N'Top requests: Dark mode, mobile app, better search functionality. High satisfaction: 4.2/5', N'feedback'),
-(11, N'Competitor Analysis - Features', N'Competitor A: Strong mobile app\nCompetitor B: Better onboarding\nCompetitor C: Advanced analytics', N'analysis'),
-(12, N'Team Retrospective - Sprint 12', N'What went well: Good collaboration\nWhat to improve: Code review process\nAction items: Update guidelines', N'retrospective'),
-(13, N'Technology Trends - 2025', N'Key trends: AI integration, serverless architecture, edge computing, privacy-first design', N'trends'),
-(14, N'Budget Planning - Q3', N'Development: $50k\nMarketing: $30k\nInfrastructure: $20k\nTotal: $100k', N'budget'),
-(1, N'Daily Standup Notes', N'Yesterday: Completed login component\nToday: Working on authentication API\nBlockers: None', N'standup'),
-(2, N'User Story Mapping', N'Epic: User Management\nStories: Registration, Login, Profile, Settings\nPriority: High', N'planning'),
-(3, N'Content Calendar - June', N'Week 1: Product announcement\nWeek 2: Tutorial videos\nWeek 3: User testimonials\nWeek 4: Feature highlights', N'marketing'),
-(4, N'Database Backup Strategy', N'Daily incremental backups\nWeekly full backups\nMonthly archive to cold storage\nTest restore quarterly', N'backup'),
-(5, N'Machine Learning Pipeline', N'Data ingestion → Preprocessing → Feature engineering → Model training → Evaluation → Deployment', N'ml'),
-(6, N'Incident Response Plan', N'1. Detect & Alert\n2. Assess Impact\n3. Contain Issue\n4. Resolve\n5. Post-mortem', N'incident'),
-(7, N'Accessibility Audit Results', N'WCAG 2.1 AA compliance: 85%\nIssues found: 12\nHigh priority: 4\nMedium priority: 8', N'accessibility'),
-(8, N'Third-party Integrations', N'Payment: Stripe\nAnalytics: Google Analytics\nEmail: SendGrid\nPush notifications: Firebase', N'integrations'),
-(9, N'Server Monitoring Setup', N'CPU usage alerts > 80%\nMemory usage > 85%\nDisk space < 10%\nResponse time > 2s', N'monitoring'),
-(10, N'Mobile App Requirements', N'Platform: iOS & Android\nFramework: React Native\nFeatures: Offline mode, push notifications', N'mobile'),
-(11, N'SEO Optimization Plan', N'On-page: Meta tags, structured data\nOff-page: Link building, content marketing\nTechnical: Site speed, mobile-first', N'seo'),
-(12, N'Data Privacy Compliance', N'GDPR compliance checklist\nData retention policies\nUser consent management\nData deletion procedures', N'privacy'),
-(13, N'Testing Strategy', N'Unit tests: 80% coverage\nIntegration tests: Critical paths\nE2E tests: User journeys\nPerformance tests: Load & stress', N'testing'),
-(14, N'Vendor Evaluation - Cloud Services', N'AWS: Comprehensive but expensive\nGoogle Cloud: Good AI/ML services\nAzure: Strong enterprise features', N'vendor');
+
+-- Notes cho UserId = 16
+INSERT INTO Notes (UserId, Title, Content, LabelId, Deadline)
+VALUES
+(16, N'Kế hoạch học kỳ', N'Hoàn tất toàn bộ môn học trong tháng này để đảm bảo tiến độ.', 1, NULL),
+(16, N'Ý tưởng mini project', N'Phát triển ứng dụng hỗ trợ cá nhân quản lý công việc hàng ngày.', 2, NULL),
+(16, N'Lịch hẹn mentor', N'Gặp mentor vào thứ 5 tuần này lúc 15:00 tại phòng Lab 1.', 1, '2025-07-24 15:00:00'),
+(16, N'Cần học lại SQL', N'Ôn tập sâu về JOIN, GROUP BY và truy vấn lồng nhau.', 4, NULL),
+(16, N'Nghiên cứu AI', N'Tìm hiểu các nền tảng AI như ChatGPT và HuggingFace.', 5, NULL),
+(16, N'API Lab Result', N'Thiết lập kết nối API với xác thực JWT qua phương thức POST.', 8, NULL),
+(16, N'Design giao diện mobile', N'Lên bố cục đơn giản với màu sắc hài hòa và font dễ đọc.', 7, NULL),
+(16, N'Cải thiện bảo mật', N'Triển khai xác thực hai bước để tăng cường bảo mật.', 6, NULL),
+(16, N'Bài tập nhóm deadline', N'Hoàn thành và nộp bài tập nhóm trước thứ Bảy tuần này.', 3, '2025-07-19 23:59:00'),
+(16, N'Danh sách tài liệu cần đọc', N'Xem qua Clean Code, Refactoring và các sách thiết kế phần mềm.', 2, NULL),
+(16, N'Lưu ý khi deploy', N'Đảm bảo tất cả biến môi trường được cấu hình đúng khi deploy.', 4, NULL),
+(16, N'Ghi chú buổi họp lớp', N'Nội dung trao đổi về đồ án và phần thuyết trình cuối kỳ.', 1, NULL);
+
+INSERT INTO Notes (UserId, Title, Content, LabelId, Deadline)
+VALUES
+(15, N'Kế hoạch học kỳ', N'Hoàn tất toàn bộ môn học trong tháng này để đảm bảo tiến độ.', 1, NULL),
+(15, N'Ý tưởng mini project', N'Phát triển ứng dụng hỗ trợ cá nhân quản lý công việc hàng ngày.', 2, NULL),
+(15, N'Lịch hẹn mentor', N'Gặp mentor vào thứ 5 tuần này lúc 15:00 tại phòng Lab 1.', 1, '2025-07-24 15:00:00'),
+(15, N'Cần học lại SQL', N'Ôn tập sâu về JOIN, GROUP BY và truy vấn lồng nhau.', 4, NULL),
+(15, N'Nghiên cứu AI', N'Tìm hiểu các nền tảng AI như ChatGPT và HuggingFace.', 5, NULL),
+(15, N'API Lab Result', N'Thiết lập kết nối API với xác thực JWT qua phương thức POST.', 8, NULL),
+(15, N'Design giao diện mobile', N'Lên bố cục đơn giản với màu sắc hài hòa và font dễ đọc.', 7, NULL),
+(15, N'Cải thiện bảo mật', N'Triển khai xác thực hai bước để tăng cường bảo mật.', 6, NULL),
+(15, N'Bài tập nhóm deadline', N'Hoàn thành và nộp bài tập nhóm trước thứ Bảy tuần này.', 3, '2025-07-19 23:59:00'),
+(15, N'Danh sách tài liệu cần đọc', N'Xem qua Clean Code, Refactoring và các sách thiết kế phần mềm.', 2, NULL),(15, N'Lưu ý khi deploy', N'Đảm bảo tất cả biến môi trường được cấu hình đúng khi deploy.', 4, NULL),
+(15, N'Ghi chú buổi họp lớp', N'Nội dung trao đổi về đồ án và phần thuyết trình cuối kỳ.', 1, NULL);
+
+
+-- Notes cho UserId = 17
+INSERT INTO Notes (UserId, Title, Content, LabelId) VALUES
+(16, N'Kế hoạch học kỳ', N'Hoàn thành tất cả môn trong tháng này.', 1),
+(16, N'Ý tưởng mini project', N'Làm ứng dụng quản lý công việc cá nhân.', 2),
+(16, N'Lịch hẹn mentor', N'Thứ 5 tuần này, 15h00 tại Lab 1.', 1),
+(16, N'Cần học lại SQL', N'Tập trung JOIN, GROUP BY, Subquery.', 4),
+(16, N'Nghiên cứu AI', N'Tìm hiểu ChatGPT, HuggingFace.', 5),
+(16, N'API Lab Result', N'Kết nối POST + JWT authorization.', 8),
+(16, N'Design giao diện mobile', N'Màu sắc, font và bố cục đơn giản.', 7),
+(16, N'Cải thiện bảo mật', N'Thêm xác thực 2 lớp.', 6),
+(16, N'Bài tập nhóm deadline', N'Nộp trước thứ 7 tuần này.', 3),
+(16, N'Danh sách tài liệu cần đọc', N'Clean Code, Refactoring...', 2),
+(16, N'Lưu ý khi deploy', N'Check environment variables.', 4),
+(16, N'Ghi chú buổi họp lớp', N'Bàn về đồ án và thuyết trình.', 1);
 
 -- CALENDAR EVENTS 
 INSERT INTO CalendarEvents (UserId, TaskId, Title, Description, StartTime, EndTime, ReminderTime) VALUES
