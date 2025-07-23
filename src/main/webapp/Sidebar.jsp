@@ -522,20 +522,17 @@ body.dark-mode .beetask-toggle:focus {
         <div class="beetask-user-section">
             <div class="beetask-user-profile">
                 <div class="beetask-user-avatar">
-                    <c:choose>
-                        <c:when test="${not empty user and not empty user.avatarUrl}">
-                            <img src="${user.avatarUrl}" alt="Avatar">
-                        </c:when>
-                        <c:otherwise>
-                            <div class="beetask-avatar-placeholder">
-                                ${not empty user ? fn:substring(user.username, 0, 2).toUpperCase() : 'U'}
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                    <% if (headerUser != null && headerUser.getAvatarUrl() != null && !headerUser.getAvatarUrl().isEmpty()) { %>
+                        <img src="<%= user.getAvatarUrl() %>" alt="Avatar">
+                    <% } else { %>
+                        <div class="beetask-avatar-placeholder">
+                            <%= headerUser != null ? headerUser.getUsername().substring(0, Math.min(2, headerUser.getUsername().length())).toUpperCase() : "U" %>
+                        </div>
+                    <% } %>
                 </div>
                 <div class="beetask-user-info">
-                    <span class="beetask-username">${not empty user ? user.username : 'Guest'}</span>
-                    <span class="beetask-user-role">${not empty user ? user.role : 'User'}</span>
+                    <span class="beetask-username"><%= headerUser != null ? headerUser.getUsername() : "Guest" %></span>
+                    <span class="beetask-user-role"><%= headerUser != null ? headerUser.getRole() : "User" %></span>
                 </div>
             </div>
         </div>

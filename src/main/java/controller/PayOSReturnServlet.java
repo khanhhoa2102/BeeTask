@@ -13,17 +13,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import dao.NotificationDAO;
+import dao.PayOSDAO;
 import model.Notification;
 import dao.UserDAO;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.stream.Collectors;
 import java.sql.Timestamp;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.User;
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="WebhookServlet", urlPatterns={"/webhook"})
-public class WebhookServlet extends HttpServlet {
+@WebServlet(name="ReturnServlet", urlPatterns={"/return"})
+public class PayOSReturnServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -49,40 +53,44 @@ public class WebhookServlet extends HttpServlet {
         }
     } 
     
-    
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Step 1: Read raw request body
-        String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println("🔔 Webhook received:\n" + body);
-
-        // Step 2: Parse JSON
-        JSONObject root = new JSONObject(body);
-        JSONObject data = root.getJSONObject("data");
-
-        // Step 4: Extract payment data
-        long orderCode = data.getLong("orderCode");
-        String statusCode = data.getString("code"); // "00" = success
-        String desc = data.optString("description");
-
-        if ("00".equals(statusCode) && orderCode!=123) {
-            try{
-                int id = Integer.parseInt(desc.split(" ")[5]);
-                System.out.println("✅ Order " + orderCode + " marked as PAID: " + desc);
+        try {
+            HttpSession session = request.getSession();
+            String orderCodeStr = request.getParameter("orderCode");
+            if (orderCodeStr == null) {
+                response.getWriter().write("❌ Missing orderCode");
+                return;
+            }
+            
+            long orderCode = Long.parseLong(orderCodeStr);
+            PayOSDAO payos = new PayOSDAO();
+            String jsonResponse = payos.getPayOSOrderStatus(orderCode);
+            
+            JSONObject json = new JSONObject(jsonResponse);
+            String status = json.getJSONObject("data").getString("status");
+            
+            if ("PAID".equalsIgnoreCase(status)) {
+                response.getWriter().write("✅ Payment successful!");
+                int id = (int) session.getAttribute("userId");
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                 new NotificationDAO().addNotification(new Notification(0, id, "You have become a premium user", false, timestamp));
                 new UserDAO().updateRole(id);
-            } catch(Exception e){
-
+                
+                session.removeAttribute("user");
+                UserDAO dao = new UserDAO();
+                User updatedUser = dao.findById(id);
+                session.setAttribute("user", updatedUser);
+                System.out.println(updatedUser.getRole());
+            } else {
+                response.getWriter().write("❌ Payment failed or not completed. Status: " + status);
             }
-        } else {
-            System.out.println("⚠️ Payment failed or pending. Code: " + statusCode + " - " + desc);
+            request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
+        } catch (Exception ex) {
+            Logger.getLogger(PayOSReturnServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        // Step 5: Acknowledge webhook
-        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -93,12 +101,6 @@ public class WebhookServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
-
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request

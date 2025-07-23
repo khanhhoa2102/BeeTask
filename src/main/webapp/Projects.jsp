@@ -18,7 +18,7 @@
 </head>
 <body>
 <div class="container">
-        <%@include file="../Sidebar.jsp"%>
+        <%@include file="./Sidebar.jsp"%>
 
     <div class="main-content">
         <div class="page-header">
