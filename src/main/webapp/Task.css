@@ -1834,3 +1834,14 @@ body.dark-mode .notification {
   color: #f8fafc;
   border-left-color: #3b82f6;
 }
+
+.ai-suggestion-col .ai-time {
+    font-size: 0.85rem;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.dark-mode .ai-suggestion-col .ai-time {
+    color: #93c5fd;
+}

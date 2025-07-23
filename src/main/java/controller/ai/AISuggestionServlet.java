@@ -2,35 +2,37 @@ package controller.ai;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dao.AIScheduleDAO;
 import dao.CalendarEventDAO;
 import dao.TaskDAO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.stream.Collectors;
 import model.*;
 import model.ai.*;
 import service.AIService;
+import utils.LocalDateTimeAdapter;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("/ai-suggest-preview")
 public class AISuggestionServlet extends HttpServlet {
 
     private final TaskDAO taskDAO = new TaskDAO();
     private final CalendarEventDAO calendarDAO = new CalendarEventDAO();
+    private final AIScheduleDAO scheduleDAO = new AIScheduleDAO();
     private final AIService aiService = new AIService();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            System.out.println("🧪 [AI Servlet] POST /ai-suggest-preview triggered");
+            System.out.println("🧠 [AI Servlet] POST /ai-suggest-preview triggered");
 
             User user = (User) req.getSession(false).getAttribute("user");
-            System.out.println("🧪 [AI Servlet] Session user: " + (user != null ? user.getUsername() : "null"));
             if (user == null) {
                 resp.setStatus(401);
                 resp.getWriter().write("{\"error\":\"User not logged in\"}");
@@ -39,12 +41,7 @@ public class AISuggestionServlet extends HttpServlet {
 
             int userId = user.getUserId();
             int taskId = Integer.parseInt(req.getParameter("taskId"));
-            System.out.println("🧪 [AI Servlet] taskId received: " + taskId);
-
             Task task = taskDAO.getTaskById(taskId);
-            System.out.println("🧪 [AI Servlet] Task fetched: " + (task != null ? task.getTitle() : "null")
-                    + ", CreatedBy: " + (task != null ? task.getCreatedBy() : "N/A")
-                    + ", CurrentUserId: " + userId);
 
             if (task == null || task.getCreatedBy() != userId) {
                 resp.setStatus(403);
@@ -52,13 +49,13 @@ public class AISuggestionServlet extends HttpServlet {
                 return;
             }
 
-            // Convert java.util.Date to java.time.LocalDateTime
+            // Convert target task
             LocalDateTime dueDateTime = null;
             if (task.getDueDate() != null) {
-                dueDateTime = new java.sql.Timestamp(task.getDueDate().getTime()).toLocalDateTime(); // ✅ an toàn
+                dueDateTime = new java.sql.Timestamp(task.getDueDate().getTime()).toLocalDateTime();
             }
 
-            SimpleTask simpleTask = new SimpleTask(
+            SimpleTask targetTask = new SimpleTask(
                     task.getTitle(),
                     task.getDescription(),
                     dueDateTime,
@@ -68,28 +65,50 @@ public class AISuggestionServlet extends HttpServlet {
                     task.getPriority()
             );
 
-            List<CalendarEvent> events = calendarDAO.getEventsByUserId(userId);
+            int projectId = task.getBoardId(); // Nếu cần bạn có thể sửa để map sang projectId
+            List<Task> allProjectTasks = taskDAO.getTasksByProjectIdGrouped(projectId)
+                    .values().stream().flatMap(List::stream).collect(Collectors.toList());
 
+            List<SimpleTask> otherTasks = allProjectTasks.stream()
+                    .filter(t -> t.getTaskId() != taskId)
+                    .map(t -> new SimpleTask(
+                    t.getTitle(),
+                    t.getDescription(),
+                    t.getDueDate() != null ? new java.sql.Timestamp(t.getDueDate().getTime()).toLocalDateTime() : null,
+                    List.of(),
+                    t.getStatusName(),
+                    0,
+                    t.getPriority()
+            ))
+                    .collect(Collectors.toList());
+
+            List<CalendarEvent> events = calendarDAO.getEventsByUserId(userId);
             List<SimpleCalendarEvent> simpleEvents = events.stream()
                     .map(e -> new SimpleCalendarEvent(e.getTitle(), e.getStartTime(), e.getEndTime()))
                     .collect(Collectors.toList());
 
-            AISuggestionRequest request = new AISuggestionRequest(List.of(simpleTask), simpleEvents);
+            String projectName = "Project " + projectId;
+
+            AISuggestionRequest request = new AISuggestionRequest(targetTask, otherTasks, simpleEvents, projectName);
             AISuggestionResponse aiResponse = aiService.sendSchedulingRequest(request);
 
-            // Lọc suggestion theo title trùng với task
             ScheduledTaskSuggestion matched = aiResponse.getSchedules().stream()
-                    .filter(s -> !Boolean.TRUE.equals(s.isEvent())) // bỏ calendar event
-                    .filter(s -> s.getTitle().equalsIgnoreCase(task.getTitle())) // chỉ lấy task bạn bấm
+                    .filter(s -> !Boolean.TRUE.equals(s.isEvent()))
+                    .filter(s -> s.getTitle().equalsIgnoreCase(task.getTitle()))
                     .findFirst()
-                    .orElse(null);
+                    .orElse(aiResponse.getSchedules().isEmpty() ? null : aiResponse.getSchedules().get(0));
 
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
 
             if (matched != null) {
+                matched.setTaskId(taskId); // Gán TaskId cho suggestion để lưu
+
+                // 🧠 Chỉ lưu nếu chưa tồn tại (Pending)
+                scheduleDAO.insertIfNotExists(matched);
+
                 Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(LocalDateTime.class, new utils.LocalDateTimeAdapter())
+                        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                         .create();
                 gson.toJson(matched, resp.getWriter());
             } else {
