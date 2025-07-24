@@ -28,7 +28,7 @@
     <body class="dashboard-body">
         <div class="dashboard-container">
             <!-- Sidebar -->
-                <%@ include file="../Sidebar.jsp" %>
+            <%@ include file="../Sidebar.jsp" %>
 
             <!-- Main Content -->
             <main class="main-content">
@@ -54,8 +54,13 @@
                                 <h2>Welcome to BeeTask</h2>
                                 <p>Manage your work efficiently, track project progress, and collaborate with your team seamlessly.</p>
                                 <div class="welcome-actions">
-                                    <button class="primary-btn"><i class="fas fa-plus"></i> Create New Project</button>
-                                    <button class="secondary-btn"><i class="fas fa-play"></i> View Tutorial</button>
+                                     <button class="primary-btn"><i class="fas fa-plus"></i> Create New Project</button>
+                                    <a href="Tutorial.jsp">
+                                        <button class="secondary-btn">
+                                            <i class="fas fa-play"></i> View Tutorial
+                                        </button>
+                                    </a>
+
                                 </div>
                             </div>
                         </div>
@@ -73,7 +78,7 @@
                                 <div class="project-card">
                                     <h4><%= project.getName() %></h4>
                                     <p><%= project.getDescription() %></p>
-                                    <a href="ProjectDashboard.jsp?projectId=<%= project.getProjectId() %>" class="view-btn">
+                                    <a href="<%= request.getContextPath() %>/Task.jsp?projectId=<%= project.getProjectId() %>" class="view-btn">
                                         <i class="fas fa-arrow-right"></i> View Project
                                     </a>
                                 </div>
