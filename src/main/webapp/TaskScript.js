@@ -993,6 +993,11 @@ function assignTask(taskId, selectedUserIds) {
 }
 
 function openAssignModal(taskId, assignedUserIds = []) {
+    console.log(">>> openAssignModal() called with taskId =", taskId);
+    document.getElementById("assignTaskId").value = taskId;
+    document.getElementById("assignModal").style.display = "block";
+    console.log(">>> assignTaskId.value set =", document.getElementById("assignTaskId").value);
+    
     const modal = document.getElementById("assignModal");
     const form = document.getElementById("assignForm");
     const checkboxesContainer = document.getElementById("userCheckboxes");
@@ -1030,34 +1035,37 @@ function closeAssignModal() {
 }
 
 function submitAssignForm(event) {
-  event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); // Ngăn reload
 
-  const taskId = document.getElementById("assignTaskId").value;
-  const checkboxes = document.querySelectorAll('#userCheckboxes input[type="checkbox"]:checked');
-  const selectedUserIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    const taskId = document.getElementById("assignTaskId").value;
+    const checkboxes = document.querySelectorAll('input[name="assignees"]:checked');
+    const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
 
-  fetch(`${contextPath}/assign`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      taskId: parseInt(taskId),
-      userIds: selectedUserIds
-    })
-  })
-  .then(res => {
-    if (res.ok) {
-      alert('Task assigned successfully');
-      closeAssignModal();
-    } else {
-      alert('Failed to assign task');
+    if (!taskId || isNaN(taskId)) {
+        alert("Task ID is invalid.");
+        return;
     }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Error assigning task');
-  });
+
+    if (userIds.length === 0) {
+        alert("Please select at least one user to assign.");
+        return;
+    }
+
+    fetch('/BeeTask/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId: parseInt(taskId), userIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Users assigned successfully!");
+        closeAssignModal();
+        // Optionally refresh or update UI
+    })
+    .catch(error => {
+        console.error("Assignment error:", error);
+        alert("Failed to assign users.");
+    });
 }
 
 document.getElementById("uploadForm").addEventListener("submit", async function (e) {
@@ -1133,16 +1141,48 @@ function loadAttachmentsForTask(taskId) {
         return;
       }
 
-      data.forEach(file => {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${file.fileUrl}" target="_blank">${file.fileName}</a>`;
-        list.appendChild(li);
-      });
+    data.forEach(file => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${file.fileName}</span>
+        <button onclick="downloadAttachment('${file.fileUrl}')">Download</button>
+        <button onclick="deleteAttachment(${taskId}, '${file.fileName}')">Delete</button>
+      `;
+      list.appendChild(li);
+    });
     })
     .catch(error => {
       console.error("Error loading attachments:", error);
     });
 }
+
+function deleteAttachment(taskId, filename) {
+    if (confirm("Are you sure you want to delete this attachment?")) {
+        fetch(`file?taskId=${taskId}&filename=${encodeURIComponent(filename)}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.text())
+        .then(message => {
+            alert(message);
+            loadAttachmentsForTask(taskId);
+        })
+        .catch(err => {
+            console.error("Error deleting file:", err);
+            alert("Failed to delete file.");
+        });
+    }
+}
+
+function downloadAttachment(fileUrl) {
+  const a = document.createElement("a");
+  a.href = fileUrl;
+  a.download = ""; // Hỗ trợ tải trực tiếp nếu server set header đúng
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 
 function openUploadModal(taskId) {
   document.getElementById("uploadTaskId").value = taskId;

@@ -44,7 +44,7 @@ public class TaskAttachmentDAO {
         }
         return attachments;
     }
-        public int insertAttachmentAndReturnId(TaskAttachment attachment) {
+    public int insertAttachmentAndReturnId(TaskAttachment attachment) {
         String sql = "INSERT INTO TaskAttachments (TaskId, FileUrl, FileName, FileType, FileSize) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DBConnection.getConnection(); 
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -63,5 +63,16 @@ public class TaskAttachmentDAO {
             e.printStackTrace();
         }
         return -1;
+    }
+        
+    public void deleteAttachment(int taskId, String fileName) {
+        String sql = "DELETE FROM TaskAttachments WHERE TaskId = ? AND FileName = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, taskId);
+            ps.setString(2, fileName);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

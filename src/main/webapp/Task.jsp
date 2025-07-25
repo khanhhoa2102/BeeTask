@@ -516,7 +516,14 @@
                     <button type="button" onclick="openUploadModal(document.getElementById('taskDetailId').value)" class="btn btn-outline-primary">
                         Upload File
                     </button>
-                    <ul id="attachmentFileList" style="margin-top: 10px;"></ul>
+                    <ul id="attachmentFileList">
+                        <c:forEach var="file" items="${attachments}">
+                            <li>
+                                <a href="file?taskId=${taskId}&filename=${file}" target="_blank" download>🔽 Download</a>
+                                <span onclick="deleteAttachment(${taskId}, '${file}')" style="cursor:pointer; color: red;">🗑 Delete</span>
+                            </li>
+                        </c:forEach>
+                    </ul>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeTaskDetailModal()">Close</button>
@@ -526,7 +533,7 @@
                     <button class="btn btn-danger" onclick="taskManager.deleteTask(document.getElementById('taskDetailId').value)">
                         <i class="fas fa-trash"></i> Delete
                     </button>
-                    <button class="btn btn-primary" onclick="openAssignModal(${task.taskId})">
+                    <button class="btn btn-primary" onclick="openAssignModal(document.getElementById('taskDetailId').value)">
                         <i class="fas fa-user-plus"></i> Assign
                     </button>
                 </div>
@@ -626,7 +633,7 @@
         <h3>Upload Attachment</h3>
         <form id="uploadForm" enctype="multipart/form-data">
           <input type="hidden" name="taskId" id="uploadTaskId" />
-          <input type="file" name="attachment" required />
+          <input type="file" name="file" required />
           <button type="submit">Upload</button>
         </form>
       </div>

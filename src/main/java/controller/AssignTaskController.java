@@ -45,8 +45,11 @@ public class AssignTaskController extends HttpServlet {
             response.getWriter().write("{\"message\": \"Task assigned successfully\"}");
 
         } catch (Exception e) {
+            e.printStackTrace(); // In stack trace chi tiết ra log
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+
+            // Ghi thêm thông tin lỗi vào response JSON để debug từ client
+            response.getWriter().write("{\"error\": \"Internal error: " + e.toString().replace("\"", "\\\"") + "\"}");
         }
     }
 }
