@@ -258,4 +258,22 @@ public class UserDAO {
 
         return users;
     }
+    
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM Users";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("userId"));
+                user.setUsername(rs.getString("username"));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
 }

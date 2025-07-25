@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.Project, model.Board, model.Task, model.User" %>
-<%@ page import="dao.ProjectDAO, dao.BoardDAO, dao.TaskDAO, dao.TaskStatusDAO" %>
+<%@ page import="dao.ProjectDAO, dao.BoardDAO, dao.TaskDAO, dao.TaskStatusDAO, dao.TaskAssigneeDAO, dao.UserDAO" %>
 <%@ page import="java.util.*" %>
 <%
     User user = (User) session.getAttribute("user");
@@ -24,6 +24,9 @@
     BoardDAO boardDAO = new BoardDAO();
     TaskDAO taskDAO = new TaskDAO();
     TaskStatusDAO statusDAO = new TaskStatusDAO();
+    TaskAssigneeDAO taskAssigneeDAO = new TaskAssigneeDAO();
+    UserDAO userDAO = new UserDAO();
+    List<User> allUsers = userDAO.getAllUsers();
     Project project = null;
     List<Board> boards = new ArrayList<>();
     Map<Integer, List<Task>> tasksMap = new HashMap<>();
@@ -218,6 +221,14 @@
                                     <div class="task-content">
                                         <h4 class="task-title"><%= task.getTitle() %></h4>
                                         <p class="task-description"><%= task.getDescription() %></p>
+                                    </div>
+                                    <div class="task-assignees">
+                                        <% 
+                                            List<User> assignees = taskAssigneeDAO.findUsersByTask(task.getTaskId());
+                                            for (User u : assignees) {
+                                        %>
+                                            <span><%= u.getUsername() %></span>
+                                        <% } %>
                                     </div>
                                     <div class="task-footer">
                                         <div class="task-meta">
@@ -500,6 +511,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label><i class="fas fa-paperclip"></i> Attachments:</label>
+                    <button type="button" onclick="openUploadModal(document.getElementById('taskDetailId').value)" class="btn btn-outline-primary">
+                        Upload File
+                    </button>
+                    <ul id="attachmentFileList" style="margin-top: 10px;"></ul>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeTaskDetailModal()">Close</button>
                     <button type="button" class="btn btn-warning" onclick="editTaskFromDetail()">
@@ -507,6 +525,9 @@
                     </button>
                     <button class="btn btn-danger" onclick="taskManager.deleteTask(document.getElementById('taskDetailId').value)">
                         <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <button class="btn btn-primary" onclick="openAssignModal(${task.taskId})">
+                        <i class="fas fa-user-plus"></i> Assign
                     </button>
                 </div>
             </div>
@@ -577,6 +598,40 @@
                 </div>
             </div>
         </div>
+    </div>
+    
+    <!-- Assign Task Modal -->
+    <div id="assignModal" class="modal">
+      <div class="modal-content">
+        <h3 style="padding: 1rem; margin: 0;">Assign Users to Task</h3>
+        <form id="assignForm" onsubmit="submitAssignForm(event)" style="padding: 0 1rem 1rem 1rem;">
+          <input type="hidden" name="taskId" id="assignTaskId" />
+
+          <div id="userCheckboxes" style="max-height: 250px; overflow-y: auto; padding: 0.5rem 0;">
+            <!-- Checkboxes will be dynamically inserted here -->
+          </div>
+
+          <div style="text-align: right; margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary">Assign</button>
+            <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Upload Attachment Modal -->
+    <div id="uploadModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span onclick="closeUploadModal()" class="close">&times;</span>
+        <h3>Upload Attachment</h3>
+        <form id="uploadForm" enctype="multipart/form-data">
+          <input type="hidden" name="taskId" id="uploadTaskId" />
+          <input type="file" name="attachment" required />
+          <button type="submit">Upload</button>
+        </form>
+      </div>
+        <div id="uploadMessage" class="message" style="margin-top:10px;"></div>
+        <ul id="attachmentFileList"></ul>
     </div>
 
     <script>
@@ -677,6 +732,19 @@
                 closeProjectMembersModal();
             }
         }
+    </script>
+    <script>
+        window.allUsers = [
+            <% for (User u : allUsers) { %>
+                {
+                    userId: <%= u.getUserId() %>,
+                    name: "<%= u.getUsername().replace("\"", "\\\"") %>"
+                },
+            <% } %>
+        ];
+    </script>
+    <script>
+        const contextPath = "${pageContext.request.contextPath}";
     </script>
 </body>
 </html>

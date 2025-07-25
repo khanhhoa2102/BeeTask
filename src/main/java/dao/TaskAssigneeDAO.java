@@ -3,6 +3,7 @@ package dao;
 import context.DBConnection;
 import java.sql.*;
 import java.util.*;
+import model.User;
 
 public class TaskAssigneeDAO {
 
@@ -40,6 +41,27 @@ public class TaskAssigneeDAO {
             stmt.setInt(2, userId);
             stmt.executeUpdate();
         }
+    }
+    
+    public List<User> findUsersByTask(int taskId) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT u.* FROM TaskAssignees ta JOIN Users u ON ta.userId = u.userId WHERE ta.taskId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, taskId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("userId"));
+                    user.setUsername(rs.getString("username"));
+                    // add any other fields if needed
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 
     // ✅ Đổi tên hàm này để đúng với chỗ gọi từ TaskController

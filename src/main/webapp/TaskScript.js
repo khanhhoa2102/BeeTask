@@ -507,11 +507,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const dueDate = formData.get("dueDate")
             const priority = formData.get("priority")
             const status = formData.get("status")
-            // LẤY DANH SÁCH USER ĐƯỢC ASSIGN
-            const assigneeSelect = document.getElementById("editTaskAssignees")
-            const assigneeIds = Array.from(assigneeSelect.selectedOptions).map(opt => opt.value)
-            const assigneeParams = assigneeIds.map(id => `assignees=${id}`).join("&")
-            
             if (!title.trim()) {
                 this.showNotification("Task title is required", "error")
                 return
@@ -519,7 +514,8 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch("task", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                body: `action=edit&taskId=${taskId}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&dueDate=${dueDate}&priority=${priority}&status=${encodeURIComponent(status)}&${assigneeParams}`,            })
+                body: `action=edit&taskId=${taskId}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&dueDate=${dueDate}&priority=${priority}&status=${encodeURIComponent(status)}`,
+            })
                     .then((response) => {
                         if (response.ok) {
                             this.showNotification("Task updated", "success")
@@ -974,4 +970,185 @@ window.closeEditTaskModal = () => {
 }
 window.closeTaskDetailModal = () => {
     document.getElementById("taskDetailModal").style.display = "none"
+}
+
+function assignTask(taskId, selectedUserIds) {
+    fetch('/BeeTask/assign', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            taskId: taskId,
+            userIds: selectedUserIds
+        })
+    })
+    .then(res => {
+        if (res.ok) {
+            alert('Task assigned successfully');
+        } else {
+            alert('Failed to assign task');
+        }
+    });
+}
+
+function openAssignModal(taskId, assignedUserIds = []) {
+    const modal = document.getElementById("assignModal");
+    const form = document.getElementById("assignForm");
+    const checkboxesContainer = document.getElementById("userCheckboxes");
+
+    // Set Task ID
+    document.getElementById("assignTaskId").value = taskId;
+
+    // Clear previous checkboxes
+    checkboxesContainer.innerHTML = "";
+
+    // Danh sách user nên được khai báo global từ backend render (hoặc fetch từ API)
+    if (!window.allUsers) {
+        console.error("User list (allUsers) is not loaded.");
+        return;
+    }
+
+    // Render checkbox cho từng user
+    window.allUsers.forEach(user => {
+        const isChecked = assignedUserIds.includes(user.userId);
+        const checkbox = document.createElement("div");
+        checkbox.innerHTML = `
+            <label>
+                <input type="checkbox" name="assignees" value="${user.userId}" ${isChecked ? 'checked' : ''} />
+                ${user.name}
+            </label>
+        `;
+        checkboxesContainer.appendChild(checkbox);
+    });
+
+    modal.style.display = "block";
+}
+
+function closeAssignModal() {
+    document.getElementById("assignModal").style.display = "none";
+}
+
+function submitAssignForm(event) {
+  event.preventDefault(); // Prevent default form submission
+
+  const taskId = document.getElementById("assignTaskId").value;
+  const checkboxes = document.querySelectorAll('#userCheckboxes input[type="checkbox"]:checked');
+  const selectedUserIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+  fetch(`${contextPath}/assign`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      taskId: parseInt(taskId),
+      userIds: selectedUserIds
+    })
+  })
+  .then(res => {
+    if (res.ok) {
+      alert('Task assigned successfully');
+      closeAssignModal();
+    } else {
+      alert('Failed to assign task');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Error assigning task');
+  });
+}
+
+document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+  const messageDiv = document.getElementById("uploadMessage");
+
+  // Xoá nội dung thông báo trước đó
+  messageDiv.textContent = "";
+  messageDiv.style.color = "";
+
+  try {
+    const response = await fetch("/BeeTask/uploadAttachments", {
+      method: "POST",
+      body: formData,
+    });
+
+    const resultText = await response.text();
+
+    if (!response.ok) {
+      throw new Error("Upload failed: " + resultText);
+    }
+
+    let result;
+    try {
+      result = JSON.parse(resultText); // tránh lỗi JSON parse nếu backend trả HTML
+    } catch (parseErr) {
+      throw new Error("Invalid server response");
+    }
+
+    if (result.success && result.fileName) {
+      messageDiv.textContent = "File uploaded successfully.";
+      messageDiv.style.color = "green";
+
+      // Reset form
+      form.reset();
+
+      // Load lại danh sách file
+      const taskId = document.getElementById("uploadTaskId").value;
+      loadAttachmentsForTask(taskId);
+
+      // Đóng modal sau 1.5s
+      setTimeout(() => {
+        closeUploadModal();
+        messageDiv.textContent = "";
+      }, 1500);
+    } else {
+      messageDiv.textContent = "Upload failed. Please try again.";
+      messageDiv.style.color = "red";
+    }
+
+  } catch (error) {
+    console.error("Upload Error:", error);
+    messageDiv.textContent = "An error occurred: " + error.message;
+    messageDiv.style.color = "red";
+  }
+});
+
+function loadAttachmentsForTask(taskId) {
+  fetch(`/BeeTask/uploadAttachments?taskId=${taskId}`)
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to fetch attachments.");
+      return response.json();
+    })
+    .then(data => {
+      const list = document.getElementById("attachmentFileList");
+      list.innerHTML = "";
+
+      if (data.length === 0) {
+        list.innerHTML = "<li>No attachments</li>";
+        return;
+      }
+
+      data.forEach(file => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${file.fileUrl}" target="_blank">${file.fileName}</a>`;
+        list.appendChild(li);
+      });
+    })
+    .catch(error => {
+      console.error("Error loading attachments:", error);
+    });
+}
+
+function openUploadModal(taskId) {
+  document.getElementById("uploadTaskId").value = taskId;
+  document.getElementById("uploadModal").style.display = "block";
+}
+
+function closeUploadModal() {
+  document.getElementById("uploadModal").style.display = "none";
 }

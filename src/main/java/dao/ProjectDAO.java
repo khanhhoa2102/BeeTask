@@ -384,6 +384,21 @@ public class ProjectDAO {
     }
 
     public boolean isLeaderOfProject(int userId, int projectId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "SELECT Role FROM ProjectMembers WHERE ProjectId = ? AND UserId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projectId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String role = rs.getString("Role");
+                return "Leader".equalsIgnoreCase(role);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
