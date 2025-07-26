@@ -1,42 +1,116 @@
 const userId = '<%= session.getAttribute("userId") %>';
 
 function loadAllNotifications() {
-    fetch(`${contextPath}/notifications?action=viewall`)
-        .then(res => res.json())
+    fetch(`${contextPath}/managenotifications?action=getByCreatedUser`)
+        .then(response => response.json())
         .then(data => {
-            const tbody = document.querySelector("#notificationTable tbody");
-            tbody.innerHTML = "";
+            const wrapper = document.getElementById('projectNotificationsWrapper');
+            wrapper.innerHTML = '';
 
-            data.forEach(n => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${n.notificationId}</td>
-                    <td><span contenteditable="true" data-id="${n.notificationId}" class="editable">${n.message}</span></td>
-                    <td>${n.createdAt || ""}</td>
-                    <td>
-                        <button onclick="editNotification(${n.notificationId})">Edit</button>
-                        <button onclick="deleteNotification(${n.notificationId})">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+            if (Object.keys(data).length === 0) {
+                wrapper.innerHTML = '<p>No notifications available.</p>';
+                return;
+            }
+
+            for (const [projectName, info] of Object.entries(data)) {
+                const notifications = info.notifications;
+                const projectId = info.projectId;
+                projectNameToId[projectName] = projectId;
+                const section = document.createElement('div');
+                section.classList.add('project-section');
+
+                const header = document.createElement('h3');
+                header.textContent = projectName;
+                section.appendChild(header);
+
+                // Add button
+                const addBtn = document.createElement('button');
+                addBtn.textContent = 'Add Notification';
+                addBtn.classList.add('add-btn');
+                addBtn.onclick = () => openAddModal(projectName);
+                section.appendChild(addBtn);
+
+                if (notifications.length === 0) {
+                    section.innerHTML += '<p>No notifications for this project.</p>';
+                } else {
+                    const table = document.createElement('table');
+                    table.classList.add('notification-table');
+
+                    const thead = document.createElement('thead');
+                    thead.innerHTML = `
+                        <tr>
+                            <th>ID</th>
+                            <th>Message</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>`;
+                    table.appendChild(thead);
+
+                    const tbody = document.createElement('tbody');
+
+                    notifications.forEach(n => {
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                            <td>${n.projectNotificationId}</td>
+                            <td>${n.message}</td>
+                            <td>${new Date(n.createdAt).toLocaleString()}</td>
+                            <td>
+                                <button onclick="deleteNotification(${n.projectNotificationId})">Delete</button>
+                            </td>
+                        `;
+
+                        tbody.appendChild(row);
+                    });
+
+                    table.appendChild(tbody);
+                    section.appendChild(table);
+                }
+
+                wrapper.appendChild(section);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notifications:', error);
         });
 }
 
-function createNotification(event) {
-    event.preventDefault();
-    const targetId = document.getElementById("targetIdInput").value;
-    const message = document.getElementById("messageInput").value;
+// Keep track of project name to ID mapping
+let projectNameToId = {};
 
-    fetch(`${contextPath}/notifications?action=create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `targetId=${targetId}&message=${encodeURIComponent(message)}`
-    }).then(() => {
-        document.getElementById("createForm").reset();
-        loadAllNotifications();
-    });
+function openAddModal(projectName) {
+    const modal = document.getElementById('addNotificationModal');
+    const textarea = document.getElementById('notificationMessage');
+    const hiddenInput = document.getElementById('modalProjectId');
+
+    // Find the corresponding projectId by name
+    const projectId = projectNameToId[projectName];
+    hiddenInput.value = projectId;
+
+    textarea.value = '';
+    modal.classList.remove('hidden');
 }
+
+function closeAddModal() {
+    document.getElementById('addNotificationModal').classList.add('hidden');
+}
+
+// Submit handler
+document.getElementById('addNotificationForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const projectId = document.getElementById('modalProjectId').value;
+    const message = document.getElementById('notificationMessage').value;
+
+    fetch(`${contextPath}/managenotifications?action=add&projectId=${encodeURIComponent(projectId)}&message=${encodeURIComponent(message)}`)
+    .then(() => {
+        closeAddModal();
+        loadAllNotifications(); // Refresh list
+    })
+    .catch(error => console.error('Error adding notification:', error));
+});
+
+// Close modal on X click
+document.getElementById('closeModal').addEventListener('click', closeAddModal);
 
 function editNotification(id) {
     const messageSpan = document.querySelector(`.editable[data-id="${id}"]`);
@@ -54,14 +128,12 @@ function editNotification(id) {
 function deleteNotification(id) {
     if (!confirm("Are you sure you want to delete this notification?")) return;
 
-    fetch(`${contextPath}/notifications?action=delete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `notificationId=${id}`
-    }).then(() => {
+    fetch(`${contextPath}/managenotifications?action=delete&id=${id}`)
+    .then(() => {
         loadAllNotifications();
     });
 }
+
 
 // Initial load
 loadAllNotifications();

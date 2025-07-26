@@ -30,30 +30,24 @@
             
             <main class="main-content">
                 
-                <h2>All Notifications</h2>
+                <h2>Manage Project Notifications</h2>
 
-                <!-- Create form -->
-                <form id="createForm" onsubmit="createNotification(event)">
-                    <input type="number" id="targetIdInput" placeholder="User ID" required>
-                    <input type="text" id="messageInput" placeholder="Enter message" required>
-                    <button type="submit">Send Notification</button>
-                </form>
-
-
-                <!-- Notifications table -->
-                <table id="notificationTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Message</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Populated by JavaScript -->
-                    </tbody>
-                </table>
+                <!-- Container where notifications will be inserted -->
+                <div id="projectNotificationsWrapper">
+                    <!-- JS will populate this with grouped project notifications -->
+                </div>
+                <div id="addNotificationModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span id="closeModal" class="close-button">&times;</span>
+                        <h3>Add Notification</h3>
+                        <form id="addNotificationForm">
+                            <input type="hidden" id="modalProjectId" />
+                            <label for="notificationMessage">Message:</label>
+                            <textarea id="notificationMessage" required></textarea>
+                            <button type="submit">Add</button>
+                        </form>
+                    </div>
+                </div>
             </main>
         </div>
         <script src="${pageContext.request.contextPath}/ManageNotification.js"></script>

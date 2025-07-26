@@ -1,18 +1,25 @@
 /* Notification Dropdown Styling */
 .notification-dropdown {
     position: absolute;
-    top: 30px; /* Adjust as needed */
+    top: 30px;
     right: 0;
-    width: 250px;
+    width: 500px;              
+    max-height: 400px;       
     background-color: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: none; /* Initially hidden, toggle with JS */
+    display: none;
     flex-direction: column;
     padding: 8px 0;
     z-index: 1000;
     transition: all 0.3s ease;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.notification-dropdown.show {
+    display: block;
 }
 
 body.dark-mode .notification-dropdown {
@@ -21,26 +28,28 @@ body.dark-mode .notification-dropdown {
     color: #ffffff;
 }
 
-.notification-dropdown.show {
-    display: block;
-}
-
 /* Notification List Styling */
 .notification-dropdown ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    max-height: 200px;
+    max-height: 100%;
     overflow-y: auto;
 }
 
 .notification-dropdown ul li {
-    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
     font-size: 14px;
     cursor: pointer;
+    position: relative;
     transition: background-color 0.3s;
 }
 
+/* Hover background */
 .notification-dropdown ul li:hover {
     background-color: #f3f4f6;
 }
@@ -49,44 +58,52 @@ body.dark-mode .notification-dropdown ul li:hover {
     background-color: #374151;
 }
 
-/* Notification Actions Buttons Styling */
-.notification-actions {
+/* Message content */
+.notification-message {
+    flex: 3;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Action Buttons (initially hidden) */
+.notification-buttons {
+    flex: 1; /* 1/4 width shared between the 2 buttons */
     display: flex;
-    justify-content: space-around;
-    padding: 8px 0 0 0;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 8px;
+    justify-content: flex-end;
+    gap: 6px;
+    visibility: hidden; /* Only visible on hover */
 }
 
-body.dark-mode .notification-actions {
-    border-color: #374151;
+.notification-dropdown ul li:hover .notification-buttons {
+    visibility: visible;
 }
 
-.notification-actions button {
-    background-color: #f3f4f6;
+.notification-buttons button {
+    background-color: transparent;
     border: none;
+    padding: 4px 6px;
     border-radius: 4px;
-    padding: 6px 12px;
     font-size: 12px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    color: #f97316; /* orange like your screenshot */
+    transition: background-color 0.2s ease;
 }
 
-.notification-actions button:hover {
-    background-color: #e5e7eb;
-    color: #111827;
+.notification-buttons button:hover {
+    background-color: #ffeede;
+    color: #c2410c;
 }
 
-body.dark-mode .notification-actions button {
-    background-color: #374151;
-    color: #ffffff;
+body.dark-mode .notification-buttons button {
+    color: #facc15;
 }
 
-body.dark-mode .notification-actions button:hover {
+body.dark-mode .notification-buttons button:hover {
     background-color: #4b5563;
 }
 
-/* Custom Scrollbar Styling */
+/* Scrollbar Styling */
 .notification-dropdown ul::-webkit-scrollbar {
     width: 6px;
 }
@@ -104,7 +121,6 @@ body.dark-mode .notification-actions button:hover {
     background-color: #a0a0a0;
 }
 
-/* Dark mode scrollbar */
 body.dark-mode .notification-dropdown ul::-webkit-scrollbar-thumb {
     background-color: #4b5563;
 }
@@ -113,7 +129,6 @@ body.dark-mode .notification-dropdown ul::-webkit-scrollbar-thumb:hover {
     background-color: #6b7280;
 }
 
-/* Firefox Support */
 .notification-dropdown ul {
     scrollbar-width: thin;
     scrollbar-color: #c0c0c0 transparent;
@@ -123,21 +138,19 @@ body.dark-mode .notification-dropdown ul {
     scrollbar-color: #4b5563 transparent;
 }
 
-/* Unread notification styling */
+/* Read/Unread Styling */
 .notification-dropdown ul li.unread {
     font-weight: 600;
-    background-color: #e0f2fe; /* subtle blue background */
-    border-left: 4px solid #3b82f6; /* blue accent bar */
+    background-color: #e0f2fe;
+    border-left: 4px solid #3b82f6;
 }
 
-/* Read notification styling */
 .notification-dropdown ul li.read {
     font-weight: normal;
     background-color: transparent;
     border-left: 4px solid transparent;
 }
 
-/* Hover effects */
 .notification-dropdown ul li.unread:hover {
     background-color: #bae6fd;
 }
@@ -146,7 +159,6 @@ body.dark-mode .notification-dropdown ul {
     background-color: #f3f4f6;
 }
 
-/* Dark mode: unread */
 body.dark-mode .notification-dropdown ul li.unread {
     background-color: #1e3a8a;
     border-left-color: #60a5fa;
@@ -157,7 +169,50 @@ body.dark-mode .notification-dropdown ul li.unread:hover {
     background-color: #1d4ed8;
 }
 
-/* Dark mode: read */
 body.dark-mode .notification-dropdown ul li.read:hover {
     background-color: #374151;
+}
+
+.notification-section {
+    padding: 4px 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.section-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: left;
+    padding: 6px 0;
+    color: #1f2937;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+body.dark-mode .section-toggle {
+    color: #f3f4f6;
+}
+
+.notification-section-content.collapsed {
+    display: none;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+.notification-item:hover .notification-buttons {
+    visibility: visible;
 }
