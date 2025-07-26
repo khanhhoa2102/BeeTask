@@ -112,6 +112,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.handleAddBoard(addBoardForm)
                 })
             }
+            document.getElementById("rejectAISuggestionBtn")?.addEventListener("click", () => {
+                const taskId = document.getElementById("rejectAISuggestionBtn").dataset.taskId;
+                if (!taskId || !confirm("Are you sure you want to reject this AI suggestion?"))
+                    return;
+
+                fetch(`${window.contextPath}/ai-suggest-apply?action=reject`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: `taskId=${taskId}`
+                })
+                        .then(res => res.json())
+                        .then(result => {
+                            window.closeAISuggestionModal();
+                            taskManager.showNotification("❌ AI suggestion rejected", "info");
+
+                            const col = document.querySelector(`.table-row[data-task-id="${taskId}"] .ai-suggestion-col`);
+                            if (col)
+                                col.innerHTML = `<span class="ai-no-suggestion text-muted">Rejected</span>`;
+                        })
+                        .catch(err => {
+                            console.error("Failed to reject AI suggestion", err);
+                            taskManager.showNotification("❌ Failed to reject AI suggestion", "error");
+                        });
+            });
         }
         applyTheme(theme) {
             document.body.classList.toggle("dark-mode", theme === "dark-mode")
@@ -364,6 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
         duplicateBoard(boardId) {
             if (!confirm("Duplicate this board and all its tasks?")) return;
 
+
             fetch("board?action=duplicate", {
                 method: "POST",
                 headers: {
@@ -388,7 +413,6 @@ document.addEventListener("DOMContentLoaded", () => {
         sortBoardTasks(boardId, sortBy) {
             const boardContainer = document.querySelector(`.board-card[data-board-id="${boardId}"] .board-tasks`);
             if (!boardContainer) return;
-
             const tasks = Array.from(boardContainer.querySelectorAll(".task-card"));
 
             tasks.sort((a, b) => {
@@ -436,20 +460,51 @@ document.addEventListener("DOMContentLoaded", () => {
                     })
         }
         applyAISuggestion(taskId, start, end, priority, difficulty, confidence, shortdesc) {
-            if (confirm("Are you sure you want to apply this AI suggestion?")) {
-                // In a real application, you would send an AJAX request to update the task
-                // For now, we'll simulate it and show a notification.
-                console.log("Apply AI Suggestion → Task:", taskId)
-                console.log("Start:", start)
-                console.log("End:", end)
-                console.log("Priority:", priority)
-                console.log("Difficulty:", difficulty)
-                console.log("Confidence:", confidence)
-                console.log("Short Desc:", shortdesc)
-                this.showNotification("✅ AI suggestion applied!", "success")
-                window.closeAISuggestionModal()
-            }
+            if (!confirm("Are you sure you want to apply this AI suggestion?"))
+                return;
+
+            const suggestion = {
+                taskId: parseInt(taskId),
+                title: "",
+                start: start,
+                end: end,
+                priority: priority,
+                difficulty: parseInt(difficulty),
+                confidence: parseFloat(confidence),
+                shortDescription: shortdesc,
+                event: false
+            };
+
+
+            fetch(`${window.contextPath}/ai-suggest-apply`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({schedules: [suggestion]})
+            })
+                    .then(res => res.json())
+                    .then(result => {
+                        this.showNotification("✅ AI suggestion applied!", "success");
+                        window.closeAISuggestionModal();
+
+                        // Tìm ô AI Suggestion trong bảng
+                        const row = document.querySelector(`.table-row[data-task-id="${taskId}"]`);
+                        const col = row?.querySelector(".ai-suggestion-col");
+
+                        if (col) {
+                            col.innerHTML = `
+                <div class="ai-time">
+                    <i class="fas fa-clock"></i>
+                    ${start} → ${end}
+                </div>
+            `;
+                        }
+                    })
+                    .catch(err => {
+                        console.error("❌ Failed to apply suggestion:", err);
+                        this.showNotification("❌ Failed to apply AI suggestion", "error");
+                    });
         }
+
         handleAddTask() {
             const form = document.getElementById("addTaskForm")
             const formData = new FormData(form)
@@ -919,49 +974,57 @@ const styleSheet = document.createElement("style")
 styleSheet.textContent = notificationStyles
 document.head.appendChild(styleSheet)
 window.openAISuggestionModal = (taskId, taskTitle, taskDesc, taskDue, taskPriority) => {
-    console.log("🧪 AI Suggest Clicked:", {taskId, taskTitle, taskDesc, taskDue, taskPriority})
+    console.log("🧪 AI Suggest Clicked:", {taskId, taskTitle, taskDesc, taskDue, taskPriority});
+
     fetch(`${window.contextPath}/ai-suggest-preview`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
         body: `taskId=${taskId}`,
         credentials: "include",
     })
-            .then((res) => res.json())
-            .then((data) => {
-                const suggestion = data.schedules?.[0]
-                if (!suggestion) {
-                    alert("No suggestion received.")
-                    return
+            .then((res) => {
+                if (!res.ok)
+                    throw new Error("Server returned error");
+                return res.json();
+            })
+            .then((suggestion) => {
+                if (!suggestion || !suggestion.start || !suggestion.end) {
+                    alert("No suggestion received.");
+                    return;
                 }
-                // Current info
-                document.getElementById("aiCurrentTaskTitle").innerText = taskTitle
-                document.getElementById("aiCurrentTaskDescription").innerText = taskDesc
-                document.getElementById("aiCurrentTaskDueDate").innerText = taskDue || "N/A"
-                document.getElementById("aiCurrentTaskPriority").innerText = taskPriority || "N/A"
-                // AI Suggestion
-                document.getElementById("aiSuggestedStart").innerText = suggestion.suggestedStartTime || "N/A"
-                document.getElementById("aiSuggestedEnd").innerText = suggestion.suggestedEndTime || "N/A"
-                document.getElementById("aiSuggestedPriority").innerText = suggestion.priority || "N/A"
-                document.getElementById("aiSuggestedDifficulty").innerText = suggestion.difficulty || "N/A"
-                document.getElementById("aiSuggestedConfidence").innerText = suggestion.confidence || "N/A"
-                document.getElementById("aiSuggestedShortDesc").innerText = suggestion.shortDescription || "N/A"
-                const btn = document.getElementById("applyAISuggestionBtn")
-                btn.dataset.taskId = taskId
-                btn.dataset.start = suggestion.suggestedStartTime
-                btn.dataset.end = suggestion.suggestedEndTime
-                btn.dataset.priority = suggestion.priority
-                btn.dataset.difficulty = suggestion.difficulty
-                btn.dataset.confidence = suggestion.confidence
-                btn.dataset.shortdesc = suggestion.shortDescription
-                document.getElementById("aiSuggestionModal").style.display = "block"
+
+                // Thông tin task hiện tại
+                document.getElementById("aiCurrentTaskTitle").innerText = taskTitle;
+                document.getElementById("aiCurrentTaskDescription").innerText = taskDesc;
+                document.getElementById("aiCurrentTaskDueDate").innerText = taskDue || "N/A";
+                document.getElementById("aiCurrentTaskPriority").innerText = taskPriority || "N/A";
+
+                // Thông tin gợi ý từ AI
+                document.getElementById("aiSuggestedStart").innerText = suggestion.start || "N/A";
+                document.getElementById("aiSuggestedEnd").innerText = suggestion.end || "N/A";
+                document.getElementById("aiSuggestedPriority").innerText = suggestion.priority || "N/A";
+                document.getElementById("aiSuggestedDifficulty").innerText = suggestion.difficulty || "N/A";
+                document.getElementById("aiSuggestedConfidence").innerText = Math.round(suggestion.confidence * 100) + "%";
+                document.getElementById("aiSuggestedShortDesc").innerText = suggestion.shortDescription || "N/A";
+
+                // Gán dữ liệu để apply
+                const btn = document.getElementById("applyAISuggestionBtn");
+                btn.dataset.taskId = taskId;
+                btn.dataset.start = suggestion.start;
+                btn.dataset.end = suggestion.end;
+                btn.dataset.priority = suggestion.priority;
+                btn.dataset.difficulty = suggestion.difficulty;
+                btn.dataset.confidence = suggestion.confidence;
+                btn.dataset.shortdesc = suggestion.shortDescription;
+                document.getElementById("rejectAISuggestionBtn").dataset.taskId = taskId;
+                document.getElementById("aiSuggestionModal").style.display = "block";
             })
             .catch((err) => {
-                console.error("AI fetch failed", err)
-                alert("AI suggestion failed.")
-            })
-}
+                console.error("AI fetch failed", err);
+                alert("AI suggestion failed.");
+            });
+};
+
 window.closeAddTaskModal = () => {
     document.getElementById("addTaskModal").style.display = "none"
 }

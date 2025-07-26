@@ -61,8 +61,6 @@
                         <c:forEach var="note" items="${notes}">
                             <div class="note-item" data-id="${note.noteId}">
                                 <div class="note-checkbox-wrapper">
-                                    <input type="checkbox" class="note-checkbox" id="note-${note.noteId}">
-                                    <label for="note-${note.noteId}" class="checkbox-label"></label>
                                 </div>
                                 <div class="note-content" data-editable="true">
                                     <span class="note-text">${note.title}</span>
@@ -128,16 +126,22 @@
             <h3>Chọn hoặc tạo nhãn</h3>
             <button id="close-label-modal" class="close-btn">&times;</button>
         </div>
-        <div class="label-options"></div>
+        <div class="label-options">
+            <!-- Labels từ database sẽ được load ở đây -->
+        </div>
         <div class="section-divider"></div>
         <div class="add-label-section">
             <div class="new-label-form">
                 <input type="text" id="new-label-name" placeholder="Tên nhãn" class="form-input">
                 <div class="color-picker">
-                    <div class="color-option selected" data-color="blue" style="background-color: blue;"></div>
-                    <div class="color-option" data-color="green" style="background-color: green;"></div>
-                    <div class="color-option" data-color="red" style="background-color: red;"></div>
-                    <div class="color-option" data-color="purple" style="background-color: purple;"></div>
+                    <div class="color-option selected" data-color="#FFD700" style="background-color: #FFD700;"></div> <!-- yellow -->
+                    <div class="color-option" data-color="#FF0000" style="background-color: #FF0000;"></div> <!-- red -->
+                    <div class="color-option" data-color="#008000" style="background-color: #008000;"></div> <!-- green -->
+                    <div class="color-option" data-color="#FFA500" style="background-color: #FFA500;"></div> <!-- orange -->
+                    <div class="color-option" data-color="#8B0000" style="background-color: #8B0000;"></div> <!-- darkred -->
+                    <div class="color-option" data-color="#DC143C" style="background-color: #DC143C;"></div> <!-- crimson -->
+                    <div class="color-option" data-color="#0000FF" style="background-color: #0000FF;"></div> <!-- blue -->
+                    <div class="color-option" data-color="#A52A2A" style="background-color: #A52A2A;"></div> <!-- brown -->
                 </div>
                 <button id="create-label-btn" class="btn-primary">Tạo nhãn</button>
             </div>

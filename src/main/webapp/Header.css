@@ -324,7 +324,7 @@ body.dark-mode .project-list li:hover {
 }
 
 .sidebar.collapsed ~ .main-content {
-    margin-left: 80px;
+    
     width: calc(100% - 80px);
 }
 

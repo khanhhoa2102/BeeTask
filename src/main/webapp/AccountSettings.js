@@ -4,114 +4,131 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function initializeAccountSettings() {
     const form = document.getElementById('settingsForm');
-    const avatarUrlInput = document.getElementById('avatarUrl');
+    const avatarUpload = document.getElementById('avatarUpload');
     const avatarPreview = document.getElementById('avatarPreview');
     const submitBtn = document.getElementById('submitBtn');
-    const phoneNumberInput = document.getElementById('phoneNumber');
-    const usernameInput = document.getElementById('username');
 
-    if (avatarUrlInput && avatarPreview) {
-        avatarUrlInput.addEventListener('input', function () {
-            const url = this.value.trim();
-            const testImg = new Image();
-            testImg.onload = function () {
-                avatarPreview.src = url;
+    // Handle avatar upload
+    if (avatarUpload && avatarPreview) {
+        avatarUpload.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file)
+                return;
+
+            if (!file.type.match('image.*')) {
+                showToast('Please select an image file (JPEG, PNG, etc.)', 'error');
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image size should not exceed 2MB', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                avatarPreview.src = e.target.result;
                 avatarPreview.style.display = 'block';
                 avatarPreview.nextElementSibling.style.opacity = '0';
             };
-            testImg.onerror = function () {
-                avatarPreview.src = 'https://via.placeholder.com/100';
-                avatarPreview.nextElementSibling.style.opacity = '1';
-            };
-            testImg.src = url;
+            reader.readAsDataURL(file);
         });
     }
 
-    if (phoneNumberInput) {
-        phoneNumberInput.addEventListener('input', function () {
-            let value = this.value.replace(/\D/g, '');
-            if (value.length > 10)
-                value = value.substring(0, 10);
-            if (value.length >= 7) {
-                value = value.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
-            } else if (value.length >= 4) {
-                value = value.replace(/(\d{4})(\d{0,3})/, '$1 $2');
-            }
-            this.value = value;
-            const phoneDisplay = document.getElementById('phoneDisplay');
-            if (phoneDisplay)
-                phoneDisplay.textContent = value || 'Chưa cập nhật';
-        });
-    }
+    // Live updates
+    document.getElementById('username').addEventListener('input', function () {
+        document.getElementById('usernameDisplay').textContent = this.value;
+    });
 
-    if (usernameInput) {
-        usernameInput.addEventListener('input', function () {
-            const profileName = document.querySelector('.profile-header h3');
-            if (profileName)
-                profileName.textContent = this.value || 'Tên người dùng';
-        });
-    }
+    document.getElementById('phoneNumber').addEventListener('input', function () {
+        document.getElementById('phoneDisplay').textContent = this.value || 'Not provided';
+    });
 
-    const addressInput = document.getElementById('address');
-    if (addressInput) {
-        addressInput.addEventListener('input', function () {
-            const addressDisplay = document.getElementById('addressDisplay');
-            if (addressDisplay)
-                addressDisplay.textContent = this.value || 'Chưa cập nhật';
-        });
-    }
+    document.getElementById('address').addEventListener('input', function () {
+        document.getElementById('addressDisplay').textContent = this.value || 'Not provided';
+    });
 
+    // Form submission
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
-            if (!validateForm()) return;
+            if (!validateForm())
+                return;
             showLoadingState(true);
             submitForm();
         });
     }
-
-    addValidationListeners();
 }
 
 function validateForm() {
-    const username = document.getElementById('username').value.trim();
-    const phoneNumber = document.getElementById('phoneNumber').value.trim();
-    const avatarUrl = document.getElementById('avatarUrl').value.trim();
-    const address = document.getElementById('address').value.trim();
+    const form = document.getElementById('settingsForm');
+    const usernameInput = document.getElementById('username');
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    const addressInput = document.getElementById('address');
+    const avatarFileInput = document.getElementById('avatarUpload');
+    
+    // Get current values
+    const username = usernameInput.value.trim();
+    const phoneNumber = phoneNumberInput.value.trim();
+    const address = addressInput.value.trim();
+    const avatarFile = avatarFileInput.files[0];
+    
+    // Get original values from data attributes
+    const originalUsername = usernameInput.dataset.original;
+    const originalPhone = phoneNumberInput.dataset.original || '';
+    const originalAddress = addressInput.dataset.original || '';
 
-    if (!username || username.length < 3 || username.length > 100) {
-        showToast('Tên đăng nhập phải từ 3 đến 100 ký tự', 'error');
-        document.getElementById('username').focus();
-        return false;
+    // Check if avatar is being uploaded (regardless of other changes)
+    if (avatarFile) {
+        // Validate avatar file
+        if (!avatarFile.type.match('image.*')) {
+            showToast('Please select a valid image file (JPEG, PNG)', 'error');
+            return false;
+        }
+        if (avatarFile.size > 2 * 1024 * 1024) {
+            showToast('Image size should not exceed 2MB', 'error');
+            return false;
+        }
+        // If only uploading avatar, return true immediately
+        if (username === originalUsername && 
+            phoneNumber === originalPhone && 
+            address === originalAddress) {
+            return true;
+        }
     }
 
-    if (phoneNumber && phoneNumber.length > 20) {
-        showToast('Số điện thoại không được vượt quá 20 ký tự', 'error');
-        document.getElementById('phoneNumber').focus();
-        return false;
+    // Check if username was changed
+    if (username !== originalUsername) {
+        if (!username || username.length < 3 || username.length > 100) {
+            showToast('Username must be between 3 and 100 characters', 'error');
+            return false;
+        }
     }
 
-    if (avatarUrl && avatarUrl.length > 255) {
-        showToast('URL avatar không được vượt quá 255 ký tự', 'error');
-        document.getElementById('avatarUrl').focus();
-        return false;
+    // Check if phone number was changed
+    if (phoneNumber !== originalPhone) {
+        if (phoneNumber && !isValidPhoneNumber(phoneNumber)) {
+            showToast('Invalid phone number format', 'error');
+            return false;
+        }
     }
 
-    if (address && address.length > 255) {
-        showToast('Địa chỉ không được vượt quá 255 ký tự', 'error');
-        document.getElementById('address').focus();
-        return false;
+    // Check if address was changed
+    if (address !== originalAddress) {
+        if (address && address.length > 255) {
+            showToast('Address should not exceed 255 characters', 'error');
+            return false;
+        }
     }
 
-    if (phoneNumber && !isValidPhoneNumber(phoneNumber)) {
-        showToast('Số điện thoại không hợp lệ', 'error');
-        document.getElementById('phoneNumber').focus();
-        return false;
-    }
+    // Check if any fields were actually changed
+    const hasChanges = username !== originalUsername ||
+                      phoneNumber !== originalPhone ||
+                      address !== originalAddress ||
+                      (avatarFile && avatarFile.size > 0);
 
-    if (avatarUrl && !isValidUrl(avatarUrl)) {
-        showToast('URL avatar không hợp lệ', 'error');
-        document.getElementById('avatarUrl').focus();
+    if (!hasChanges) {
+        showToast('No changes were made', 'info');
         return false;
     }
 
@@ -124,75 +141,57 @@ function isValidPhoneNumber(phone) {
     return phoneRegex.test(cleanPhone);
 }
 
-function isValidUrl(url) {
-    try {
-        new URL(url);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
 function submitForm() {
     const form = document.getElementById('settingsForm');
     const formData = new FormData(form);
-    const contextPath = document.body.getAttribute('data-context-path') || '';
-    const endpoint = `${contextPath}/account/settings`;
+    const avatarFile = document.getElementById('avatarUpload').files[0];
 
-    const encodedData = new URLSearchParams(formData);
-
-    console.log('🔵 Đang gửi dữ liệu đến:', endpoint);
-    console.log('📦 Dữ liệu gửi đi:');
-    for (let [key, value] of encodedData.entries()) {
-        console.log(`  - ${key}: ${value}`);
+    // Đảm bảo gửi file nếu có
+    if (avatarFile) {
+        formData.set('avatarFile', avatarFile);
     }
 
-    fetch(endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: encodedData
-    })
-    .then(response => {
-        console.log('✅ Phản hồi từ server:', response);
-        return response.json();
-    })
-    .then(data => {
-        console.log('🟢 JSON nhận được từ server:', data);
-        if (data.log) {
-            console.log('📋 Log từ server:', data.log);
-        }
+    showLoadingState(true);
 
-        showLoadingState(false);
-        if (data.success) {
-            showToast('✅ Cập nhật thông tin thành công!', 'success');
-            document.getElementById('phoneDisplay').textContent = formData.get('phoneNumber') || 'Chưa cập nhật';
-            document.getElementById('addressDisplay').textContent = formData.get('address') || 'Chưa cập nhật';
-            document.querySelector('.profile-header h3').textContent = formData.get('username') || 'Tên người dùng';
-            document.getElementById('avatarPreview').src = formData.get('avatarUrl') || 'https://via.placeholder.com/100';
-        } else {
-            showToast(`❌ Cập nhật thất bại: ${data.message || 'Không rõ nguyên nhân.'}`, 'error');
-        }
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
     })
-    .catch(error => {
-        showLoadingState(false);
-        console.error('❌ Lỗi kết nối máy chủ:', error);
-        showToast('❌ Lỗi kết nối máy chủ!', 'error');
-    });
+            .then(response => response.json())
+            .then(data => {
+                showLoadingState(false);
+                if (data.success) {
+                    showToast(data.message || 'Cập nhật thành công!', 'success');
+                    if (avatarFile && data.avatarUrl) {
+                        // Cập nhật ảnh preview
+                        const avatarPreview = document.getElementById('avatarPreview');
+                        avatarPreview.src = data.avatarUrl;
+                        // Reset input file
+                        document.getElementById('avatarUpload').value = '';
+                    }
+                } else {
+                    showToast(data.message || 'Cập nhật thất bại', 'error');
+                }
+            })
+            .catch(error => {
+                showLoadingState(false);
+                showToast('Lỗi kết nối máy chủ', 'error');
+            });
 }
 
 function showLoadingState(loading) {
     const submitBtn = document.getElementById('submitBtn');
-    const btnText = submitBtn.querySelector('span');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const spinner = submitBtn.querySelector('.spinner-border');
+
     if (loading) {
-        submitBtn.classList.add('loading');
         submitBtn.disabled = true;
-        btnText.textContent = 'Đang lưu...';
+        btnText.textContent = 'Saving...';
+        spinner.classList.remove('d-none');
     } else {
-        submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
-        btnText.textContent = 'Lưu thay đổi';
+        btnText.textContent = 'Save Changes';
+        spinner.classList.add('d-none');
     }
 }
 
@@ -200,33 +199,16 @@ function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastIcon = toast.querySelector('.toast-icon');
     const toastMessage = toast.querySelector('.toast-message');
+
     toastMessage.textContent = message;
     toast.className = `toast ${type}`;
+
     toastIcon.className = type === 'success'
-        ? 'toast-icon fas fa-check-circle'
-        : 'toast-icon fas fa-exclamation-circle';
+            ? 'toast-icon fas fa-check-circle'
+            : type === 'error'
+            ? 'toast-icon fas fa-exclamation-circle'
+            : 'toast-icon fas fa-info-circle';
+
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 4000);
-}
-
-function addValidationListeners() {
-    const usernameInput = document.getElementById('username');
-    const phoneInput = document.getElementById('phoneNumber');
-    const avatarUrlInput = document.getElementById('avatarUrl');
-
-    if (usernameInput) {
-        usernameInput.addEventListener('blur', function () {
-            this.style.borderColor = this.value.trim().length < 3 ? '#dc3545' : '#e1e5e9';
-        });
-    }
-    if (phoneInput) {
-        phoneInput.addEventListener('blur', function () {
-            this.style.borderColor = isValidPhoneNumber(this.value.trim()) ? '#e1e5e9' : '#dc3545';
-        });
-    }
-    if (avatarUrlInput) {
-        avatarUrlInput.addEventListener('blur', function () {
-            this.style.borderColor = isValidUrl(this.value.trim()) ? '#e1e5e9' : '#dc3545';
-        });
-    }
 }

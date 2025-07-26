@@ -1,5 +1,7 @@
 package controller;
 
+import com.google.gson.Gson;
+import dao.LabelDAO;
 import dao.NoteDAO;
 import model.Note;
 
@@ -10,6 +12,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import model.Label;
 
 @WebServlet(name = "NoteServlet", urlPatterns = {"/notes"})
 public class NoteServlet extends HttpServlet {
@@ -28,10 +31,17 @@ public class NoteServlet extends HttpServlet {
             int userId = (int) session.getAttribute("userId");
             List<Note> notes = NoteDAO.findAllByUserId(userId);
 
+            if (notes == null) {
+                System.err.println("[ERROR] notes is null from NoteDAO.findAllByUserId(" + userId + ")");
+            }
+
             request.setAttribute("notes", notes);
             request.getRequestDispatcher("/Home/Note.jsp").forward(request, response);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("[ERROR] Lỗi trong NoteServlet.doGet(): " + e.getMessage());
+            e.printStackTrace();  // In toàn bộ stack trace để debug
+
             request.setAttribute("error", "Không thể tải ghi chú: " + e.getMessage());
             request.getRequestDispatcher("/Home/Note.jsp").forward(request, response);
         }
@@ -48,7 +58,7 @@ public class NoteServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.write("❌ Thiếu tham số 'action'.");
+            out.write("❌ Missing 'action' parameter.");
             return;
         }
 
@@ -58,60 +68,94 @@ public class NoteServlet extends HttpServlet {
                 case "create": {
                     String title = request.getParameter("title");
                     String content = request.getParameter("content");
-                    int userId = Integer.parseInt(request.getParameter("userId"));
-                    int labelId = Integer.parseInt(request.getParameter("labelId"));
+                    String userIdStr = request.getParameter("userId");
+                    String labelIdStr = request.getParameter("labelId");
 
-                    Note note = new Note(title, content, userId, labelId);
-                    boolean created = new NoteDAO().createNote(note);
+                    // Kiểm tra các tham số bắt buộc
+                    if (title == null || content == null || userIdStr == null) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("❌ Thiếu tham số bắt buộc");
+                        return;
+                    }
 
-                    if (created) {
-                        out.write("✅ Ghi chú đã tạo.");
-                    } else {
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.write("❌ Không thể tạo ghi chú.");
+                    try {
+                        int userId = Integer.parseInt(userIdStr);
+                        int labelId = (labelIdStr == null || labelIdStr.trim().isEmpty()) ? 0 : Integer.parseInt(labelIdStr);
+
+                        Note note = new Note(title, content, userId, labelId);
+                        boolean created = new NoteDAO().createNote(note);
+
+                        if (created) {
+                            out.write("✅ Note created successfully.");
+                        } else {
+                            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            out.write("❌ Failed to create note.");
+                        }
+                    } catch (NumberFormatException e) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("❌ Định dạng số không hợp lệ");
                     }
                     break;
                 }
 
                 case "update": {
-                    int noteId = Integer.parseInt(request.getParameter("noteId"));
+                    String noteIdStr = request.getParameter("noteId");
                     String title = request.getParameter("title");
                     String content = request.getParameter("content");
-                    String deadline = request.getParameter("deadline"); // có thể rỗng
+                    String deadline = request.getParameter("deadline");
 
+                    if (noteIdStr == null || noteIdStr.trim().isEmpty()) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("❌ Missing 'noteId'.");
+                        return;
+                    }
+
+                    int noteId = Integer.parseInt(noteIdStr);
                     boolean updated = new NoteDAO().updateNote(noteId, title, content, deadline);
                     if (updated) {
-                        out.write("✅ Ghi chú đã cập nhật.");
+                        out.write("✅ Note updated successfully.");
                     } else {
                         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.write("❌ Cập nhật ghi chú thất bại.");
+                        out.write("❌ Failed to update note.");
                     }
                     break;
                 }
 
                 case "delete": {
-                    int noteId = Integer.parseInt(request.getParameter("noteId"));
+                    String noteIdStr = request.getParameter("noteId");
+
+                    if (noteIdStr == null || noteIdStr.trim().isEmpty()) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.write("❌ Missing 'noteId'.");
+                        return;
+                    }
+
+                    int noteId = Integer.parseInt(noteIdStr);
                     boolean deleted = new NoteDAO().deleteNote(noteId);
                     if (deleted) {
-                        out.write("✅ Ghi chú đã bị xóa.");
+                        out.write("✅ Note deleted successfully.");
                     } else {
                         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.write("❌ Xóa ghi chú thất bại.");
+                        out.write("❌ Failed to delete note.");
                     }
                     break;
                 }
 
                 default: {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.write("❌ Giá trị 'action' không hợp lệ.");
+                    out.write("❌ Invalid action value.");
                     break;
                 }
             }
 
+        } catch (NumberFormatException nfe) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.write("❌ Invalid number format: " + nfe.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write("❌ Lỗi máy chủ: " + e.getMessage());
+            out.write("❌ Server error: " + e.getMessage());
         }
     }
+
 }

@@ -2,7 +2,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // User Avatar Dropdown functionality
     const userAvatarBtn = document.getElementById('userAvatarBtn');
     const userDropdown = document.getElementById('userDropdown');
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const helpBtn = document.getElementById('helpBtn');
 
+    if (notificationBtn && notificationDropdown){
+        document.addEventListener('click', function(e) {
+            if (
+                notificationBtn &&
+                notificationDropdown &&
+                !notificationDropdown.contains(e.target)
+            ) {
+                if (notificationDropdown.classList.contains('show')) {
+                    notificationDropdown.classList.remove('show');
+                }
+            }
+        });
+        
+        notificationBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
     if (userAvatarBtn && userDropdown) {
         // Toggle dropdown when clicking avatar button
         userAvatarBtn.addEventListener('click', function(e) {
@@ -12,8 +33,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
-            if (!userAvatarBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-                userDropdown.classList.remove('show');
+            if(userDropdown.classList.contains('show')){
+                if (!userAvatarBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
             }
         });
 
@@ -64,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Other button functionalities
     const bookmarkBtn = document.getElementById('bookmarkBtn');
-    const notificationBtn = document.getElementById('notificationBtn');
-    const helpBtn = document.getElementById('helpBtn');
+
+
 
     if (bookmarkBtn) {
         bookmarkBtn.addEventListener('click', function() {
@@ -76,8 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (notificationBtn) {
         notificationBtn.addEventListener('click', function() {
-            console.log('Notification clicked');
-            // Add notification functionality here
+            
         });
     }
 
@@ -102,7 +124,6 @@ function loadNotifications() {
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById("notificationList");
-            const countEl = document.getElementById("notificationCount");
             list.innerHTML = "";
 
             let unreadCount = 0;
@@ -115,13 +136,6 @@ function loadNotifications() {
                 } else li.classList.add("read");
                 list.appendChild(li);
             });
-
-            if (unreadCount > 0) {
-                countEl.style.display = "inline-block";
-                countEl.textContent = unreadCount;
-            } else {
-                countEl.style.display = "none";
-            }
         });
 }
 

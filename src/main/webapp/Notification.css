@@ -85,3 +85,79 @@ body.dark-mode .notification-actions button {
 body.dark-mode .notification-actions button:hover {
     background-color: #4b5563;
 }
+
+/* Custom Scrollbar Styling */
+.notification-dropdown ul::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-dropdown ul::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notification-dropdown ul::-webkit-scrollbar-thumb {
+    background-color: #c0c0c0;
+    border-radius: 10px;
+}
+
+.notification-dropdown ul::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a0;
+}
+
+/* Dark mode scrollbar */
+body.dark-mode .notification-dropdown ul::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+}
+
+body.dark-mode .notification-dropdown ul::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+}
+
+/* Firefox Support */
+.notification-dropdown ul {
+    scrollbar-width: thin;
+    scrollbar-color: #c0c0c0 transparent;
+}
+
+body.dark-mode .notification-dropdown ul {
+    scrollbar-color: #4b5563 transparent;
+}
+
+/* Unread notification styling */
+.notification-dropdown ul li.unread {
+    font-weight: 600;
+    background-color: #e0f2fe; /* subtle blue background */
+    border-left: 4px solid #3b82f6; /* blue accent bar */
+}
+
+/* Read notification styling */
+.notification-dropdown ul li.read {
+    font-weight: normal;
+    background-color: transparent;
+    border-left: 4px solid transparent;
+}
+
+/* Hover effects */
+.notification-dropdown ul li.unread:hover {
+    background-color: #bae6fd;
+}
+
+.notification-dropdown ul li.read:hover {
+    background-color: #f3f4f6;
+}
+
+/* Dark mode: unread */
+body.dark-mode .notification-dropdown ul li.unread {
+    background-color: #1e3a8a;
+    border-left-color: #60a5fa;
+    color: #ffffff;
+}
+
+body.dark-mode .notification-dropdown ul li.unread:hover {
+    background-color: #1d4ed8;
+}
+
+/* Dark mode: read */
+body.dark-mode .notification-dropdown ul li.read:hover {
+    background-color: #374151;
+}
