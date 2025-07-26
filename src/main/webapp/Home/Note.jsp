@@ -3,12 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%
-    if (session.getAttribute("userId") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
 
 <!DOCTYPE html>
 <html lang="vi">

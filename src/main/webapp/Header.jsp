@@ -2,8 +2,12 @@
 <%@ page import="model.User" %>
 <%
     User headerUser = (User) session.getAttribute("user");
+    Boolean skipUserIdSet = (Boolean) request.getAttribute("skipUserIdSet");
+
+    if (headerUser != null && (skipUserIdSet == null || !skipUserIdSet)) {
+        session.setAttribute("userId", headerUser.getUserId());
+    }
 %>
-<% session.setAttribute("userId", (Integer)headerUser.getUserId());%>
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />

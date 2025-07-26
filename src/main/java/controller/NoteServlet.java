@@ -1,18 +1,13 @@
 package controller;
 
-import com.google.gson.Gson;
-import dao.LabelDAO;
 import dao.NoteDAO;
 import model.Note;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import model.Label;
 
 @WebServlet(name = "NoteServlet", urlPatterns = {"/notes"})
 public class NoteServlet extends HttpServlet {
@@ -23,7 +18,7 @@ public class NoteServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("Login.jsp");
             return;
         }
 
