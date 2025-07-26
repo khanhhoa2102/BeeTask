@@ -15,6 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <% request.setAttribute("skipUserIdSet", true); %>
         <%@ include file="/Header.jsp"%>
         <title>BeeTask - <%= template.getName() %></title>
         <link rel="stylesheet" href="TemplateDetail.css">
@@ -42,7 +43,6 @@
                 </div>
                 <% } %>
                 <%@include file="../Sidebar.jsp"%>
-                <%@include file="../Help.jsp" %>
             </aside>
 
             <main class="main-content">
@@ -62,7 +62,7 @@
                                 if (user != null) {
                                     useTemplateLink = request.getContextPath() + "/CreateProject.jsp?templateId=" + templateId;
                                 } else {
-                                    useTemplateLink = request.getContextPath() + "/Login.jsp";
+                                    useTemplateLink = request.getContextPath() + "/Authentication/Login.jsp";
                                 }
                             %>
                             <a href="<%= useTemplateLink %>" class="use-template-btn">
