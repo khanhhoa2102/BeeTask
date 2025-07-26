@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Task {
     private int taskId;
@@ -16,6 +17,7 @@ public class Task {
     private int createdBy;
     private int position;
     private String priority;
+    private List<User> assignees; // hoặc List<Integer> assigneeIds
 
     // Default constructor
     public Task() {}
@@ -120,6 +122,14 @@ public class Task {
     
     public void setPriority(String priority) { 
         this.priority = priority; 
+    }
+    
+    public List<User> getAssignees() {
+        return assignees;
+    }
+
+    public void setAssignees(List<User> assignees) {
+        this.assignees = assignees;
     }
 
     @Override

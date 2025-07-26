@@ -41,21 +41,50 @@ public class ProjectDAO {
         return null;
     }
 
-    // Insert new project (Task1)
-    public void insert(Project project) {
+    public int insert(Project project) {
         String sql = "INSERT INTO Projects (Name, Description, CreatedBy, CreatedAt) VALUES (?, ?, ?, GETDATE())";
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, project.getName());
             stmt.setString(2, project.getDescription());
             stmt.setInt(3, project.getCreatedBy());
 
-            int result = stmt.executeUpdate();
-            System.out.println("Project inserted successfully. Rows affected: " + result);
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Inserting project failed, no rows affected.");
+            }
 
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int projectId = generatedKeys.getInt(1);
+                    System.out.println("Inserted ProjectId: " + projectId);
+                    return projectId;
+                } else {
+                    throw new SQLException("Inserting project failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             System.err.println("Error inserting project: " + e.getMessage());
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    public void addProjectMember(int projectId, int userId, String role) {
+        String sql = "INSERT INTO ProjectMembers (ProjectId, UserId, Role) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projectId);
+            stmt.setInt(2, userId);
+            stmt.setString(3, role);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error adding project member: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -333,5 +362,43 @@ public class ProjectDAO {
             return false;
         }
     }
+    
+    public List<User> getUsersByProjectId(int projectId) throws Exception {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT u.* FROM Users u JOIN ProjectMembers pm ON u.UserId = pm.UserId WHERE pm.ProjectId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setEmail(rs.getString("Email"));
+                    // add other fields if needed
+                    users.add(user);
+                }
+            }
+        }
+        return users;
+    }
 
+    public boolean isLeaderOfProject(int userId, int projectId) {
+        String sql = "SELECT Role FROM ProjectMembers WHERE ProjectId = ? AND UserId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projectId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String role = rs.getString("Role");
+                return "Leader".equalsIgnoreCase(role);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

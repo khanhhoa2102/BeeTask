@@ -1835,6 +1835,23 @@ body.dark-mode .notification {
   border-left-color: #3b82f6;
 }
 
+
+.hidden { display: none; }
+
+.task-assignees {
+    display: flex;
+    gap: 5px;
+    margin: 5px 0;
+    flex-wrap: wrap;
+}
+
+.task-assignees span {
+    background-color: #000;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
 .ai-suggestion-col .ai-time {
     font-size: 0.85rem;
     color: #2563eb;
@@ -1845,3 +1862,4 @@ body.dark-mode .notification {
 .dark-mode .ai-suggestion-col .ai-time {
     color: #93c5fd;
 }
+

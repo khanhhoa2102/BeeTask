@@ -145,7 +145,7 @@ public class BoardDAO {
         try {
             // Step 1: Duplicate board
             String insertSQL = "INSERT INTO Boards (ProjectId, Name, Description, CreatedAt, Position) "
-                    + "VALUES (?, ?, ?, GETDATE(), ?)";
+                             + "VALUES (?, ?, ?, GETDATE(), ?)";
             try (PreparedStatement stmt = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setInt(1, original.getProjectId());
                 stmt.setString(2, original.getName() + " (Copy)");
@@ -159,8 +159,8 @@ public class BoardDAO {
 
                     // Step 2: Duplicate tasks
                     String duplicateTasksSQL = "INSERT INTO Tasks (BoardId, ListId, Title, Description, StatusId, DueDate, CreatedAt, CreatedBy, Position, Priority) "
-                            + "SELECT ?, ListId, Title, Description, StatusId, DueDate, GETDATE(), CreatedBy, Position, Priority "
-                            + "FROM Tasks WHERE BoardId = ?";
+                                             + "SELECT ?, ListId, Title, Description, StatusId, DueDate, GETDATE(), CreatedBy, Position, Priority "
+                                             + "FROM Tasks WHERE BoardId = ?";
                     try (PreparedStatement taskStmt = connection.prepareStatement(duplicateTasksSQL)) {
                         taskStmt.setInt(1, newBoardId);
                         taskStmt.setInt(2, boardId);
