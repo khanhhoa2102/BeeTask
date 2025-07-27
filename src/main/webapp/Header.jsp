@@ -47,9 +47,17 @@
                     <i class="far fa-bell"></i>
                 </button>
                 <div class="notification-dropdown" id="notificationDropdown">
-                    <ul id="notificationList">
-                        <!-- JS will populate list here -->
-                    </ul>
+                    <div class="notification-section">
+                        <button class="section-toggle" onclick="toggleSection('systemSection')">
+                            ▶ System
+                        </button>
+                        <ul id="systemSection" class="notification-section-content">
+                            <!-- JS will populate system notifications here -->
+                        </ul>
+                    </div>
+                    <div id="notificationList">
+                        <!-- JS will populate project notifications here -->
+                    </div>
                     <div class="notification-actions">
                         <button onclick="markAllRead(event)">Mark all read</button>
                         <button onclick="markAllUnread(event)">Mark all unread</button>

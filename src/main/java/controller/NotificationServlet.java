@@ -79,18 +79,19 @@ public class NotificationServlet extends HttpServlet {
                 break;
             }
 
-            case "markAllRead": {
-                notificationDAO.markAllAsRead(userId);
-                response.getWriter().write("{\"success\":true, \"message\":\"All marked as read.\"}");
+            case "markAsRead": {
+                int notificationId = Integer.parseInt(request.getParameter("id"));
+                notificationDAO.markAsRead(notificationId);
+                response.getWriter().write("OK");
+                break;
+            }
+            case "markAsUnread": {
+                int notificationId = Integer.parseInt(request.getParameter("id"));
+                notificationDAO.markAsUnread(notificationId);
+                response.getWriter().write("OK");
                 break;
             }
 
-            case "markAllUnread": {
-                notificationDAO.markAllAsUnread(userId);
-                response.getWriter().write("{\"success\":true, \"message\":\"All marked as unread.\"}");
-                break;
-            }
-            
             case "create": {
                 int targetId = Integer.parseInt(request.getParameter("targetId"));
                 String message = request.getParameter("message");
@@ -122,11 +123,12 @@ public class NotificationServlet extends HttpServlet {
             }
             
             case "delete": {
-                int id = Integer.parseInt(request.getParameter("notificationId"));
-                notificationDAO.deleteNotification(id);
-                response.getWriter().write("{\"status\":\"deleted\"}");
+                int notificationId = Integer.parseInt(request.getParameter("id"));
+                notificationDAO.deleteNotification(notificationId);
+                response.getWriter().write("OK");
                 break;
             }
+
 
             default: {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action.");
