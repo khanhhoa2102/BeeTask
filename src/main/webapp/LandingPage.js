@@ -99,4 +99,32 @@ style.textContent = `
         }
     }
 `;
+const viewAllBtn = document.getElementById("viewAllBtn");
+if (viewAllBtn) {
+    viewAllBtn.addEventListener("click", function() {
+        const hiddenTemplates = document.querySelectorAll(".hidden-template");
+        const isShowingAll = hiddenTemplates[0]?.style.display === "block";
+        
+        if (isShowingAll) {
+            // Nếu đang hiển thị tất cả, thì ẩn các template từ thứ 7 trở đi
+            hiddenTemplates.forEach(template => {
+                template.style.display = "none";
+            });
+            viewAllBtn.innerHTML = "View All Templates <i class='fas fa-arrow-right'></i>";
+        } else {
+            // Nếu đang ẩn, thì hiển thị tất cả template
+            hiddenTemplates.forEach(template => {
+                template.style.display = "block";
+            });
+            viewAllBtn.innerHTML = "Show Less <i class='fas fa-arrow-up'></i>";
+        }
+        
+        // Cuộn xuống phần templates nếu đang hiển thị tất cả
+        if (!isShowingAll) {
+            document.querySelector(".templates").scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+    });
+}
 document.head.appendChild(style);
