@@ -108,46 +108,65 @@ public class ProjectDAO {
         }
     }
 
-    // Delete project (Task1 - with cascading)
     public void delete(int projectId) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
             try {
-                String deleteTasksSQL = "DELETE FROM Tasks WHERE BoardId IN (SELECT BoardId FROM Boards WHERE ProjectId = ?)";
+                // 1. Xóa TaskAssignees trước
+                String deleteAssigneesSQL =
+                    "DELETE FROM TaskAssignees " +
+                    "WHERE taskId IN (" +
+                    "   SELECT taskId FROM Tasks " +
+                    "   WHERE boardId IN (" +
+                    "       SELECT boardId FROM Boards WHERE projectId = ?))";
+                try (PreparedStatement stmt0 = conn.prepareStatement(deleteAssigneesSQL)) {
+                    stmt0.setInt(1, projectId);
+                    stmt0.executeUpdate();
+                }
+
+                // 2. Xóa Tasks
+                String deleteTasksSQL =
+                    "DELETE FROM Tasks WHERE boardId IN (" +
+                    "SELECT boardId FROM Boards WHERE projectId = ?)";
                 try (PreparedStatement stmt1 = conn.prepareStatement(deleteTasksSQL)) {
                     stmt1.setInt(1, projectId);
                     stmt1.executeUpdate();
                 }
 
-                String deleteBoardsSQL = "DELETE FROM Boards WHERE ProjectId = ?";
+                // 3. Xóa Boards
+                String deleteBoardsSQL =
+                    "DELETE FROM Boards WHERE projectId = ?";
                 try (PreparedStatement stmt2 = conn.prepareStatement(deleteBoardsSQL)) {
                     stmt2.setInt(1, projectId);
                     stmt2.executeUpdate();
                 }
 
-                String deleteProjectSQL = "DELETE FROM Projects WHERE ProjectId = ?";
+                // 4. Xóa Project
+                String deleteProjectSQL =
+                    "DELETE FROM Projects WHERE projectId = ?";
                 try (PreparedStatement stmt3 = conn.prepareStatement(deleteProjectSQL)) {
                     stmt3.setInt(1, projectId);
                     stmt3.executeUpdate();
                 }
 
                 conn.commit();
-                System.out.println("Project deleted successfully with ID: " + projectId);
+                System.out.println("✅ Project deleted successfully with ID: " + projectId);
 
             } catch (SQLException ex) {
                 conn.rollback();
+                System.err.println("❌ Deletion failed, rollback. Error: " + ex.getMessage());
                 throw ex;
             } finally {
                 conn.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
-            System.err.println("Error deleting project: " + e.getMessage());
+            System.err.println("❌ Error deleting project: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
+    
     // Get all projects (Task1)
     public List<Project> getAllProjects() {
         List<Project> projects = new ArrayList<>();
