@@ -542,6 +542,7 @@
                     <c:choose>
                         <c:when test="${not empty user and not empty user.avatarUrl}">
                             <img src="${user.avatarUrl}" alt="Avatar">
+
                         </c:when>
                         <c:otherwise>
                             <div class="beetask-avatar-placeholder">
