@@ -50,21 +50,21 @@
                     <%
     Map<String, Integer> summary = (Map<String, Integer>) request.getAttribute("userSummaryStats");
 %>
-
-<div class="user-summary-cards" style="display: flex; gap: 20px; margin-top: 20px;">
-    <div class="card" style="flex: 1; background-color: #f3f4f6; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 10px;">👥 Total Users</h3>
-        <p style="font-size: 24px; font-weight: bold;"><%= summary.get("TotalUsers") %></p>
+<div class="user-summary-cards">
+    <div class="card total-users">
+        <h3>👥 Total Users</h3>
+        <p><%= summary.get("TotalUsers") %></p>
     </div>
-    <div class="card" style="flex: 1; background-color: #fde68a; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 10px;">🔒 Blocked Users</h3>
-        <p style="font-size: 24px; font-weight: bold;"><%= summary.get("BlockedUsers") %></p>
+    <div class="card blocked-users">
+        <h3>🔒 Blocked Users</h3>
+        <p><%= summary.get("BlockedUsers") %></p>
     </div>
-    <div class="card" style="flex: 1; background-color: #bbf7d0; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 10px;">🌟 Premium Users</h3>
-        <p style="font-size: 24px; font-weight: bold;"><%= summary.get("PremiumUsers") %></p>
+    <div class="card premium-users">
+        <h3>🌟 Premium Users</h3>
+        <p><%= summary.get("PremiumUsers") %></p>
     </div>
 </div>
+
 
                     
                     
@@ -107,18 +107,20 @@
     int unlockedProjects = totalProjects - lockedProjects;
 %>
 
-<div class="project-summary-cards" style="display: flex; gap: 20px; margin-top: 20px;">
-    <div class="card" style="flex: 1; background-color: #e0f2fe; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 10px;">📊 Total Projects</h3>
-        <p style="font-size: 24px; font-weight: bold;"><%= totalProjects %></p>
+
+
+<div class="project-summary-cards">
+    <div class="card total-projects">
+        <h3>📊 Total Projects</h3>
+        <p><%= totalProjects %></p>
     </div>
-    <div class="card" style="flex: 1; background-color: #fecaca; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 10px;">🔒 Locked Projects</h3>
-        <p style="font-size: 24px; font-weight: bold;"><%= lockedProjects %></p>
+    <div class="card locked-projects">
+        <h3>🔒 Locked Projects</h3>
+        <p><%= lockedProjects %></p>
     </div>
-    <div class="card" style="flex: 1; background-color: #dcfce7; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 10px;">🔓 Unlocked Projects</h3>
-        <p style="font-size: 24px; font-weight: bold;"><%= unlockedProjects %></p>
+    <div class="card unlocked-projects">
+        <h3>🔓 Unlocked Projects</h3>
+        <p><%= unlockedProjects %></p>
     </div>
 </div>
 
@@ -160,36 +162,41 @@
 
 
 
-
-        <%
-        List<Map<String, Object>> stats = (List<Map<String, Object>>) request.getAttribute("stats");
-
-        Map<String, Map<String, Integer>> dataMap = new LinkedHashMap<>();
-        for (Map<String, Object> entry : stats) {
-            String week = (String) entry.get("week");
-            String role = (String) entry.get("role");
-            int count = (Integer) entry.get("count");
-
-            dataMap.putIfAbsent(week, new HashMap<>());
-            dataMap.get(week).put(role, count);
+<%
+    List<Map<String, Object>> stats = (List<Map<String, Object>>) request.getAttribute("stats");
+    Map<String, Map<String, Integer>> dataMap = new LinkedHashMap<>();
+    for (Map<String, Object> entry : stats) {
+        String week = (String) entry.get("week");
+        String role = (String) entry.get("role");
+        int count = (Integer) entry.get("count");
+        dataMap.putIfAbsent(week, new HashMap<>());
+        dataMap.get(week).put(role, count);
+    }
+    List<String> weeks = new ArrayList<>(dataMap.keySet());
+    Collections.reverse(weeks);
+    
+    // ✅ THAY ĐỔI: Giới hạn tối đa 8 tuần và tạo labels W1, W2, W3...
+    int maxWeeks = Math.min(weeks.size(), 8);
+    List<String> limitedWeeks = weeks.subList(0, maxWeeks);
+    
+    List<Integer> userCounts = limitedWeeks.stream()
+            .map(week -> dataMap.get(week).getOrDefault("User", 0))
+            .collect(Collectors.toList());
+    List<Integer> premiumCounts = limitedWeeks.stream()
+            .map(week -> dataMap.get(week).getOrDefault("Premium", 0))
+            .collect(Collectors.toList());
+    
+    // ✅ THAY ĐỔI: Tạo weekLabels với định dạng W1, W2, W3...
+    StringBuilder weekLabelsBuilder = new StringBuilder("[");
+    for (int i = 0; i < maxWeeks; i++) {
+        weekLabelsBuilder.append("\"W").append(i + 1).append("\"");
+        if (i < maxWeeks - 1) {
+            weekLabelsBuilder.append(", ");
         }
-
-        List<String> weeks = new ArrayList<>(dataMap.keySet());
-        Collections.reverse(weeks);
-
-        List<Integer> userCounts = weeks.stream()
-                .map(week -> dataMap.get(week).getOrDefault("User", 0))
-                .collect(Collectors.toList());
-
-        List<Integer> premiumCounts = weeks.stream()
-                .map(week -> dataMap.get(week).getOrDefault("Premium", 0))
-                .collect(Collectors.toList());
-
-        String weekLabels = weeks.stream()
-                .map(w -> "\"" + w + "\"")
-                .collect(Collectors.joining(", ", "[", "]"));
-        %>
-
+    }
+    weekLabelsBuilder.append("]");
+    String weekLabels = weekLabelsBuilder.toString();
+%>
 
 
 
@@ -228,48 +235,50 @@
 
 
         <script>
+            
             const barCtx = document.getElementById('barChart').getContext('2d');
-            const chart = new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: <%= weekLabels %>,
-                    datasets: [
-                        {
-                            label: 'User',
-                            data: <%= userCounts.toString() %>,
-                            backgroundColor: '#4caf50'
-                        },
-                        {
-                            label: 'Premium',
-                            data: <%= premiumCounts.toString() %>,
-                            backgroundColor: '#2196f3'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: ''
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {display: true, text: 'Quantity'}
-                        },
-                        x: {
-                            title: {display: true, text: 'Week start'}
-                        }
-                    }
-                }
-            });
-
-
-
-
-
+           // Biểu đồ cột với W1, W2, W3... (tối đa 8 tuần)
+const chart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+        labels: <%= weekLabels %>,
+        datasets: [
+            {
+                label: 'User',
+                data: <%= userCounts.toString() %>,
+                backgroundColor: '#4caf50'
+                // ❌ Không dùng barThickness ở đây
+            },
+            {
+                label: 'Premium',
+                data: <%= premiumCounts.toString() %>,
+                backgroundColor: '#2196f3'
+                // ❌ Không dùng barThickness ở đây
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {display: true, text: 'Quantity'}
+            },
+            x: {
+                title: {display: true, text: 'Week'},
+                // ✅ ĐIỀU CHỈNH TỶ LỆ Ở ĐÂY
+                categoryPercentage: 0.5,  // 50% không gian cho category
+                barPercentage: 0.7        // 70% không gian cho bar
+            }
+        }
+    }
+});
 
 
 
@@ -301,13 +310,8 @@
                 
                 
                 
-                
-                const isDarkMode = document.body.classList.contains("dark-mode"); // hoặc class bạn dùng cho dark mode
-
-const axisColor = isDarkMode ? 'white' : 'black';
-const legendTextColor = isDarkMode ? 'white' : 'black';
-
-
+              
+//biểu đồ đường 
             new Chart(document.getElementById('projectLineChart'), {
                 type: 'line',
                 data: {
@@ -326,20 +330,20 @@ const legendTextColor = isDarkMode ? 'white' : 'black';
                     plugins: {
                         legend: {
                             labels: {
-                                color: legendTextColor
+                                
                             }
                         }
                     },
                     scales: {
                         x: {
                             ticks: {
-                                color: axisColor  
+                               
                             }
                         },
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                color: axisColor  
+                               
                             }
                         }
                     }
@@ -357,7 +361,7 @@ const legendTextColor = isDarkMode ? 'white' : 'black';
 
 
 
-
+// biểu đò tròn người dùng 
 
             const pieData = {
                 labels: <%= pieLabels.toString() %>,

@@ -24,11 +24,6 @@
             </button>
         </div>
 
-        <div class="header-center">
-            <input type="text" class="search-box" placeholder="Search...">
-            <button class="create-btn">Create</button>
-        </div>
-
         <div class="header-right">
             <!-- Dark Mode Toggle -->
             <div class="dark-mode-section">

@@ -39,7 +39,7 @@ public class TemplateActionServlet extends HttpServlet {
     @Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Điều hướng về trang quản lý templates
-    response.sendRedirect(request.getContextPath() + "/Admin/AdminTemplates.jsp");
+    response.sendRedirect(request.getContextPath() + "/Admin/ManagementTemplates.jsp");
 }
 
 
@@ -62,7 +62,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/Admin/Templates.jsp");
+        response.sendRedirect(request.getContextPath() + "/Admin/ManagementTemplates.jsp");
     }
 
     private void handleEdit(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -84,7 +84,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/Admin/Templates.jsp");
+        response.sendRedirect(request.getContextPath() + "/Admin/ManagementTemplates.jsp");
     }
 
     private void handleDelete(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -108,6 +108,6 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/Admin/Templates.jsp");
+        response.sendRedirect(request.getContextPath() + "/Admin/ManagementTemplates.jsp");
     }
 }

@@ -28,18 +28,12 @@
 
 
     <li <% if (uri.endsWith("/Templates.jsp")) { %> class="active" <% } %>>
-        <a href="${pageContext.request.contextPath}/Admin/Templates.jsp">
+        <a href="${pageContext.request.contextPath}/Admin/ManagementTemplates.jsp">
             <i class="fas fa-copy"></i><span>Templates Management</span>
         </a>
     </li>
     
-    
-<!--    <li <% if (uri.endsWith("/CalendarHome.jsp")) { %> class="active" <% } %>>
-        <a href="${pageContext.request.contextPath}/Home/CalendarHome.jsp">
-            <i class="fas fa-calendar-day"></i><span>System settings</span>
-        </a>
-    </li>-->
-    
+ 
     
     
     

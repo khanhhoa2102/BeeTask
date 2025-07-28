@@ -181,6 +181,63 @@ String sql =
     
     
     
+    //search và filter project for admin
+    
+     public List<ProjectOverview> searchProjectsForAdmin(String keyword, String lockStatus) throws SQLException {
+    List<ProjectOverview> list = new ArrayList<>();
+
+    StringBuilder sql = new StringBuilder(
+        "SELECT p.ProjectId, p.Name AS ProjectName, p.Description AS ProjectDescription, " +
+        "pu.Username AS ProjectCreatedBy, p.CreatedAt AS ProjectCreatedAt, " +
+        "p.IsLocked, pm.UserId, u.Username AS UserName, pm.Role AS UserRole, " +
+        "t.TaskId, t.Title AS TaskTitle, t.Description AS TaskDescription, " +
+        "t.DueDate, t.CreatedAt AS TaskCreatedAt, tu.Username AS TaskCreatedBy, ts.Name AS TaskStatus " +
+        "FROM Projects p " +
+        "JOIN Users pu ON p.CreatedBy = pu.UserId " +
+        "LEFT JOIN ProjectMembers pm ON pm.ProjectId = p.ProjectId " +
+        "LEFT JOIN Users u ON u.UserId = pm.UserId " +
+        "LEFT JOIN Boards b ON b.ProjectId = p.ProjectId " +
+        "LEFT JOIN Tasks t ON t.BoardId = b.BoardId " +
+        "LEFT JOIN TaskStatuses ts ON ts.StatusId = t.StatusId " +
+        "LEFT JOIN Users tu ON tu.UserId = t.CreatedBy " +
+        "WHERE 1=1 "
+    );
+
+    List<Object> params = new ArrayList<>();
+
+    if (keyword != null && !keyword.trim().isEmpty()) {
+        sql.append(" AND (CAST(p.ProjectId AS VARCHAR) LIKE ? OR p.Name LIKE ?) ");
+        String likeKeyword = "%" + keyword.trim() + "%";
+        params.add(likeKeyword);
+        params.add(likeKeyword);
+    }
+
+    if (lockStatus != null && (lockStatus.equalsIgnoreCase("locked") || lockStatus.equalsIgnoreCase("unlocked"))) {
+        sql.append(" AND p.IsLocked = ? ");
+        params.add(lockStatus.equalsIgnoreCase("locked"));
+    }
+
+    sql.append(" ORDER BY p.ProjectId, u.Username, t.TaskId");
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+        for (int i = 0; i < params.size(); i++) {
+            ps.setObject(i + 1, params.get(i));
+        }
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        }
+    }
+
+    return list;
+}
+
+    
+    
     
     
     
