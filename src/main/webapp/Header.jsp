@@ -59,8 +59,8 @@
                         <!-- JS will populate project notifications here -->
                     </div>
                     <div class="notification-actions">
-                        <button onclick="markAllRead(event)">Mark all read</button>
-                        <button onclick="markAllUnread(event)">Mark all unread</button>
+                        <button onclick="markAllRead()">Mark all read</button>
+                        <button onclick="markAllUnread()">Mark all unread</button>
                         <button onclick="window.location.href='${pageContext.request.contextPath}/ManageNotification.jsp'">Manage</button>
                     </div>
                 </div>

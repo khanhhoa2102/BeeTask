@@ -16,7 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import model.ProjectNotification;
 
 /**
@@ -92,7 +94,15 @@ public class ProjectNotificationServlet extends HttpServlet {
 
                 case "getByUserId": {
                     List<ProjectNotification> notifications = projectNotificationDAO.getNotificationsByUserId(userId);
-                    String json = new Gson().toJson(notifications);
+                    Map<String, Object> responseMap = new LinkedHashMap<>();
+                    for (ProjectNotification n : notifications) {
+                        Map<String, Object> entry = new LinkedHashMap<>();
+                        entry.put("notifications", notifications);
+                        int pId = projectNotificationDAO.getProjectIdByNotificationId(n.getProjectNotificationId());
+                        String pName = projectNotificationDAO.getProjectNameByProjectId(pId);
+                        responseMap.put(pName, entry);
+                    }
+                    String json = new Gson().toJson(responseMap);
                     response.getWriter().write(json);
                     break;
                 }
