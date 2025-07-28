@@ -1,46 +1,104 @@
-/* Main container */
-.main-box {
+/* Light Mode Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f8fc;
+    margin: 0;
+    padding: 0;
+}
+
+.premium-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 50px;
-    font-family: Arial, sans-serif;
+    padding: 50px 20px;
 }
 
-/* Checkout card */
-.checkout {
-    border: 2px solid #00a651;
-    border-radius: 8px;
-    padding: 16px;
-    width: 280px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.premium-card {
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.premium-card h1 {
+    font-size: 28px;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.premium-card .highlight {
+    color: #6a5acd;
+    font-weight: bold;
+}
+
+.premium-card .subtitle {
+    color: #6b7280;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.benefits {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+}
+
+.benefits li {
+    background-color: #f0f4ff;
+    color: #374151;
+    padding: 12px 20px;
+    margin: 10px 0;
+    border-radius: 12px;
+    font-size: 15px;
     text-align: left;
 }
 
-/* Product info */
-.product p {
-    margin: 8px 0;
-    font-size: 16px;
-}
-
-.product p strong {
-    margin-right: 5px;
-}
-
-/* Payment button */
-#create-payment-link-btn {
-    margin-top: 16px;
-    width: 100%;
-    background-color: #00a651;
+.payment-btn {
+    background-color: #6a5acd;
     color: white;
     border: none;
-    padding: 10px 0;
-    border-radius: 0 0 6px 6px;
+    padding: 14px 30px;
     font-size: 16px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
 }
 
-#create-payment-link-btn:hover {
-    background-color: #009246;
+.payment-btn:hover {
+    background-color: #5a4abc;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #1f1f2e;
+}
+
+body.dark-mode .premium-card {
+    background-color: #2a2a3b;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .premium-card h1 {
+    color: #f4f4f5;
+}
+
+body.dark-mode .premium-card .subtitle {
+    color: #d1d5db;
+}
+
+body.dark-mode .benefits li {
+    background-color: #3c3c51;
+    color: #e5e7eb;
+}
+
+body.dark-mode .payment-btn {
+    background-color: #7c6cff;
+}
+
+body.dark-mode .payment-btn:hover {
+    background-color: #6959e0;
 }
