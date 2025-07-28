@@ -192,6 +192,6 @@
     </div>
 </div>
 
-<script src="projects.js"></script>
+<script src="Projects.js"></script>
 </body>
 </html>

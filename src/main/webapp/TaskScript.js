@@ -77,6 +77,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.openAISuggestionModal(taskId, taskTitle, taskDesc, taskDue, taskPriority)
                 })
             })
+            document.querySelectorAll(".ai-resuggest-btn").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    const taskId = button.dataset.taskId;
+                    const taskTitle = button.dataset.taskTitle;
+                    const taskDesc = button.dataset.taskDesc;
+                    const taskDue = button.dataset.taskDue;
+                    const taskPriority = button.dataset.taskPriority;
+
+                    if (!confirm("⚠️ Re-suggest sẽ thay thế gợi ý hiện tại. Tiếp tục?"))
+                        return;
+
+                    fetch(`${window.contextPath}/ai-suggest-reset`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                        body: `taskId=${taskId}`
+                    })
+                            .then((res) => res.json())
+                            .then(result => {
+                                console.log("🔁 Re-suggest result:", result);
+                                if (result.success) {
+                                    // Gọi lại AI như bình thường
+                                    window.openAISuggestionModal(taskId, taskTitle, taskDesc, taskDue, taskPriority);
+                                } else {
+                                    alert("⚠️ Failed to re-suggest");
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Re-suggest error", err);
+                                alert("❌ Failed to re-suggest");
+                            });
+                });
+            });
+
             // Apply AI Suggestion Button in modal
             const applyAISuggestionBtn = document.getElementById("applyAISuggestionBtn")
             if (applyAISuggestionBtn) {
@@ -386,7 +419,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         duplicateBoard(boardId) {
-            if (!confirm("Duplicate this board and all its tasks?")) return;
+            if (!confirm("Duplicate this board and all its tasks?"))
+                return;
 
 
             fetch("board?action=duplicate", {
@@ -396,23 +430,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: `boardId=${boardId}`,
             })
-                .then((response) => {
-                    if (!response.ok) throw new Error("Failed to duplicate board");
-                    return response.text(); // Bạn có thể dùng JSON nếu muốn trả thêm thông tin
-                })
-                .then(() => {
-                    this.showNotification("✅ Board duplicated successfully", "success");
-                    location.reload(); // Load lại để thấy board mới
-                })
-                .catch((err) => {
-                    console.error("❌ Error duplicating board:", err);
-                    this.showNotification("❌ Failed to duplicate board", "error");
-                });
+                    .then((response) => {
+                        if (!response.ok)
+                            throw new Error("Failed to duplicate board");
+                        return response.text(); // Bạn có thể dùng JSON nếu muốn trả thêm thông tin
+                    })
+                    .then(() => {
+                        this.showNotification("✅ Board duplicated successfully", "success");
+                        location.reload(); // Load lại để thấy board mới
+                    })
+                    .catch((err) => {
+                        console.error("❌ Error duplicating board:", err);
+                        this.showNotification("❌ Failed to duplicate board", "error");
+                    });
         }
-        
+
         sortBoardTasks(boardId, sortBy) {
             const boardContainer = document.querySelector(`.board-card[data-board-id="${boardId}"] .board-tasks`);
-            if (!boardContainer) return;
+            if (!boardContainer)
+                return;
             const tasks = Array.from(boardContainer.querySelectorAll(".task-card"));
 
             tasks.sort((a, b) => {
@@ -421,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const dateB = new Date(b.dataset.taskDuedate || "9999-12-31");
                     return dateA - dateB;
                 } else if (sortBy === "priority") {
-                    const priorityMap = { "High": 1, "Medium": 2, "Low": 3 };
+                    const priorityMap = {"High": 1, "Medium": 2, "Low": 3};
                     const aPriority = priorityMap[a.dataset.taskPriority] || 4;
                     const bPriority = priorityMap[b.dataset.taskPriority] || 4;
                     return aPriority - bPriority;
@@ -432,7 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tasks.forEach(task => boardContainer.appendChild(task)); // Reorder DOM
             this.showNotification(`🔃 Sorted tasks by ${sortBy}`, "info");
         }
-0
+        0
         deleteBoard(boardId) {
             console.log("🧪 deleteBoard called with ID:", boardId) // ✅ Thêm dòng này
             if (!confirm("Are you sure you want to delete this board?"))
@@ -644,7 +680,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         this.showNotification("❌ Error updating task", "error")
                     })
         }
-        
+
         deleteTask(taskId) {
             if (!confirm("Are you sure you want to delete this task?"))
                 return
@@ -1051,18 +1087,17 @@ function assignTask(taskId, selectedUserIds) {
             userIds: selectedUserIds
         })
     })
-    .then(res => {
-        if (res.ok) {
-            alert('Task assigned successfully');
-        } else {
-            alert('Failed to assign task');
-        }
-    });
+            .then(res => {
+                if (res.ok) {
+                    alert('Task assigned successfully');
+                } else {
+                    alert('Failed to assign task');
+                }
+            });
 }
 
 function openAssignModal(taskId, assignedUserIds = []) {
     console.log(">>> openAssignModal() called with taskId =", taskId);
-
     const projectId = new URLSearchParams(window.location.search).get("projectId");
     if (!projectId) {
         console.error("No projectId found in URL");
@@ -1136,107 +1171,108 @@ function submitAssignForm(event) {
 
     fetch('/BeeTask/assign', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskId: parseInt(taskId), userIds })
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({taskId: parseInt(taskId), userIds})
     })
-    .then(response => response.json())
-    .then(data => {
-        alert("Users assigned successfully!");
-        closeAssignModal();
-        // Optionally refresh or update UI
-    })
-    .catch(error => {
-        console.error("Assignment error:", error);
-        alert("Failed to assign users.");
-    });
+            .then(response => response.json())
+            .then(data => {
+                alert("Users assigned successfully!");
+                closeAssignModal();
+                // Optionally refresh or update UI
+            })
+            .catch(error => {
+                console.error("Assignment error:", error);
+                alert("Failed to assign users.");
+            });
 }
 
 document.getElementById("uploadForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const form = e.target;
-  const formData = new FormData(form);
-  const messageDiv = document.getElementById("uploadMessage");
+    const form = e.target;
+    const formData = new FormData(form);
+    const messageDiv = document.getElementById("uploadMessage");
 
-  // Xoá nội dung thông báo trước đó
-  messageDiv.textContent = "";
-  messageDiv.style.color = "";
+    // Xoá nội dung thông báo trước đó
+    messageDiv.textContent = "";
+    messageDiv.style.color = "";
 
-  try {
-    const response = await fetch("/BeeTask/uploadAttachments", {
-      method: "POST",
-      body: formData,
-    });
-
-    const resultText = await response.text();
-
-    if (!response.ok) {
-      throw new Error("Upload failed: " + resultText);
-    }
-
-    let result;
     try {
-      result = JSON.parse(resultText); // tránh lỗi JSON parse nếu backend trả HTML
-    } catch (parseErr) {
-      throw new Error("Invalid server response");
+        const response = await fetch("/BeeTask/uploadAttachments", {
+            method: "POST",
+            body: formData,
+        });
+
+        const resultText = await response.text();
+
+        if (!response.ok) {
+            throw new Error("Upload failed: " + resultText);
+        }
+
+        let result;
+        try {
+            result = JSON.parse(resultText); // tránh lỗi JSON parse nếu backend trả HTML
+        } catch (parseErr) {
+            throw new Error("Invalid server response");
+        }
+
+        if (result.success && result.fileName) {
+            messageDiv.textContent = "File uploaded successfully.";
+            messageDiv.style.color = "green";
+
+            // Reset form
+            form.reset();
+
+            // Load lại danh sách file
+            const taskId = document.getElementById("uploadTaskId").value;
+            loadAttachmentsForTask(taskId);
+
+            // Đóng modal sau 1.5s
+            setTimeout(() => {
+                closeUploadModal();
+                messageDiv.textContent = "";
+            }, 1500);
+        } else {
+            messageDiv.textContent = "Upload failed. Please try again.";
+            messageDiv.style.color = "red";
+        }
+
+    } catch (error) {
+        console.error("Upload Error:", error);
+        messageDiv.textContent = "An error occurred: " + error.message;
+        messageDiv.style.color = "red";
     }
-
-    if (result.success && result.fileName) {
-      messageDiv.textContent = "File uploaded successfully.";
-      messageDiv.style.color = "green";
-
-      // Reset form
-      form.reset();
-
-      // Load lại danh sách file
-      const taskId = document.getElementById("uploadTaskId").value;
-      loadAttachmentsForTask(taskId);
-
-      // Đóng modal sau 1.5s
-      setTimeout(() => {
-        closeUploadModal();
-        messageDiv.textContent = "";
-      }, 1500);
-    } else {
-      messageDiv.textContent = "Upload failed. Please try again.";
-      messageDiv.style.color = "red";
-    }
-
-  } catch (error) {
-    console.error("Upload Error:", error);
-    messageDiv.textContent = "An error occurred: " + error.message;
-    messageDiv.style.color = "red";
-  }
 });
 
 function loadAttachmentsForTask(taskId) {
-  fetch(`/BeeTask/uploadAttachments?taskId=${taskId}`)
-    .then(response => {
-      if (!response.ok) throw new Error("Failed to fetch attachments.");
-      return response.json();
-    })
-    .then(data => {
-      const list = document.getElementById("attachmentFileList");
-      list.innerHTML = "";
+    fetch(`/BeeTask/uploadAttachments?taskId=${taskId}`)
+            .then(response => {
+                if (!response.ok)
+                    throw new Error("Failed to fetch attachments.");
+                return response.json();
+            })
+            .then(data => {
+                const list = document.getElementById("attachmentFileList");
+                list.innerHTML = "";
 
-      if (data.length === 0) {
-        list.innerHTML = "<li>No attachments</li>";
-        return;
-      }
+                if (data.length === 0) {
+                    list.innerHTML = "<li>No attachments</li>";
+                    return;
+                }
 
-    data.forEach(file => {
-      const li = document.createElement("li");
-      li.innerHTML = `
+                data.forEach(file => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
         <span>${file.fileName}</span>
         <button onclick="downloadAttachment('${file.fileUrl}')">Download</button>
         <button onclick="deleteAttachment(${taskId}, '${file.fileName}')">Delete</button>
       `;
-      list.appendChild(li);
-    });
-    })
-    .catch(error => {
-      console.error("Error loading attachments:", error);
-    });
+                    list.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading attachments:", error);
+            });
 }
 
 function deleteAttachment(taskId, filename) {
@@ -1244,34 +1280,35 @@ function deleteAttachment(taskId, filename) {
         fetch(`file?taskId=${taskId}&filename=${encodeURIComponent(filename)}`, {
             method: 'DELETE'
         })
-        .then(response => response.text())
-        .then(message => {
-            alert(message);
-            loadAttachmentsForTask(taskId);
-        })
-        .catch(err => {
-            console.error("Error deleting file:", err);
-            alert("Failed to delete file.");
-        });
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    loadAttachmentsForTask(taskId);
+                })
+                .catch(err => {
+                    console.error("Error deleting file:", err);
+                    alert("Failed to delete file.");
+                });
     }
 }
 
 function downloadAttachment(fileUrl) {
-  const a = document.createElement("a");
-  a.href = fileUrl;
-  a.download = ""; // Hỗ trợ tải trực tiếp nếu server set header đúng
-  a.style.display = "none";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = ""; // Hỗ trợ tải trực tiếp nếu server set header đúng
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 
 function openUploadModal(taskId) {
-  document.getElementById("uploadTaskId").value = taskId;
-  document.getElementById("uploadModal").style.display = "block";
+    document.getElementById("uploadTaskId").value = taskId;
+    document.getElementById("uploadModal").style.display = "block";
 }
 
 function closeUploadModal() {
-  document.getElementById("uploadModal").style.display = "none";
+    document.getElementById("uploadModal").style.display = "none";
 }
+

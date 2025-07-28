@@ -9,27 +9,10 @@
     <body class="dashboard-body">
         <div class="dashboard-container">
             <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="user-profile">
-                    <div class="avatar">
-                        <% if (headerUser.getAvatarUrl() != null && !headerUser.getAvatarUrl().isEmpty()) { %>
-                        <img src="<%= headerUser.getAvatarUrl() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
-                        <% } else { %>
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ccc;"></div>
-                        <% } %>
-                    </div>
-                    <div class="info">
-                        <span class="username"><%= headerUser.getUsername() %></span>
-                        <span class="email"><%= headerUser.getEmail() %></span>
-                    </div>
-                </div>
+            <%@include file="./Sidebar.jsp"%>
 
-                <%@include file="./Sidebar.jsp"%>
-                <%@include file="./Help.jsp" %>
-            </aside>
-            
             <main class="main-content">
-                
+
                 <h2>Manage Project Notifications</h2>
 
                 <!-- Container where notifications will be inserted -->
