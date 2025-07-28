@@ -102,7 +102,7 @@
                             </a>
                             <% if(headerUser.getRole().equalsIgnoreCase("User")) {%>
                             <a href="${pageContext.request.contextPath}/VIP.jsp" class="dropdown-item">
-                                <span>Get VIP</span>
+                                <span>Get Premium</span>
                             </a>
                             <%}%>
                         </div>
