@@ -102,7 +102,7 @@ public class LoginGoogleServlet extends HttpServlet {
 
             // Step 5: Gửi refreshToken về client (qua query để lưu localStorage)
             if (refreshToken != null) {
-                response.sendRedirect("Home/Home.jsp?googleRefresh=" + refreshToken);
+                response.sendRedirect("Home/Home.jsp?googleRefresh=" + refreshToken + "&email=" + email);
             } else {
                 response.sendRedirect("Home/Home.jsp");
             }
