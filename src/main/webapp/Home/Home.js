@@ -442,3 +442,5 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("✅ Local account added to recentAccounts");
     }
 });
+// Comment
+
