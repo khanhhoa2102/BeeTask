@@ -85,10 +85,11 @@
                                         <button class="action-btn" onclick="editProject(<%= p.getProjectId() %>)" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="action-btn delete-btn" onclick="confirmDelete(<%= p.getProjectId() %>, '<%= p.getName() %>')" title="Delete">
+                                       
+                                        <% } %>
+                                         <button class="action-btn delete-btn" onclick="confirmDelete(<%= p.getProjectId() %>, '<%= p.getName() %>')" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
-                                        <% } %>
                                     </div>
                                 </div>
 
