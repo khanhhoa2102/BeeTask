@@ -290,9 +290,8 @@ body {
     font-size: 14px;
 }
 
-/* Templates Section */
 .templates {
-    padding: 64px 0;
+    padding: 64px 20px; /* Thêm padding hai bên */
 }
 
 .templates-grid {
@@ -501,7 +500,41 @@ body {
         grid-template-columns: 1fr;
     }
 }
+.hidden-template {
+    display: none;
+}
 
+/* Thêm media query để đảm bảo responsive */
+@media (max-width: 768px) {
+    .templates-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .hidden-template {
+        display: none;
+    }
+}
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px; /* Giảm khoảng cách giữa các card */
+    margin-bottom: 48px;
+    max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px; /* Thêm padding hai bên */
+}
+
+@media (max-width: 1024px) {
+    .templates-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 cột trên tablet */
+    }
+}
+
+@media (max-width: 640px) {
+    .templates-grid {
+        grid-template-columns: 1fr; /* 1 cột trên mobile */
+    }
 a .template-title,
 a .template-description,
 a .template-category {
