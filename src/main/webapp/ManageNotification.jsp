@@ -39,12 +39,13 @@
                 <div id="addNotificationModal" class="modal hidden">
                     <div class="modal-content">
                         <span id="closeModal" class="close-button">&times;</span>
-                        <h3>Add Notification</h3>
+                        <h3 id="modalTitle">Add Notification</h3>
                         <form id="addNotificationForm">
                             <input type="hidden" id="modalProjectId" />
+                            <input type="hidden" id="editingNotificationId" />
                             <label for="notificationMessage">Message:</label>
-                            <textarea id="notificationMessage" required></textarea>
-                            <button type="submit">Add</button>
+                            <textarea id="notificationMessage" rows="5" required></textarea>
+                            <button type="submit" id="submitButton">Add</button>
                         </form>
                     </div>
                 </div>

@@ -16,6 +16,7 @@ h2 {
 .project-section {
     border: 1px solid #ddd;
     border-radius: 10px;
+    width: 750px;
     padding: 1rem 1.5rem;
     margin-bottom: 2rem;
     background-color: #fdfdfd;
@@ -108,8 +109,35 @@ h2 {
     background-color: #fff;
     padding: 2rem;
     border-radius: 10px;
-    width: 300px;
+    width: 350px;
     box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+/* Textarea styling */
+.modal-content textarea {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Button styling */
+.modal-content button {
+    padding: 8px 16px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
 }
 
 .close-button {
@@ -130,5 +158,81 @@ h2 {
 }
 
 .add-btn:hover {
+    background-color: #0056b3;
+}
+
+.message-cell {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 300px; /* adjust width as needed */
+}
+
+body.dark-mode #projectNotificationsWrapper {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+}
+
+body.dark-mode .project-section {
+    background-color: #2a2a2a;
+    border-color: #444;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .project-section h3 {
+    color: #ddd;
+}
+
+body.dark-mode .notification-table thead {
+    background-color: #333;
+}
+
+body.dark-mode .notification-table th,
+body.dark-mode .notification-table td {
+    color: #f0f0f0;
+    border-bottom: 1px solid #444;
+}
+
+body.dark-mode .notification-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+body.dark-mode .notification-table button {
+    background-color: #c0392b;
+    color: white;
+}
+
+body.dark-mode .notification-table button:hover {
+    background-color: #e74c3c;
+}
+
+body.dark-mode #projectNotificationsWrapper p {
+    color: #aaa;
+}
+
+body.dark-mode .modal-content {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    box-shadow: 0 0 15px rgba(255,255,255,0.15);
+}
+
+body.dark-mode .modal-content textarea {
+    background-color: #1e1e1e;
+    color: #fff;
+    border-color: #666;
+}
+
+body.dark-mode .modal-content button {
+    background-color: #0069d9;
+}
+
+body.dark-mode .modal-content button:hover {
+    background-color: #0056b3;
+}
+
+body.dark-mode .add-btn {
+    background-color: #0069d9;
+}
+
+body.dark-mode .add-btn:hover {
     background-color: #0056b3;
 }

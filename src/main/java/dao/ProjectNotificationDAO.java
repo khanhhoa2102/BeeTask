@@ -124,6 +124,44 @@ public class ProjectNotificationDAO {
         return null; // Not found or error
     }
     
+    public int getProjectIdByNotificationId(int id){
+        String sql = "SELECT ProjectId FROM ProjectNotifications WHERE ProjectNotificationId = ?";
+        try (
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("ProjectId");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public String getProjectNameByProjectId(int id){
+        String sql = "SELECT Name FROM Projects WHERE ProjectId = ?";
+        try (
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("Name");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public List<ProjectNotification> getNotificationsByUserId(int userId) {
         List<ProjectNotification> list = new ArrayList<>();
 
@@ -217,7 +255,7 @@ public class ProjectNotificationDAO {
     }
     
     public void markAllAsUnreadById(int notificationId) {
-        String sql = "UPDATE ProjectNotificationStatus SET IsRead = 0 WHERE NotificationId = ?";
+        String sql = "UPDATE ProjectNotificationStatus SET IsRead = 0 WHERE ProjectNotificationId = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, notificationId);
@@ -228,7 +266,7 @@ public class ProjectNotificationDAO {
     }
     
     public void editNotification(ProjectNotification notification) {
-        String sql = "UPDATE ProjectNotifications SET Message = ? WHERE NotificationId = ?";
+        String sql = "UPDATE ProjectNotifications SET Message = ? WHERE ProjectNotificationId = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

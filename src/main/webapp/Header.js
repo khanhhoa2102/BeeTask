@@ -114,10 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleDropdown() {
     const dropdown = document.getElementById("notificationDropdown");
     dropdown.classList.toggle("show");
-    if (dropdown.classList.contains("show")) {
-        loadNotifications();
-        loadProjectNotifications();
-    }
 }
 
 function loadNotifications() {
@@ -187,6 +183,28 @@ function toggleSection(sectionId) {
     toggleBtn.textContent = section.classList.contains("collapsed") ? "▶ System" : "▼ System";
 }
 
+function markAllRead(){
+    fetch(`${contextPath}/notifications?action=markAllRead`)
+        .then(res => res.text())
+        .then(response => {
+            if (response === "OK") {
+                loadNotifications();
+                loadProjectNotifications();
+            }
+        });
+}
+
+function markAllUnread(){
+    fetch(`${contextPath}/notifications?action=markAllUnread`)
+        .then(res => res.text())
+        .then(response => {
+            if (response === "OK") {
+                loadNotifications();
+                loadProjectNotifications();
+            }
+        });
+}
+
 function markNotificationAsRead(id) {
     fetch(`${contextPath}/notifications?action=markAsRead&id=${id}`)
         .then(res => res.text())
@@ -224,25 +242,18 @@ function loadProjectNotifications() {
             const notificationList = document.getElementById('notificationList');
             notificationList.innerHTML = '';
 
-            const projectMap = {};
-
-            data.forEach(n => {
-                if (!projectMap[n.projectId]) {
-                    projectMap[n.projectId] = [];
-                }
-                projectMap[n.projectId].push(n);
-            });
-
-            for (const [projectId, notifications] of Object.entries(projectMap)) {
+            for (const [projectName, info] of Object.entries(data)) {
+                const notifications = info.notifications;
+                
                 const section = document.createElement('div');
                 section.classList.add('notification-section');
 
                 const header = document.createElement('button');
                 header.classList.add('section-toggle');
-                header.innerHTML = `▶ Project ${projectId}`;
+                header.innerHTML = `▶ ${projectName}`;
                 header.onclick = () => {
                     list.classList.toggle('collapsed');
-                    header.innerHTML = `${list.classList.contains('collapsed') ? '▶' : '▼'} Project ${projectId}`;
+                    header.innerHTML = `${list.classList.contains('collapsed') ? '▶' : '▼'} ${projectName}`;
                 };
 
                 const list = document.createElement('ul');
@@ -289,3 +300,9 @@ function deleteNotification(notificationId) {
     fetch(`${contextPath}/projectnotifications?action=deleteByUser&id=${notificationId}`)
         .then(() => loadProjectNotifications());
 }
+
+loadNotifications();
+loadProjectNotifications();
+
+setInterval(loadNotifications, 30000);
+setInterval(loadProjectNotifications, 30000);

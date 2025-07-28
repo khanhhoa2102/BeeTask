@@ -31,7 +31,9 @@ function loadAllNotifications() {
                 section.appendChild(addBtn);
 
                 if (notifications.length === 0) {
-                    section.innerHTML += '<p>No notifications for this project.</p>';
+                    const noNotifText = document.createElement('p');
+                    noNotifText.textContent = 'No notifications for this project.';
+                    section.appendChild(noNotifText);
                 } else {
                     const table = document.createElement('table');
                     table.classList.add('notification-table');
@@ -39,7 +41,6 @@ function loadAllNotifications() {
                     const thead = document.createElement('thead');
                     thead.innerHTML = `
                         <tr>
-                            <th>ID</th>
                             <th>Message</th>
                             <th>Created At</th>
                             <th>Actions</th>
@@ -52,10 +53,10 @@ function loadAllNotifications() {
                         const row = document.createElement('tr');
 
                         row.innerHTML = `
-                            <td>${n.projectNotificationId}</td>
-                            <td>${n.message}</td>
+                            <td class="message-cell">${n.message}</td>
                             <td>${new Date(n.createdAt).toLocaleString()}</td>
                             <td>
+                                <button onclick="openEditModal(${n.projectNotificationId}, \`${n.message.replace(/`/g, '\\`')}\`, ${projectId})">Edit</button>
                                 <button onclick="deleteNotification(${n.projectNotificationId})">Delete</button>
                             </td>
                         `;
@@ -77,8 +78,13 @@ function loadAllNotifications() {
 
 // Keep track of project name to ID mapping
 let projectNameToId = {};
+let isEditing = false;
 
 function openAddModal(projectName) {
+    isEditing = false;
+    document.getElementById('modalTitle').textContent = 'Add Notification';
+    document.getElementById('submitButton').textContent = 'Add';
+    
     const modal = document.getElementById('addNotificationModal');
     const textarea = document.getElementById('notificationMessage');
     const hiddenInput = document.getElementById('modalProjectId');
@@ -91,39 +97,54 @@ function openAddModal(projectName) {
     modal.classList.remove('hidden');
 }
 
+function openEditModal(notificationId, message, projectId) {
+    isEditing = true;
+    document.getElementById('modalTitle').textContent = 'Edit Notification';
+    document.getElementById('submitButton').textContent = 'Update';
+    document.getElementById('notificationMessage').value = message;
+    document.getElementById('editingNotificationId').value = notificationId;
+    document.getElementById('modalProjectId').value = projectId;
+
+    document.getElementById('addNotificationModal').classList.remove('hidden');
+}
+
 function closeAddModal() {
     document.getElementById('addNotificationModal').classList.add('hidden');
 }
 
-// Submit handler
-document.getElementById('addNotificationForm').addEventListener('submit', function (e) {
+document.getElementById('addNotificationForm').onsubmit = function (e) {
     e.preventDefault();
-    const projectId = document.getElementById('modalProjectId').value;
-    const message = document.getElementById('notificationMessage').value;
 
-    fetch(`${contextPath}/managenotifications?action=add&projectId=${encodeURIComponent(projectId)}&message=${encodeURIComponent(message)}`)
-    .then(() => {
-        closeAddModal();
-        loadAllNotifications(); // Refresh list
-    })
-    .catch(error => console.error('Error adding notification:', error));
-});
+    const message = document.getElementById('notificationMessage').value.trim();
+    const projectId = document.getElementById('modalProjectId').value;
+    const notificationId = document.getElementById('editingNotificationId').value;
+
+    if (!message) return;
+
+    let action = isEditing ? 'edit' : 'add';
+    let url = `${contextPath}/managenotifications?action=${action}&projectId=${encodeURIComponent(projectId)}&message=${encodeURIComponent(message)}`;
+
+    if (isEditing) {
+        url += `&id=${encodeURIComponent(notificationId)}`;
+    }
+
+    fetch(url)
+        .then(res => {
+            if (!res.ok) throw new Error('Failed to save notification.');
+            return res.text();
+        })
+        .then(() => {
+            document.getElementById('addNotificationModal').classList.add('hidden');
+            loadAllNotifications();
+        })
+        .catch(err => {
+            console.error(err);
+            alert('An error occurred while saving the notification.');
+        });
+};
 
 // Close modal on X click
 document.getElementById('closeModal').addEventListener('click', closeAddModal);
-
-function editNotification(id) {
-    const messageSpan = document.querySelector(`.editable[data-id="${id}"]`);
-    const newMessage = messageSpan.textContent.trim();
-
-    fetch(`${contextPath}/notifications?action=edit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `notificationId=${id}&message=${encodeURIComponent(newMessage)}`
-    }).then(() => {
-        loadAllNotifications();
-    });
-}
 
 function deleteNotification(id) {
     if (!confirm("Are you sure you want to delete this notification?")) return;

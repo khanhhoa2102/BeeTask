@@ -47,20 +47,22 @@
                     <i class="far fa-bell"></i>
                 </button>
                 <div class="notification-dropdown" id="notificationDropdown">
-                    <div class="notification-section">
-                        <button class="section-toggle" onclick="toggleSection('systemSection')">
-                            ▶ System
-                        </button>
-                        <ul id="systemSection" class="notification-section-content">
-                            <!-- JS will populate system notifications here -->
-                        </ul>
-                    </div>
-                    <div id="notificationList">
-                        <!-- JS will populate project notifications here -->
+                    <div class="notification-scrollable">
+                        <div class="notification-section">
+                            <button class="section-toggle" onclick="toggleSection('systemSection')">
+                                ▶ System
+                            </button>
+                            <ul id="systemSection" class="notification-section-content">
+                                <!-- JS will populate system notifications here -->
+                            </ul>
+                        </div>
+                        <div id="notificationList">
+                            <!-- JS will populate project notifications here -->
+                        </div>
                     </div>
                     <div class="notification-actions">
-                        <button onclick="markAllRead(event)">Mark all read</button>
-                        <button onclick="markAllUnread(event)">Mark all unread</button>
+                        <button onclick="markAllRead()">Mark all read</button>
+                        <button onclick="markAllUnread()">Mark all unread</button>
                         <button onclick="window.location.href='${pageContext.request.contextPath}/ManageNotification.jsp'">Manage</button>
                     </div>
                 </div>
