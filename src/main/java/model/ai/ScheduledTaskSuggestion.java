@@ -3,6 +3,7 @@ package model.ai;
 import java.time.LocalDateTime;
 
 public class ScheduledTaskSuggestion {
+
     private int taskId;
     private String title;
     private int difficulty;
@@ -13,7 +14,7 @@ public class ScheduledTaskSuggestion {
     private double confidence;
     private String shortDescription;
     private Boolean event;
-
+    private String status;
 
     public ScheduledTaskSuggestion() {
     }
@@ -43,8 +44,6 @@ public class ScheduledTaskSuggestion {
         this.shortDescription = shortDescription;
         this.event = event;
     }
-    
-    
 
     // Getters
     public String getTitle() {
@@ -131,6 +130,13 @@ public class ScheduledTaskSuggestion {
     public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
-    
-    
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

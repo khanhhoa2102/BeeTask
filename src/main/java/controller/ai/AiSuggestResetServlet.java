@@ -6,9 +6,7 @@ import dao.AIScheduleDAO;
 import dao.CalendarEventDAO;
 import dao.TaskDAO;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import model.*;
 import model.ai.*;
 import service.AIService;
@@ -19,8 +17,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@WebServlet("/ai-suggest-preview")
-public class AISuggestionServlet extends HttpServlet {
+@WebServlet("/ai-suggest-reset")
+public class AiSuggestResetServlet extends HttpServlet {
 
     private final TaskDAO taskDAO = new TaskDAO();
     private final CalendarEventDAO calendarDAO = new CalendarEventDAO();
@@ -30,7 +28,7 @@ public class AISuggestionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            System.out.println("🧠 [AI Servlet] POST /ai-suggest-preview triggered");
+            System.out.println("🔁 [AI Servlet] POST /ai-suggest-reset triggered");
 
             User user = (User) req.getSession(false).getAttribute("user");
             if (user == null) {
@@ -39,7 +37,6 @@ public class AISuggestionServlet extends HttpServlet {
                 return;
             }
 
-            int userId = user.getUserId();
             int taskId = Integer.parseInt(req.getParameter("taskId"));
             Task task = taskDAO.getTaskById(taskId);
 
@@ -49,11 +46,13 @@ public class AISuggestionServlet extends HttpServlet {
                 return;
             }
 
-            // Convert target task
-            LocalDateTime dueDateTime = null;
-            if (task.getDueDate() != null) {
-                dueDateTime = new java.sql.Timestamp(task.getDueDate().getTime()).toLocalDateTime();
-            }
+            // 1. Đánh dấu bản ghi cũ là Overridden
+            scheduleDAO.updateStatus(taskId, "Overridden");
+
+            // 2. Chuẩn bị lại dữ liệu AI
+            LocalDateTime dueDateTime = task.getDueDate() != null
+                    ? new java.sql.Timestamp(task.getDueDate().getTime()).toLocalDateTime()
+                    : null;
 
             SimpleTask targetTask = new SimpleTask(
                     task.getTitle(),
@@ -65,7 +64,7 @@ public class AISuggestionServlet extends HttpServlet {
                     task.getPriority()
             );
 
-            int projectId = task.getBoardId(); // Nếu cần bạn có thể sửa để map sang projectId
+            int projectId = task.getBoardId(); // hoặc dùng ProjectId nếu có
             List<Task> allProjectTasks = taskDAO.getTasksByProjectIdGrouped(projectId)
                     .values().stream().flatMap(List::stream).collect(Collectors.toList());
 
@@ -82,14 +81,13 @@ public class AISuggestionServlet extends HttpServlet {
             ))
                     .collect(Collectors.toList());
 
-            List<CalendarEvent> events = calendarDAO.getEventsByUserId(userId);
+            List<CalendarEvent> events = calendarDAO.getEventsByUserId(user.getUserId());
             List<SimpleCalendarEvent> simpleEvents = events.stream()
                     .map(e -> new SimpleCalendarEvent(e.getTitle(), e.getStartTime(), e.getEndTime()))
                     .collect(Collectors.toList());
 
-            String projectName = "Project " + projectId;
-
-            AISuggestionRequest request = new AISuggestionRequest(targetTask, otherTasks, simpleEvents, projectName);
+            // 3. Gửi lại yêu cầu cho AI
+            AISuggestionRequest request = new AISuggestionRequest(targetTask, otherTasks, simpleEvents, "Project " + projectId);
             AISuggestionResponse aiResponse = aiService.sendSchedulingRequest(request);
 
             ScheduledTaskSuggestion matched = aiResponse.getSchedules().stream()
@@ -98,28 +96,25 @@ public class AISuggestionServlet extends HttpServlet {
                     .findFirst()
                     .orElse(aiResponse.getSchedules().isEmpty() ? null : aiResponse.getSchedules().get(0));
 
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-
             if (matched != null) {
-                matched.setTaskId(taskId); // Gán TaskId cho suggestion để lưu
+                matched.setTaskId(taskId);
+                scheduleDAO.insertAISchedules(user.getUserId(), List.of(matched), "Pending");
 
-                // 🧠 Chỉ lưu nếu chưa tồn tại (Pending)
-                scheduleDAO.insertIfNotExists(matched);
-
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
                 Gson gson = new GsonBuilder()
                         .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                         .create();
                 gson.toJson(matched, resp.getWriter());
             } else {
                 resp.setStatus(404);
-                resp.getWriter().write("{\"error\":\"No matching suggestion found for this task\"}");
+                resp.getWriter().write("{\"error\":\"No new suggestion returned\"}");
             }
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             resp.setStatus(500);
-            resp.getWriter().write("{\"error\": \"AI scheduling failed\"}");
+            resp.getWriter().write("{\"error\":\"Failed to re-suggest\"}");
         }
     }
 }
