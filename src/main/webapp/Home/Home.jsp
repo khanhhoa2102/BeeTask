@@ -28,7 +28,7 @@
     <body class="dashboard-body">
         <div class="dashboard-container">
             <!-- Sidebar -->
-                <%@ include file="../Sidebar.jsp" %>
+            <%@ include file="../Sidebar.jsp" %>
 
             <!-- Main Content -->
             <main class="main-content">
@@ -55,7 +55,12 @@
                                 <p>Manage your work efficiently, track project progress, and collaborate with your team seamlessly.</p>
                                 <div class="welcome-actions">
                                     <button class="primary-btn"><i class="fas fa-plus"></i> Create New Project</button>
-                                    <button class="secondary-btn"><i class="fas fa-play"></i> View Tutorial</button>
+                                    <a href="Tutorial.jsp">
+                                        <button class="secondary-btn">
+                                            <i class="fas fa-play"></i> View Tutorial
+                                        </button>
+                                    </a>
+
                                 </div>
                             </div>
                         </div>
@@ -73,7 +78,7 @@
                                 <div class="project-card">
                                     <h4><%= project.getName() %></h4>
                                     <p><%= project.getDescription() %></p>
-                                    <a href="ProjectDashboard.jsp?projectId=<%= project.getProjectId() %>" class="view-btn">
+                                    <a href="<%= request.getContextPath() %>/Task.jsp?projectId=<%= project.getProjectId() %>" class="view-btn">
                                         <i class="fas fa-arrow-right"></i> View Project
                                     </a>
                                 </div>
@@ -164,13 +169,24 @@
         </div>
 
         <script>
+            const email = "<%= user.getEmail() %>";
+            const username = "<%= user.getUsername() %>";
+            const password = "<%= rawPassword != null ? rawPassword : "" %>";
+            const savedEmail = localStorage.getItem("switchGoogleEmail");
+            const savedRefresh = localStorage.getItem("switchGoogleRefreshToken");
+
+            const isGoogleUser = email === savedEmail;
+
             window.beeUser = {
-                email: "<%= user.getEmail() %>",
-                username: "<%= user.getUsername() %>",
-                password: "<%= rawPassword != null ? rawPassword : "" %>",
-                refreshToken: "<%= refreshToken != null ? refreshToken : "" %>"
+                email: email,
+                username: username,
+                password: password,
+                refreshToken: isGoogleUser ? savedRefresh : ""
             };
         </script>
-        <script src="Home.js"></script>
+
+
+        <script src="${pageContext.request.contextPath}/Home/Home.js"></script>
     </body>
 </html>
+

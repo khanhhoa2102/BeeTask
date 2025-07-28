@@ -37,7 +37,7 @@ public class NotificationDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace(); // You might want to log this instead
+            e.printStackTrace();
         }
     }
     
@@ -125,6 +125,20 @@ public class NotificationDAO {
     // UPDATE (mark as read)
     public void markAsRead(int notificationId) {
         String sql = "UPDATE Notifications SET IsRead = 1 WHERE NotificationId = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, notificationId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void markAsUnread(int notificationId) {
+        String sql = "UPDATE Notifications SET IsRead = 0 WHERE NotificationId = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

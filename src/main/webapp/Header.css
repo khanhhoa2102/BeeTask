@@ -9,19 +9,16 @@ body {
 
 body.dark-mode {
     background-color: #161C2C;
-    color: white;
 }
 
 /* Container */
 .container {
-    display: flex;
     width: 100%;
     box-sizing: border-box;
 }
 
 /* Sidebar */
-.sidebar {
-    width: 180px;   
+.sidebar { 
     background-color: #ffffff;
     color: #333333;
     display: flex;
@@ -324,7 +321,7 @@ body.dark-mode .project-list li:hover {
 }
 
 .sidebar.collapsed ~ .main-content {
-    margin-left: 80px;
+    
     width: calc(100% - 80px);
 }
 

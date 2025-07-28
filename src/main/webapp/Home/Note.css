@@ -1,11 +1,10 @@
-/* ===== Reset ===== */
+/* ===== Reset & Base Styles ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* ===== Base Styles ===== */
 body {
   font-family: "Inter", sans-serif;
   background-color: #f8f9fa;
@@ -18,6 +17,7 @@ body.dark-theme {
   color: #e2e8f0;
 }
 
+/* ===== Layout ===== */
 .container {
   display: flex;
   min-height: 100vh;
@@ -37,13 +37,22 @@ body.dark-theme {
   margin-bottom: 24px;
 }
 
+
 .notes-title {
   font-size: 1.75rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   gap: 10px;
-  color: inherit;
+  color: #333333;
+}
+body.dark-theme .notes-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
 }
 
 .add-note-btn {
@@ -64,14 +73,13 @@ body.dark-theme {
   background: #2b6cb0;
 }
 
-/* ===== Notes Layout Dọc ===== */
+/* ===== Notes List ===== */
 .notes-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* ===== Note Item ===== */
 .note-item {
   width: 100%;
   background: #ffffff;
@@ -163,7 +171,7 @@ body.dark-theme .note-label {
   background: currentColor;
 }
 
-/* ===== Note Actions (3 chấm) ===== */
+/* ===== Note Actions ===== */
 .note-actions {
   margin-left: auto;
 }
@@ -251,7 +259,250 @@ body.dark-theme .context-menu-item:hover {
   background-color: #4a5568;
 }
 
-/* ===== Notification ===== */
+/* ===== Modals ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #64748b;
+}
+
+/* Label Modal Specific */
+.label-options {
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.label-option {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s ease;
+}
+
+.label-option:hover {
+  background-color: #f1f5f9;
+}
+
+.section-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 16px 0;
+}
+
+.add-label-section {
+  padding: 16px;
+}
+
+.new-label-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #1e40af;
+}
+
+/* Deadline Modal Specific */
+.form-group {
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.quick-deadline-options {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.quick-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.quick-option {
+  padding: 4px 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+}
+
+.quick-option:hover {
+  background: #e2e8f0;
+}
+
+.deadline-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Delete Modal Specific */
+.delete-modal-content {
+  max-width: 400px;
+  text-align: center;
+}
+
+.delete-confirmation {
+  padding: 24px;
+}
+
+.delete-icon {
+  font-size: 3rem;
+  color: #ef4444;
+  margin-bottom: 16px;
+}
+
+.delete-warning {
+  font-size: 1.125rem;
+  margin-bottom: 24px;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #3182ce;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #2b6cb0;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #cbd5e0;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* Notification */
 .notification {
   position: fixed;
   bottom: 20px;
@@ -273,6 +524,7 @@ body.dark-theme .context-menu-item:hover {
   background-color: #e53e3e;
 }
 
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -280,4 +532,56 @@ body.dark-theme .context-menu-item:hover {
 
 @keyframes fadeOut {
   to { opacity: 0; transform: translateY(10px); }
+}
+
+/* ===== Dark Mode Overrides ===== */
+body.dark-theme .modal-content {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+body.dark-theme .modal-header {
+  border-bottom: 1px solid #334155;
+}
+
+body.dark-theme .close-btn {
+  color: #94a3b8;
+}
+
+body.dark-theme .form-input {
+  background: #334155;
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+body.dark-theme .quick-option {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+body.dark-theme .quick-option:hover {
+  background: #475569;
+}
+
+body.dark-theme .section-divider,
+body.dark-theme .deadline-actions,
+body.dark-theme .delete-actions {
+  border-color: #334155;
+}
+
+body.dark-theme .btn-secondary {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+body.dark-theme .btn-secondary:hover {
+  background: #475569;
+}
+
+body.dark-theme .label-option:hover {
+  background-color: #334155;
+}
+
+body.dark-theme .color-option.selected {
+  border-color: #93c5fd;
 }

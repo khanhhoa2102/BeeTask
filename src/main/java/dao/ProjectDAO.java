@@ -42,21 +42,50 @@ public class ProjectDAO {
         return null;
     }
 
-    // Insert new project (Task1)
-    public void insert(Project project) {
+    public int insert(Project project) {
         String sql = "INSERT INTO Projects (Name, Description, CreatedBy, CreatedAt) VALUES (?, ?, ?, GETDATE())";
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, project.getName());
             stmt.setString(2, project.getDescription());
             stmt.setInt(3, project.getCreatedBy());
 
-            int result = stmt.executeUpdate();
-            System.out.println("Project inserted successfully. Rows affected: " + result);
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Inserting project failed, no rows affected.");
+            }
 
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int projectId = generatedKeys.getInt(1);
+                    System.out.println("Inserted ProjectId: " + projectId);
+                    return projectId;
+                } else {
+                    throw new SQLException("Inserting project failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             System.err.println("Error inserting project: " + e.getMessage());
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    public void addProjectMember(int projectId, int userId, String role) {
+        String sql = "INSERT INTO ProjectMembers (ProjectId, UserId, Role) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projectId);
+            stmt.setInt(2, userId);
+            stmt.setString(3, role);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error adding project member: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -80,46 +109,73 @@ public class ProjectDAO {
         }
     }
 
-    // Delete project (Task1 - with cascading)
     public void delete(int projectId) {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
             try {
-                String deleteTasksSQL = "DELETE FROM Tasks WHERE BoardId IN (SELECT BoardId FROM Boards WHERE ProjectId = ?)";
+                // 1. Xóa TaskAssignees trước
+                String deleteAssigneesSQL =
+                    "DELETE FROM TaskAssignees " +
+                    "WHERE taskId IN (" +
+                    "   SELECT taskId FROM Tasks " +
+                    "   WHERE boardId IN (" +
+                    "       SELECT boardId FROM Boards WHERE projectId = ?))";
+                try (PreparedStatement stmt0 = conn.prepareStatement(deleteAssigneesSQL)) {
+                    stmt0.setInt(1, projectId);
+                    stmt0.executeUpdate();
+                }
+
+                // 2. Xóa Tasks
+                String deleteTasksSQL =
+                    "DELETE FROM Tasks WHERE boardId IN (" +
+                    "SELECT boardId FROM Boards WHERE projectId = ?)";
                 try (PreparedStatement stmt1 = conn.prepareStatement(deleteTasksSQL)) {
                     stmt1.setInt(1, projectId);
                     stmt1.executeUpdate();
                 }
 
-                String deleteBoardsSQL = "DELETE FROM Boards WHERE ProjectId = ?";
+                // 3. Xóa Boards
+                String deleteBoardsSQL =
+                    "DELETE FROM Boards WHERE projectId = ?";
                 try (PreparedStatement stmt2 = conn.prepareStatement(deleteBoardsSQL)) {
                     stmt2.setInt(1, projectId);
                     stmt2.executeUpdate();
                 }
 
-                String deleteProjectSQL = "DELETE FROM Projects WHERE ProjectId = ?";
+                // 3.5 Xóa ProjectMembers (THÊM ĐOẠN NÀY)
+                String deleteMembersSQL =
+                    "DELETE FROM ProjectMembers WHERE ProjectId = ?";
+                try (PreparedStatement stmtX = conn.prepareStatement(deleteMembersSQL)) {
+                    stmtX.setInt(1, projectId);
+                    stmtX.executeUpdate();
+                }
+
+                // 4. Xóa Project
+                String deleteProjectSQL =
+                    "DELETE FROM Projects WHERE projectId = ?";
                 try (PreparedStatement stmt3 = conn.prepareStatement(deleteProjectSQL)) {
                     stmt3.setInt(1, projectId);
                     stmt3.executeUpdate();
                 }
 
                 conn.commit();
-                System.out.println("Project deleted successfully with ID: " + projectId);
+                System.out.println("✅ Project deleted successfully with ID: " + projectId);
 
             } catch (SQLException ex) {
                 conn.rollback();
+                System.err.println("❌ Deletion failed, rollback. Error: " + ex.getMessage());
                 throw ex;
             } finally {
                 conn.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
-            System.err.println("Error deleting project: " + e.getMessage());
+            System.err.println("❌ Error deleting project: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
+    
     // Get all projects (Task1)
     public List<Project> getAllProjects() {
         List<Project> projects = new ArrayList<>();
@@ -333,6 +389,74 @@ project.setLocked(rs.getBoolean("IsLocked"));
             e.printStackTrace();
             return false;
         }
+    }
+    
+    public List<User> getUsersByProjectId(int projectId) throws Exception {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT u.* FROM Users u JOIN ProjectMembers pm ON u.UserId = pm.UserId WHERE pm.ProjectId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setEmail(rs.getString("Email"));
+                    // add other fields if needed
+                    users.add(user);
+                }
+            }
+        }
+        return users;
+    }
+
+    public boolean isLeaderOfProject(int userId, int projectId) {
+        String sql = "SELECT Role FROM ProjectMembers WHERE ProjectId = ? AND UserId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projectId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String role = rs.getString("Role");
+                return "Leader".equalsIgnoreCase(role);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public List<Project> getProjectsByLeaderId(int userId) {
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT * FROM Projects WHERE CreatedBy = ?";
+
+        try (
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Project project = new Project(
+                        rs.getInt("ProjectId"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getInt("CreatedBy"),
+                        rs.getTimestamp("CreatedAt")
+                );
+                projects.add(project);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return projects;
     }
 
 }

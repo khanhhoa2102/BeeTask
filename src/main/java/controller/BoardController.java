@@ -122,15 +122,23 @@ public class BoardController extends HttpServlet {
         }
     }
 
-    private void duplicateBoard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        int boardId = Integer.parseInt(req.getParameter("boardId"));
+    private void duplicateBoard(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            int boardId = Integer.parseInt(request.getParameter("boardId"));
+            Board duplicated = boardDAO.duplicate(boardId);
 
-        Board board = boardDAO.findById(boardId);
-        if (board != null) {
-            boardDAO.duplicate(boardId);
-            resp.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Board not found");
+            if (duplicated != null) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.setContentType("application/json");
+                response.getWriter().write("{ \"success\": true, \"newBoardId\": " + duplicated.getBoardId() + " }");
+            } else {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to duplicate board");
+            }
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid boardId");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred duplicating board");
         }
     }
 }

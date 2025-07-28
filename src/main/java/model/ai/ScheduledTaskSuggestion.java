@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class ScheduledTaskSuggestion {
 
+    private int taskId;
     private String title;
     private int difficulty;
     private LocalDateTime dueDate;
@@ -13,6 +14,7 @@ public class ScheduledTaskSuggestion {
     private double confidence;
     private String shortDescription;
     private Boolean event;
+    private String status;
 
     public ScheduledTaskSuggestion() {
     }
@@ -28,6 +30,19 @@ public class ScheduledTaskSuggestion {
         this.priority = priority;
         this.confidence = confidence;
         this.shortDescription = shortDescription;
+    }
+
+    public ScheduledTaskSuggestion(int taskId, String title, int difficulty, LocalDateTime dueDate, LocalDateTime start, LocalDateTime end, String priority, double confidence, String shortDescription, Boolean event) {
+        this.taskId = taskId;
+        this.title = title;
+        this.difficulty = difficulty;
+        this.dueDate = dueDate;
+        this.start = start;
+        this.end = end;
+        this.priority = priority;
+        this.confidence = confidence;
+        this.shortDescription = shortDescription;
+        this.event = event;
     }
 
     // Getters
@@ -103,8 +118,25 @@ public class ScheduledTaskSuggestion {
     public void setEvent(Boolean event) {
         this.event = event;
     }
-    
+
     public Boolean isEvent() {
         return event != null && event;
     }
+
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

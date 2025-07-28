@@ -11,7 +11,6 @@ import java.io.IOException;
 
 @WebServlet("/project")
 public class ProjectController extends HttpServlet {
-
     private final ProjectDAO projectDAO = new ProjectDAO();
 
     @Override
@@ -37,7 +36,7 @@ public class ProjectController extends HttpServlet {
                     updateProject(request, user);
                     break;
                 case "delete":
-                    deleteProject(request);
+                    deleteProject(request, user);
                     break;
             }
         } catch (Exception e) {
@@ -57,7 +56,10 @@ public class ProjectController extends HttpServlet {
             project.setDescription(description);
             project.setCreatedBy(user.getUserId());
 
-            projectDAO.insert(project);
+            int projectId = projectDAO.insert(project);  // Lấy ID vừa insert
+            if (projectId != -1) {
+                projectDAO.addProjectMember(projectId, user.getUserId(), "Leader");  // Gán quyền Leader
+            }
         }
     }
 
@@ -74,9 +76,22 @@ public class ProjectController extends HttpServlet {
         }
     }
 
-    private void deleteProject(HttpServletRequest request) throws Exception {
-        int id = Integer.parseInt(request.getParameter("projectId"));
-        projectDAO.delete(id);
+    private void deleteProject(HttpServletRequest request, User user) throws Exception {
+        int projectId = Integer.parseInt(request.getParameter("projectId"));
+        System.out.println("🔔 Received delete request for projectId = " + projectId);
+
+        if (projectDAO.isLeaderOfProject(user.getUserId(), projectId)) {
+            System.out.println("✅ User is project leader. Proceeding to delete...");
+            try {
+                projectDAO.delete(projectId);
+            } catch (Exception e) {
+                System.err.println("❌ Error during deletion: " + e.getMessage());
+                throw new Exception("Failed to delete project. Please try again.");
+            }
+        } else {
+            System.out.println("🚫 User is not the leader of this project. Deletion denied.");
+            throw new SecurityException("You don't have permission to delete this project!");
+        }
     }
 
     @Override

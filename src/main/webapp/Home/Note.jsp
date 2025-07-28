@@ -3,17 +3,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%
-    if (session.getAttribute("userId") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <title>Ghi chú của tôi</title>
+    <title>My notes</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Home/Note.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -22,13 +16,8 @@
 
 <div class="container">
     <aside class="sidebar">
-        <div class="user-profile">
-            <button class="icon-btn">
-                <img src="../Asset/Longlogo.png" alt="BeeTask Logo">
-            </button>
-        </div>
         <%@ include file="../Sidebar.jsp" %>
-        <%@ include file="../Help.jsp" %>
+        
     </aside>
 
     <main class="main-content">
@@ -46,10 +35,10 @@
         </c:if>
 
         <div class="notes-header">
-            <h1 class="notes-title"><i class="fas fa-sticky-note"></i> Ghi chú của tôi</h1>
+            <h1 class="notes-title"><i class="fas fa-sticky-note"></i> My notes</h1>
             <div class="header-actions">
                 <button id="add-note-btn" class="add-note-btn">
-                    <i class="fas fa-plus"></i> Thêm ghi chú
+                    <i class="fas fa-plus"></i> Add notes
                 </button>
             </div>
         </div>
@@ -61,8 +50,6 @@
                         <c:forEach var="note" items="${notes}">
                             <div class="note-item" data-id="${note.noteId}">
                                 <div class="note-checkbox-wrapper">
-                                    <input type="checkbox" class="note-checkbox" id="note-${note.noteId}">
-                                    <label for="note-${note.noteId}" class="checkbox-label"></label>
                                 </div>
                                 <div class="note-content" data-editable="true">
                                     <span class="note-text">${note.title}</span>
@@ -101,8 +88,8 @@
                     <c:otherwise>
                         <div id="empty-state">
                             <i class="fas fa-sticky-note empty-icon"></i>
-                            <h3>Không có ghi chú nào</h3>
-                            <p>Nhấn "Thêm ghi chú" để bắt đầu.</p>
+                            <h3>No notes</h3>
+                            <p>Click "Add Note" to begin.</p>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -115,31 +102,37 @@
 
 <!-- Context Menu -->
 <div id="context-menu" class="context-menu">
-    <div class="context-menu-item" data-action="setLabel"><i class="fas fa-tag"></i> Chọn nhãn</div>
-    <div class="context-menu-item" data-action="setDeadline"><i class="fas fa-clock"></i> Thêm deadline</div>
+    <div class="context-menu-item" data-action="setLabel"><i class="fas fa-tag"></i> Select label</div>
+    <div class="context-menu-item" data-action="setDeadline"><i class="fas fa-clock"></i> Add deadlines</div>
     <div class="context-menu-divider"></div>
-    <div class="context-menu-item danger" data-action="delete"><i class="fas fa-trash"></i> Xóa ghi chú</div>
+    <div class="context-menu-item danger" data-action="delete"><i class="fas fa-trash"></i> Delete notes</div>
 </div>
 
 <!-- Label Modal -->
 <div id="label-modal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Chọn hoặc tạo nhãn</h3>
+            <h3>Select or create a label</h3>
             <button id="close-label-modal" class="close-btn">&times;</button>
         </div>
-        <div class="label-options"></div>
+        <div class="label-options">
+            <!-- Labels từ database sẽ được load ở đây -->
+        </div>
         <div class="section-divider"></div>
         <div class="add-label-section">
             <div class="new-label-form">
-                <input type="text" id="new-label-name" placeholder="Tên nhãn" class="form-input">
+                <input type="text" id="new-label-name" placeholder="Label name" class="form-input">
                 <div class="color-picker">
-                    <div class="color-option selected" data-color="blue" style="background-color: blue;"></div>
-                    <div class="color-option" data-color="green" style="background-color: green;"></div>
-                    <div class="color-option" data-color="red" style="background-color: red;"></div>
-                    <div class="color-option" data-color="purple" style="background-color: purple;"></div>
+                    <div class="color-option selected" data-color="#FFD700" style="background-color: #FFD700;"></div> <!-- yellow -->
+                    <div class="color-option" data-color="#FF0000" style="background-color: #FF0000;"></div> <!-- red -->
+                    <div class="color-option" data-color="#008000" style="background-color: #008000;"></div> <!-- green -->
+                    <div class="color-option" data-color="#FFA500" style="background-color: #FFA500;"></div> <!-- orange -->
+                    <div class="color-option" data-color="#8B0000" style="background-color: #8B0000;"></div> <!-- darkred -->
+                    <div class="color-option" data-color="#DC143C" style="background-color: #DC143C;"></div> <!-- crimson -->
+                    <div class="color-option" data-color="#0000FF" style="background-color: #0000FF;"></div> <!-- blue -->
+                    <div class="color-option" data-color="#A52A2A" style="background-color: #A52A2A;"></div> <!-- brown -->
                 </div>
-                <button id="create-label-btn" class="btn-primary">Tạo nhãn</button>
+                <button id="create-label-btn" class="btn-primary">Create labels</button>
             </div>
         </div>
     </div>
@@ -149,28 +142,28 @@
 <div id="deadline-modal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Chọn thời hạn</h3>
+            <h3>Choose a deadline</h3>
             <button id="close-deadline-modal" class="close-btn">&times;</button>
         </div>
         <div class="form-group">
-            <label>Ngày:</label>
+            <label>Day:</label>
             <input type="date" id="deadline-date" class="form-input">
         </div>
         <div class="form-group">
-            <label>Giờ:</label>
+            <label>Time:</label>
             <input type="time" id="deadline-time" class="form-input">
         </div>
         <div class="quick-deadline-options">
-            <label>Tùy chọn nhanh:</label>
+            <label>Quick options:</label>
             <div class="quick-options">
-                <div class="quick-option" data-hours="3">+3 giờ</div>
-                <div class="quick-option" data-days="1">+1 ngày</div>
-                <div class="quick-option" data-days="7">+1 tuần</div>
+                <div class="quick-option" data-hours="3">+3 hours</div>
+                <div class="quick-option" data-days="1">+1 day</div>
+                <div class="quick-option" data-days="7">+1 week</div>
             </div>
         </div>
         <div class="deadline-actions">
-            <button id="save-deadline" class="btn-primary">Lưu</button>
-            <button id="remove-deadline" class="btn-secondary">Xóa</button>
+            <button id="save-deadline" class="btn-primary">Save</button>
+            <button id="remove-deadline" class="btn-secondary">Delete</button>
         </div>
     </div>
 </div>
@@ -179,16 +172,16 @@
 <div id="delete-modal" class="modal-overlay">
     <div class="modal-content delete-modal-content">
         <div class="modal-header">
-            <h3>Xác nhận xóa</h3>
+            <h3>Confirm deletion</h3>
             <button id="close-delete-modal" class="close-btn">&times;</button>
         </div>
         <div class="delete-confirmation">
             <i class="fas fa-exclamation-triangle delete-icon"></i>
-            <p class="delete-warning">Bạn có chắc muốn xóa ghi chú này?</p>
+            <p class="delete-warning">Are you sure you want to delete this note?</p>
         </div>
         <div class="delete-actions">
-            <button id="cancel-delete" class="btn-secondary">Hủy</button>
-            <button id="confirm-delete" class="btn-danger">Xóa</button>
+            <button id="cancel-delete" class="btn-secondary">Cancel</button>
+            <button id="confirm-delete" class="btn-danger">Delete</button>
         </div>
     </div>
 </div>

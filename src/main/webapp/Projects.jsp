@@ -9,17 +9,36 @@
 %>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <%@include file="Header.jsp" %>
-        <title>BeeTask - Project Management</title>
-        <link rel="stylesheet" href="Projects.css">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <div class="container">
-            <%@include file="../Sidebar.jsp"%>
+<head>
+    <%@include file="Header.jsp" %>
+    <title>BeeTask - Project Management</title>
+    <link rel="stylesheet" href="Projects.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+        <%@include file="./Sidebar.jsp"%>
 
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-container">
+                <h1 class="page-title">
+                    <i class="fas fa-project-diagram"></i>
+                    Project Management
+                </h1>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="projectSearch" class="search-input" placeholder="Search projects...">
+                    </div>
+                    <button class="btn primary create-btn" onclick="openCreateModal()">
+                        <i class="fas fa-plus"></i>
+                        Create New Project
+                    </button>
+                </div>
+            </div>
+        </div>
             <div class="main-content">
                 <div class="page-header">
                     <div class="header-container">
@@ -218,8 +237,52 @@
                     </form>
                 </div>
             </div>
-        </div>
+            <div class="modal-footer">
+                <button type="button" class="btn secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="submit" class="btn primary" id="submitBtn">
+                    <i class="fas fa-save"></i>
+                    Save Project
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal" style="display: none;">
+    <div class="modal-backdrop" onclick="closeDeleteModal()"></div>
+    <div class="modal-container small">
+        <div class="modal-header danger">
+            <h3>
+                <i class="fas fa-exclamation-triangle"></i>
+                Confirm Deletion
+            </h3>
+            <button class="modal-close" onclick="closeDeleteModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete the project <strong id="deleteProjectName"></strong>?</p>
+            <p class="warning-text">This action cannot be undone!</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn secondary" onclick="closeDeleteModal()">
+                <i class="fas fa-times"></i>
+                Cancel
+            </button>
+            <form id="deleteForm" action="project" method="post" style="display: inline;">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="projectId" id="deleteProjectId">
+                <button type="submit" class="btn danger">
+                    <i class="fas fa-trash"></i>
+                    Delete Project
+                </button>
+            </form>
+        </div>
         <script src="Projects.js"></script>
     </body>
 </html>
+

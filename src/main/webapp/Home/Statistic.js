@@ -1,4 +1,76 @@
+// Dark Mode Initialization
+document.addEventListener('DOMContentLoaded', function() {
+    // Khởi tạo dark mode từ localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+    const darkModeToggle = document.getElementById('darkModeToggle');
 
+    if (savedTheme === 'dark-mode') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.checked = true;
+    }
+
+    // Toggle dark mode
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', function() {
+            const isDark = this.checked;
+            document.body.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
+            updateTableStyles(isDark);
+        });
+    }
+    
+    // Áp dụng style ban đầu
+    updateTableStyles(savedTheme === 'dark-mode');
+});
+
+// Cập nhật giao diện bảng khi đổi theme
+function updateTableStyles(isDark) {
+    const rows = document.querySelectorAll('.table-row');
+    const header = document.querySelector('.table-header');
+    const controls = document.querySelector('.table-controls');
+    
+    if (isDark) {
+        // Dark mode styles
+        document.body.style.backgroundColor = '#1a202c';
+        document.body.style.color = '#e2e8f0';
+        
+        if (header) {
+            header.style.backgroundColor = '#2d3748';
+            header.style.color = '#e2e8f0';
+        }
+        
+        rows.forEach(row => {
+            row.style.backgroundColor = '#2d3748';
+            row.style.color = '#e2e8f0';
+            row.style.borderColor = '#4a5568';
+        });
+        
+        if (controls) {
+            controls.style.backgroundColor = '#2d3748';
+            controls.style.borderColor = '#4a5568';
+        }
+    } else {
+        // Light mode styles
+        document.body.style.backgroundColor = '';
+        document.body.style.color = '';
+        
+        if (header) {
+            header.style.backgroundColor = '';
+            header.style.color = '';
+        }
+        
+        rows.forEach(row => {
+            row.style.backgroundColor = '';
+            row.style.color = '';
+            row.style.borderColor = '';
+        });
+        
+        if (controls) {
+            controls.style.backgroundColor = '';
+            controls.style.borderColor = '';
+        }
+    }
+}
 
 
 

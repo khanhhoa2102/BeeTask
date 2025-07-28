@@ -19,8 +19,13 @@ public class User {
     private boolean isActive;
     private Timestamp createdAt;
     private String role; // ✅ Thêm role
+    private int assignedTo; // new
 
     public User() {}
+    
+    public int getAssignedTo() {
+        return assignedTo;
+    }
 
     public User(int userId, String username, String email, String passwordHash, String avatarUrl,
                 String phoneNumber, Date dateOfBirth, String gender, String address,

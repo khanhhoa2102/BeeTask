@@ -77,6 +77,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.openAISuggestionModal(taskId, taskTitle, taskDesc, taskDue, taskPriority)
                 })
             })
+            document.querySelectorAll(".ai-resuggest-btn").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    const taskId = button.dataset.taskId;
+                    const taskTitle = button.dataset.taskTitle;
+                    const taskDesc = button.dataset.taskDesc;
+                    const taskDue = button.dataset.taskDue;
+                    const taskPriority = button.dataset.taskPriority;
+
+                    if (!confirm("⚠️ Re-suggest sẽ thay thế gợi ý hiện tại. Tiếp tục?"))
+                        return;
+
+                    fetch(`${window.contextPath}/ai-suggest-reset`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                        body: `taskId=${taskId}`
+                    })
+                            .then((res) => res.json())
+                            .then(result => {
+                                console.log("🔁 Re-suggest result:", result);
+                                if (result.success) {
+                                    // Gọi lại AI như bình thường
+                                    window.openAISuggestionModal(taskId, taskTitle, taskDesc, taskDue, taskPriority);
+                                } else {
+                                    alert("⚠️ Failed to re-suggest");
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Re-suggest error", err);
+                                alert("❌ Failed to re-suggest");
+                            });
+                });
+            });
+
             // Apply AI Suggestion Button in modal
             const applyAISuggestionBtn = document.getElementById("applyAISuggestionBtn")
             if (applyAISuggestionBtn) {
@@ -112,6 +145,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.handleAddBoard(addBoardForm)
                 })
             }
+            document.getElementById("rejectAISuggestionBtn")?.addEventListener("click", () => {
+                const taskId = document.getElementById("rejectAISuggestionBtn").dataset.taskId;
+                if (!taskId || !confirm("Are you sure you want to reject this AI suggestion?"))
+                    return;
+
+                fetch(`${window.contextPath}/ai-suggest-apply?action=reject`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: `taskId=${taskId}`
+                })
+                        .then(res => res.json())
+                        .then(result => {
+                            window.closeAISuggestionModal();
+                            taskManager.showNotification("❌ AI suggestion rejected", "info");
+
+                            const col = document.querySelector(`.table-row[data-task-id="${taskId}"] .ai-suggestion-col`);
+                            if (col)
+                                col.innerHTML = `<span class="ai-no-suggestion text-muted">Rejected</span>`;
+                        })
+                        .catch(err => {
+                            console.error("Failed to reject AI suggestion", err);
+                            taskManager.showNotification("❌ Failed to reject AI suggestion", "error");
+                        });
+            });
         }
         applyTheme(theme) {
             document.body.classList.toggle("dark-mode", theme === "dark-mode")
@@ -362,25 +419,56 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         duplicateBoard(boardId) {
-            if (confirm("Duplicate this board with all its tasks?")) {
-                fetch("board?action=duplicate", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: `boardId=${boardId}`,
-                })
-                        .then((response) => {
-                            if (response.ok) {
-                                location.reload() // Refresh to show new board
-                            } else {
-                                this.showNotification("Error duplicating board", "error")
-                            }
-                        })
-                        .catch((err) => {
-                            console.error("Error duplicating board:", err)
-                            this.showNotification("Error duplicating board", "error")
-                        })
-            }
+            if (!confirm("Duplicate this board and all its tasks?"))
+                return;
+
+
+            fetch("board?action=duplicate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `boardId=${boardId}`,
+            })
+                    .then((response) => {
+                        if (!response.ok)
+                            throw new Error("Failed to duplicate board");
+                        return response.text(); // Bạn có thể dùng JSON nếu muốn trả thêm thông tin
+                    })
+                    .then(() => {
+                        this.showNotification("✅ Board duplicated successfully", "success");
+                        location.reload(); // Load lại để thấy board mới
+                    })
+                    .catch((err) => {
+                        console.error("❌ Error duplicating board:", err);
+                        this.showNotification("❌ Failed to duplicate board", "error");
+                    });
         }
+
+        sortBoardTasks(boardId, sortBy) {
+            const boardContainer = document.querySelector(`.board-card[data-board-id="${boardId}"] .board-tasks`);
+            if (!boardContainer)
+                return;
+            const tasks = Array.from(boardContainer.querySelectorAll(".task-card"));
+
+            tasks.sort((a, b) => {
+                if (sortBy === "dueDate") {
+                    const dateA = new Date(a.dataset.taskDuedate || "9999-12-31");
+                    const dateB = new Date(b.dataset.taskDuedate || "9999-12-31");
+                    return dateA - dateB;
+                } else if (sortBy === "priority") {
+                    const priorityMap = {"High": 1, "Medium": 2, "Low": 3};
+                    const aPriority = priorityMap[a.dataset.taskPriority] || 4;
+                    const bPriority = priorityMap[b.dataset.taskPriority] || 4;
+                    return aPriority - bPriority;
+                }
+                return 0;
+            });
+
+            tasks.forEach(task => boardContainer.appendChild(task)); // Reorder DOM
+            this.showNotification(`🔃 Sorted tasks by ${sortBy}`, "info");
+        }
+        0
         deleteBoard(boardId) {
             console.log("🧪 deleteBoard called with ID:", boardId) // ✅ Thêm dòng này
             if (!confirm("Are you sure you want to delete this board?"))
@@ -408,20 +496,51 @@ document.addEventListener("DOMContentLoaded", () => {
                     })
         }
         applyAISuggestion(taskId, start, end, priority, difficulty, confidence, shortdesc) {
-            if (confirm("Are you sure you want to apply this AI suggestion?")) {
-                // In a real application, you would send an AJAX request to update the task
-                // For now, we'll simulate it and show a notification.
-                console.log("Apply AI Suggestion → Task:", taskId)
-                console.log("Start:", start)
-                console.log("End:", end)
-                console.log("Priority:", priority)
-                console.log("Difficulty:", difficulty)
-                console.log("Confidence:", confidence)
-                console.log("Short Desc:", shortdesc)
-                this.showNotification("✅ AI suggestion applied!", "success")
-                window.closeAISuggestionModal()
-            }
+            if (!confirm("Are you sure you want to apply this AI suggestion?"))
+                return;
+
+            const suggestion = {
+                taskId: parseInt(taskId),
+                title: "",
+                start: start,
+                end: end,
+                priority: priority,
+                difficulty: parseInt(difficulty),
+                confidence: parseFloat(confidence),
+                shortDescription: shortdesc,
+                event: false
+            };
+
+
+            fetch(`${window.contextPath}/ai-suggest-apply`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({schedules: [suggestion]})
+            })
+                    .then(res => res.json())
+                    .then(result => {
+                        this.showNotification("✅ AI suggestion applied!", "success");
+                        window.closeAISuggestionModal();
+
+                        // Tìm ô AI Suggestion trong bảng
+                        const row = document.querySelector(`.table-row[data-task-id="${taskId}"]`);
+                        const col = row?.querySelector(".ai-suggestion-col");
+
+                        if (col) {
+                            col.innerHTML = `
+                <div class="ai-time">
+                    <i class="fas fa-clock"></i>
+                    ${start} → ${end}
+                </div>
+            `;
+                        }
+                    })
+                    .catch(err => {
+                        console.error("❌ Failed to apply suggestion:", err);
+                        this.showNotification("❌ Failed to apply AI suggestion", "error");
+                    });
         }
+
         handleAddTask() {
             const form = document.getElementById("addTaskForm")
             const formData = new FormData(form)
@@ -561,6 +680,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         this.showNotification("❌ Error updating task", "error")
                     })
         }
+
         deleteTask(taskId) {
             if (!confirm("Are you sure you want to delete this task?"))
                 return
@@ -684,6 +804,9 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch(`${window.contextPath}/project?action=getMembers&projectId=${projectId}`)
                     .then((res) => res.json())
                     .then((members) => {
+                        // Save globally
+                        window.projectMembers = members;
+                        
                         const list = document.getElementById("projectMemberList")
                         list.innerHTML = "" // Clear existing members
 
@@ -824,6 +947,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("taskDetailPriority").innerText = priority
         document.getElementById("taskDetailStatus").innerText = status
         document.getElementById("taskDetailModal").style.display = "block"
+        loadAttachmentsForTask(taskId);
+        
     }
     window.closeTaskDetailModal = () => {
         document.getElementById("taskDetailModal").style.display = "none"
@@ -890,49 +1015,57 @@ const styleSheet = document.createElement("style")
 styleSheet.textContent = notificationStyles
 document.head.appendChild(styleSheet)
 window.openAISuggestionModal = (taskId, taskTitle, taskDesc, taskDue, taskPriority) => {
-    console.log("🧪 AI Suggest Clicked:", {taskId, taskTitle, taskDesc, taskDue, taskPriority})
+    console.log("🧪 AI Suggest Clicked:", {taskId, taskTitle, taskDesc, taskDue, taskPriority});
+
     fetch(`${window.contextPath}/ai-suggest-preview`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
         body: `taskId=${taskId}`,
         credentials: "include",
     })
-            .then((res) => res.json())
-            .then((data) => {
-                const suggestion = data.schedules?.[0]
-                if (!suggestion) {
-                    alert("No suggestion received.")
-                    return
+            .then((res) => {
+                if (!res.ok)
+                    throw new Error("Server returned error");
+                return res.json();
+            })
+            .then((suggestion) => {
+                if (!suggestion || !suggestion.start || !suggestion.end) {
+                    alert("No suggestion received.");
+                    return;
                 }
-                // Current info
-                document.getElementById("aiCurrentTaskTitle").innerText = taskTitle
-                document.getElementById("aiCurrentTaskDescription").innerText = taskDesc
-                document.getElementById("aiCurrentTaskDueDate").innerText = taskDue || "N/A"
-                document.getElementById("aiCurrentTaskPriority").innerText = taskPriority || "N/A"
-                // AI Suggestion
-                document.getElementById("aiSuggestedStart").innerText = suggestion.suggestedStartTime || "N/A"
-                document.getElementById("aiSuggestedEnd").innerText = suggestion.suggestedEndTime || "N/A"
-                document.getElementById("aiSuggestedPriority").innerText = suggestion.priority || "N/A"
-                document.getElementById("aiSuggestedDifficulty").innerText = suggestion.difficulty || "N/A"
-                document.getElementById("aiSuggestedConfidence").innerText = suggestion.confidence || "N/A"
-                document.getElementById("aiSuggestedShortDesc").innerText = suggestion.shortDescription || "N/A"
-                const btn = document.getElementById("applyAISuggestionBtn")
-                btn.dataset.taskId = taskId
-                btn.dataset.start = suggestion.suggestedStartTime
-                btn.dataset.end = suggestion.suggestedEndTime
-                btn.dataset.priority = suggestion.priority
-                btn.dataset.difficulty = suggestion.difficulty
-                btn.dataset.confidence = suggestion.confidence
-                btn.dataset.shortdesc = suggestion.shortDescription
-                document.getElementById("aiSuggestionModal").style.display = "block"
+
+                // Thông tin task hiện tại
+                document.getElementById("aiCurrentTaskTitle").innerText = taskTitle;
+                document.getElementById("aiCurrentTaskDescription").innerText = taskDesc;
+                document.getElementById("aiCurrentTaskDueDate").innerText = taskDue || "N/A";
+                document.getElementById("aiCurrentTaskPriority").innerText = taskPriority || "N/A";
+
+                // Thông tin gợi ý từ AI
+                document.getElementById("aiSuggestedStart").innerText = suggestion.start || "N/A";
+                document.getElementById("aiSuggestedEnd").innerText = suggestion.end || "N/A";
+                document.getElementById("aiSuggestedPriority").innerText = suggestion.priority || "N/A";
+                document.getElementById("aiSuggestedDifficulty").innerText = suggestion.difficulty || "N/A";
+                document.getElementById("aiSuggestedConfidence").innerText = Math.round(suggestion.confidence * 100) + "%";
+                document.getElementById("aiSuggestedShortDesc").innerText = suggestion.shortDescription || "N/A";
+
+                // Gán dữ liệu để apply
+                const btn = document.getElementById("applyAISuggestionBtn");
+                btn.dataset.taskId = taskId;
+                btn.dataset.start = suggestion.start;
+                btn.dataset.end = suggestion.end;
+                btn.dataset.priority = suggestion.priority;
+                btn.dataset.difficulty = suggestion.difficulty;
+                btn.dataset.confidence = suggestion.confidence;
+                btn.dataset.shortdesc = suggestion.shortDescription;
+                document.getElementById("rejectAISuggestionBtn").dataset.taskId = taskId;
+                document.getElementById("aiSuggestionModal").style.display = "block";
             })
             .catch((err) => {
-                console.error("AI fetch failed", err)
-                alert("AI suggestion failed.")
-            })
-}
+                console.error("AI fetch failed", err);
+                alert("AI suggestion failed.");
+            });
+};
+
 window.closeAddTaskModal = () => {
     document.getElementById("addTaskModal").style.display = "none"
 }
@@ -942,3 +1075,240 @@ window.closeEditTaskModal = () => {
 window.closeTaskDetailModal = () => {
     document.getElementById("taskDetailModal").style.display = "none"
 }
+
+function assignTask(taskId, selectedUserIds) {
+    fetch('/BeeTask/assign', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            taskId: taskId,
+            userIds: selectedUserIds
+        })
+    })
+            .then(res => {
+                if (res.ok) {
+                    alert('Task assigned successfully');
+                } else {
+                    alert('Failed to assign task');
+                }
+            });
+}
+
+function openAssignModal(taskId, assignedUserIds = []) {
+    console.log(">>> openAssignModal() called with taskId =", taskId);
+    const projectId = new URLSearchParams(window.location.search).get("projectId");
+    if (!projectId) {
+        console.error("No projectId found in URL");
+        return;
+    }
+
+    const assignTaskIdInput = document.getElementById("assignTaskId");
+    const assignModal = document.getElementById("assignModal");
+    const checkboxesContainer = document.getElementById("userCheckboxes");
+
+    // Gán taskId vào hidden input
+    assignTaskIdInput.value = taskId;
+
+    // Xóa các checkbox cũ
+    checkboxesContainer.innerHTML = "<p>Loading members...</p>";
+
+    // Gọi API để lấy danh sách thành viên của project
+    fetch(`${window.contextPath}/project?action=getMembers&projectId=${projectId}`)
+        .then(response => response.json())
+        .then(members => {
+            if (!members || members.length === 0) {
+                checkboxesContainer.innerHTML = "<p>No members found in this project.</p>";
+                return;
+            }
+
+            // Xóa nội dung loading
+            checkboxesContainer.innerHTML = "";
+
+            // Hiển thị checkbox cho từng thành viên
+            members.forEach(member => {
+                const isChecked = assignedUserIds.includes(member.userId);
+                const checkboxWrapper = document.createElement("div");
+                checkboxWrapper.classList.add("form-check", "mb-2");
+                checkboxWrapper.innerHTML = `
+                    <input class="form-check-input" type="checkbox" name="assignees" value="${member.userId}" id="member-${member.userId}" ${isChecked ? 'checked' : ''}>
+                    <label class="form-check-label" for="member-${member.userId}">
+                        ${member.username || member.name}
+                    </label>
+                `;
+                checkboxesContainer.appendChild(checkboxWrapper);
+            });
+
+            assignModal.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error fetching project members:", error);
+            checkboxesContainer.innerHTML = "<p>Error loading members.</p>";
+        });
+}
+
+function closeAssignModal() {
+    document.getElementById("assignModal").style.display = "none";
+}
+
+function submitAssignForm(event) {
+    event.preventDefault(); // Ngăn reload
+
+    const taskId = document.getElementById("assignTaskId").value;
+    const checkboxes = document.querySelectorAll('input[name="assignees"]:checked');
+    const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+    if (!taskId || isNaN(taskId)) {
+        alert("Task ID is invalid.");
+        return;
+    }
+
+    if (userIds.length === 0) {
+        alert("Please select at least one user to assign.");
+        return;
+    }
+
+    fetch('/BeeTask/assign', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({taskId: parseInt(taskId), userIds})
+    })
+            .then(response => response.json())
+            .then(data => {
+                alert("Users assigned successfully!");
+                closeAssignModal();
+                // Optionally refresh or update UI
+            })
+            .catch(error => {
+                console.error("Assignment error:", error);
+                alert("Failed to assign users.");
+            });
+}
+
+document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const messageDiv = document.getElementById("uploadMessage");
+
+    // Xoá nội dung thông báo trước đó
+    messageDiv.textContent = "";
+    messageDiv.style.color = "";
+
+    try {
+        const response = await fetch("/BeeTask/uploadAttachments", {
+            method: "POST",
+            body: formData,
+        });
+
+        const resultText = await response.text();
+
+        if (!response.ok) {
+            throw new Error("Upload failed: " + resultText);
+        }
+
+        let result;
+        try {
+            result = JSON.parse(resultText); // tránh lỗi JSON parse nếu backend trả HTML
+        } catch (parseErr) {
+            throw new Error("Invalid server response");
+        }
+
+        if (result.success && result.fileName) {
+            messageDiv.textContent = "File uploaded successfully.";
+            messageDiv.style.color = "green";
+
+            // Reset form
+            form.reset();
+
+            // Load lại danh sách file
+            const taskId = document.getElementById("uploadTaskId").value;
+            loadAttachmentsForTask(taskId);
+
+            // Đóng modal sau 1.5s
+            setTimeout(() => {
+                closeUploadModal();
+                messageDiv.textContent = "";
+            }, 1500);
+        } else {
+            messageDiv.textContent = "Upload failed. Please try again.";
+            messageDiv.style.color = "red";
+        }
+
+    } catch (error) {
+        console.error("Upload Error:", error);
+        messageDiv.textContent = "An error occurred: " + error.message;
+        messageDiv.style.color = "red";
+    }
+});
+
+function loadAttachmentsForTask(taskId) {
+    fetch(`/BeeTask/uploadAttachments?taskId=${taskId}`)
+            .then(response => {
+                if (!response.ok)
+                    throw new Error("Failed to fetch attachments.");
+                return response.json();
+            })
+            .then(data => {
+                const list = document.getElementById("attachmentFileList");
+                list.innerHTML = "";
+
+                if (data.length === 0) {
+                    list.innerHTML = "<li>No attachments</li>";
+                    return;
+                }
+
+                data.forEach(file => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+        <span>${file.fileName}</span>
+        <button onclick="downloadAttachment('${file.fileUrl}')">Download</button>
+        <button onclick="deleteAttachment(${taskId}, '${file.fileName}')">Delete</button>
+      `;
+                    list.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error("Error loading attachments:", error);
+            });
+}
+
+function deleteAttachment(taskId, filename) {
+    if (confirm("Are you sure you want to delete this attachment?")) {
+        fetch(`file?taskId=${taskId}&filename=${encodeURIComponent(filename)}`, {
+            method: 'DELETE'
+        })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    loadAttachmentsForTask(taskId);
+                })
+                .catch(err => {
+                    console.error("Error deleting file:", err);
+                    alert("Failed to delete file.");
+                });
+    }
+}
+
+function downloadAttachment(fileUrl) {
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = ""; // Hỗ trợ tải trực tiếp nếu server set header đúng
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+
+function openUploadModal(taskId) {
+    document.getElementById("uploadTaskId").value = taskId;
+    document.getElementById("uploadModal").style.display = "block";
+}
+
+function closeUploadModal() {
+    document.getElementById("uploadModal").style.display = "none";
+}
+

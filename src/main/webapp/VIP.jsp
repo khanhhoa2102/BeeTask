@@ -33,18 +33,20 @@
                 <%@include file="./Help.jsp" %>
             </aside>
             <main class="main-content">
-                <div class="main-box">
-                    <div class="checkout">
-                        <div class="product">
-                            <p><strong>Tên sản phẩm:</strong>Tài khoản VIP</p>
-                            <p><strong>Giá tiền:</strong> 2000 VNĐ</p>
-                            <p><strong>Số lượng:</strong> 1</p>
-                        </div>
+                <div class="premium-container">
+                    <div class="premium-card">
+                        <h1>Upgrade to <span class="highlight">VIP</span></h1>
+                        <p class="subtitle">Unlock powerful features to boost your productivity and workflow.</p>
+
+                        <ul class="benefits">
+                            <li>📄 Export reports as PDF</li>
+                            <li>📊 Advanced progress analytics</li>
+                            <li>🤖 Priority access to AI features</li>
+                        </ul>
 
                         <form action="${pageContext.request.contextPath}/payment" method="post">
-                            <button type="submit" id="create-payment-link-btn">
-                                Tạo Link thanh toán
-                            </button>
+                            <input type="hidden" name="amount" value="2000" />
+                            <button type="submit" class="payment-btn">Upgrade Now</button>
                         </form>
                     </div>
                 </div>

@@ -683,9 +683,9 @@ body.dark-mode .calendar-box,
 body.dark-mode .project-header-card,
 body.dark-mode .table-footer,
 body.dark-mode .table-container {
-    background: #2c3e50;
-    border-color: #34495e;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+background: #2c3e50;
+border-color: #34495e;
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-mode .project-header-card::before {
@@ -696,6 +696,7 @@ body.dark-mode .project-info h1.project-title,
 body.dark-mode .meta-item strong,
 body.dark-mode .stats-item strong {
     color: #ecf0f1;
+
 }
 
 body.dark-mode .project-description,

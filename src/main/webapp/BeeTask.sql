@@ -1,5 +1,19 @@
 use BeeTask
 
+-- lệnh tạo thêm thuộc tình để khóa và mở khóa dự án 
+-- Chạy 3 lệnh dưới đây 
+ALTER TABLE Projects
+ADD IsLocked BIT DEFAULT 0;
+
+
+UPDATE Projects
+SET IsLocked = 0
+WHERE IsLocked IS NULL;
+
+
+ALTER TABLE Projects
+ALTER COLUMN IsLocked BIT NOT NULL;
+
 -- ========== USERS ==========
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY,
@@ -75,6 +89,16 @@ CREATE TABLE ProjectMembers (
     CONSTRAINT FK_ProjectMembers_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 
+CREATE TABLE Invitations (
+    InvitationId INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NULL,                            
+    Email VARCHAR(255) NOT NULL,                    -- Email người nhận (duy nhất để đối chiếu)
+    ProjectId INT NOT NULL,
+    Status VARCHAR(20) DEFAULT 'Pending',           -- 'Pending', 'Accepted', 'Declined'
+    SentAt DATETIME DEFAULT GETDATE(),
+    RespondedAt DATETIME
+);
+
 -- ========== TEMPLATES ==========
 CREATE TABLE Templates (
     TemplateId INT PRIMARY KEY IDENTITY,
@@ -134,9 +158,10 @@ CREATE TABLE Boards (
     Name NVARCHAR(100) NOT NULL,
     Description NVARCHAR(255) NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
-    Position INT,
     CONSTRAINT FK_Boards_Projects FOREIGN KEY (ProjectId) REFERENCES Projects(ProjectId)
 );
+ALTER TABLE Boards
+ADD Position INT;
 
 -- ========== BOARD MEMBERS ==========
 CREATE TABLE BoardMembers (
@@ -169,13 +194,15 @@ CREATE TABLE Tasks (
     DueDate DATETIME NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
     CreatedBy INT NOT NULL,
-    Position INT,
-    Priority NVARCHAR(50),
     CONSTRAINT FK_Tasks_Boards FOREIGN KEY (BoardId) REFERENCES Boards(BoardId),
     CONSTRAINT FK_Tasks_Lists FOREIGN KEY (ListId) REFERENCES Lists(ListId),
     CONSTRAINT FK_Tasks_TaskStatuses FOREIGN KEY (StatusId) REFERENCES TaskStatuses(StatusId),
     CONSTRAINT FK_Tasks_Users FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
 );
+ALTER TABLE Tasks
+ADD 
+    Position INT,
+    Priority NVARCHAR(50);
 
 -- =========== TASK APPROVE ============
 CREATE TABLE TaskApprovals (
