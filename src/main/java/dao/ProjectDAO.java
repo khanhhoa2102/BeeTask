@@ -142,6 +142,14 @@ public class ProjectDAO {
                     stmt2.executeUpdate();
                 }
 
+                // 3.5 Xóa ProjectMembers (THÊM ĐOẠN NÀY)
+                String deleteMembersSQL =
+                    "DELETE FROM ProjectMembers WHERE ProjectId = ?";
+                try (PreparedStatement stmtX = conn.prepareStatement(deleteMembersSQL)) {
+                    stmtX.setInt(1, projectId);
+                    stmtX.executeUpdate();
+                }
+
                 // 4. Xóa Project
                 String deleteProjectSQL =
                     "DELETE FROM Projects WHERE projectId = ?";
