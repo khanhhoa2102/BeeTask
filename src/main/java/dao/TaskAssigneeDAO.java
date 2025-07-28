@@ -33,13 +33,15 @@ public class TaskAssigneeDAO {
         }
     }
 
-    public void delete(int taskId, int userId) throws Exception {
-        String sql = "DELETE FROM TaskAssignees WHERE TaskId=? AND UserId=?";
+    public void delete(int taskId, int userId) {
+        String sql = "DELETE FROM TaskAssignees WHERE taskId = ? AND userId = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, taskId);
-            stmt.setInt(2, userId);
-            stmt.executeUpdate();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, taskId);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     
