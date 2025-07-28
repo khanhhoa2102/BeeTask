@@ -66,7 +66,7 @@ class ProjectManager {
           projectCard.classList.add("loading")
 
           // Show notification
-          this.showNotification("Đang mở danh sách task...", "info")
+          this.showNotification("Openning...", "info")
 
           // Navigate immediately (remove the setTimeout delay)
           console.log("Navigating to Task.jsp?projectId=" + projectId)
@@ -196,10 +196,10 @@ class ProjectManager {
           <i class="fas fa-search"></i>
         </div>
         <h3 style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 0.5rem;">
-          Không tìm thấy dự án nào
+          No project found
         </h3>
         <p style="margin: 0;">
-          Thử điều chỉnh từ khóa tìm kiếm
+          Try adjusting search key
         </p>
       `
       this.projectsContainer.appendChild(emptyState)
@@ -304,8 +304,8 @@ function openCreateModal() {
     // Reset form for create
     document.getElementById("formAction").value = "create"
     document.getElementById("projectId").value = ""
-    document.getElementById("modalTitle").innerHTML = '<i class="fas fa-plus-circle"></i> Tạo dự án mới'
-    document.getElementById("submitBtn").innerHTML = '<i class="fas fa-save"></i> Lưu dự án'
+    document.getElementById("modalTitle").innerHTML = '<i class="fas fa-plus-circle"></i> Create new project'
+    document.getElementById("submitBtn").innerHTML = '<i class="fas fa-save"></i> Save'
 
     // Focus first input
     const firstInput = modal.querySelector("#projectName")
@@ -459,7 +459,7 @@ style.textContent = `
   .loading-spinner i {
     animation: spin 1s linear infinite;
   }
-  
+    
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }

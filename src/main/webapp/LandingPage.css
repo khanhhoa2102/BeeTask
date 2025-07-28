@@ -535,4 +535,9 @@ body {
     .templates-grid {
         grid-template-columns: 1fr; /* 1 cột trên mobile */
     }
+a .template-title,
+a .template-description,
+a .template-category {
+    text-decoration: none !important;
+    color: inherit;
 }

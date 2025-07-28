@@ -159,8 +159,8 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal" id="deleteModal">
-    <div class="modal-backdrop"></div>
+<div class="modal" id="deleteModal" style="display: none;">
+    <div class="modal-backdrop" onclick="closeDeleteModal()"></div>
     <div class="modal-container small">
         <div class="modal-header danger">
             <h3>
@@ -192,6 +192,6 @@
     </div>
 </div>
 
-<script src="projects.js"></script>
+<script src="Projects.js"></script>
 </body>
 </html>
