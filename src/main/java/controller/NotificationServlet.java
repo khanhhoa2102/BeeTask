@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import com.google.gson.Gson;
 import dao.NotificationDAO;
+import dao.ProjectNotificationDAO;
 import model.Notification;
 
 /**
@@ -33,10 +34,12 @@ public class NotificationServlet extends HttpServlet {
      */
     
     private NotificationDAO notificationDAO;
-
+    private ProjectNotificationDAO projectNotificationDAO;
+    
     @Override
     public void init() {
         notificationDAO = new NotificationDAO();
+        projectNotificationDAO = new ProjectNotificationDAO();
     }
 
     @Override
@@ -79,18 +82,33 @@ public class NotificationServlet extends HttpServlet {
                 break;
             }
 
-            case "markAllRead": {
-                notificationDAO.markAllAsRead(userId);
-                response.getWriter().write("{\"success\":true, \"message\":\"All marked as read.\"}");
+            case "markAsRead": {
+                int notificationId = Integer.parseInt(request.getParameter("id"));
+                notificationDAO.markAsRead(notificationId);
+                response.getWriter().write("OK");
                 break;
             }
-
-            case "markAllUnread": {
-                notificationDAO.markAllAsUnread(userId);
-                response.getWriter().write("{\"success\":true, \"message\":\"All marked as unread.\"}");
+            case "markAsUnread": {
+                int notificationId = Integer.parseInt(request.getParameter("id"));
+                notificationDAO.markAsUnread(notificationId);
+                response.getWriter().write("OK");
                 break;
             }
             
+            case "markAllRead":{
+                notificationDAO.markAllAsRead(userId);
+                projectNotificationDAO.markAllAsRead(userId);
+                response.getWriter().write("OK");
+                break;
+            }
+            
+            case "markAllUnread":{
+                notificationDAO.markAllAsUnread(userId);
+                projectNotificationDAO.markAllAsUnread(userId);
+                response.getWriter().write("OK");
+                break;
+            }
+
             case "create": {
                 int targetId = Integer.parseInt(request.getParameter("targetId"));
                 String message = request.getParameter("message");
@@ -122,11 +140,12 @@ public class NotificationServlet extends HttpServlet {
             }
             
             case "delete": {
-                int id = Integer.parseInt(request.getParameter("notificationId"));
-                notificationDAO.deleteNotification(id);
-                response.getWriter().write("{\"status\":\"deleted\"}");
+                int notificationId = Integer.parseInt(request.getParameter("id"));
+                notificationDAO.deleteNotification(notificationId);
+                response.getWriter().write("OK");
                 break;
             }
+
 
             default: {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action.");

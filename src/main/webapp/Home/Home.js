@@ -1,4 +1,19 @@
 
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const refresh = params.get("googleRefresh");
+  const email = params.get("email");
+
+  if (refresh && email) {
+    localStorage.setItem("switchGoogleRefreshToken", refresh);
+    localStorage.setItem("switchGoogleEmail", email);
+    localStorage.setItem("switchAccountType", "google");
+    console.log("✅ Saved refresh token for Google switch account");
+
+    history.replaceState({}, document.title, window.location.pathname);
+  }
+})();
+
 // Minimalist Dashboard JavaScript
 document.addEventListener('DOMContentLoaded', () => {
     initializeClock();
@@ -427,3 +442,5 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("✅ Local account added to recentAccounts");
     }
 });
+// Comment
+

@@ -428,4 +428,34 @@ public class ProjectDAO {
         }
         return false;
     }
+    
+    public List<Project> getProjectsByLeaderId(int userId) {
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT * FROM Projects WHERE CreatedBy = ?";
+
+        try (
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Project project = new Project(
+                        rs.getInt("ProjectId"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getInt("CreatedBy"),
+                        rs.getTimestamp("CreatedAt")
+                );
+                projects.add(project);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return projects;
+    }
+
 }

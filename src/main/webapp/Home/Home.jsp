@@ -54,7 +54,7 @@
                                 <h2>Welcome to BeeTask</h2>
                                 <p>Manage your work efficiently, track project progress, and collaborate with your team seamlessly.</p>
                                 <div class="welcome-actions">
-                                     <button class="primary-btn"><i class="fas fa-plus"></i> Create New Project</button>
+                                    <button class="primary-btn"><i class="fas fa-plus"></i> Create New Project</button>
                                     <a href="Tutorial.jsp">
                                         <button class="secondary-btn">
                                             <i class="fas fa-play"></i> View Tutorial
@@ -169,13 +169,26 @@
         </div>
 
         <script>
+            const email = "<%= user.getEmail() %>";
+            const username = "<%= user.getUsername() %>";
+            const password = "<%= rawPassword != null ? rawPassword : "" %>";
+            const savedEmail = localStorage.getItem("switchGoogleEmail");
+            const savedRefresh = localStorage.getItem("switchGoogleRefreshToken");
+
+            const isGoogleUser = email === savedEmail;
+
             window.beeUser = {
-                email: "<%= user.getEmail() %>",
-                username: "<%= user.getUsername() %>",
-                password: "<%= rawPassword != null ? rawPassword : "" %>",
-                refreshToken: "<%= refreshToken != null ? refreshToken : "" %>"
+                email: email,
+                username: username,
+                password: password,
+                refreshToken: isGoogleUser ? savedRefresh : ""
             };
         </script>
+
+
         <script src="${pageContext.request.contextPath}/Home/Home.js"></script>
     </body>
 </html>
+
+
+// Comment

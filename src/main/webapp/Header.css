@@ -14,14 +14,12 @@ body.dark-mode {
 
 /* Container */
 .container {
-    display: flex;
     width: 100%;
     box-sizing: border-box;
 }
 
 /* Sidebar */
-.sidebar {
-    width: 180px;   
+.sidebar { 
     background-color: #ffffff;
     color: #333333;
     display: flex;

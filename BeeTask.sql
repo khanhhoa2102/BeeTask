@@ -1,4 +1,4 @@
-use BeeTask
+use BeeTask;
 
 -- lệnh tạo thêm thuộc tình để khóa và mở khóa dự án 
 -- Chạy 3 lệnh dưới đây 
@@ -318,13 +318,32 @@ CREATE TABLE AISchedules (
 
 -- ========== NOTIFICATIONS ==========
 CREATE TABLE Notifications (
-    NotificationId INT PRIMARY KEY IDENTITY,
+    NotificationId INT PRIMARY KEY IDENTITY(1,1),
     UserId INT NOT NULL,
     Message NVARCHAR(255) NOT NULL,
     IsRead BIT DEFAULT 0,
     CreatedAt DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_Notifications_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
+
+CREATE TABLE ProjectNotifications (
+    ProjectNotificationId INT PRIMARY KEY IDENTITY(1,1),
+	ProjectId INT NOT NULL,
+    Message NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (ProjectId) REFERENCES Projects(ProjectId)
+);
+
+CREATE TABLE ProjectNotificationStatus (
+    UserId INT NOT NULL,
+    ProjectNotificationId INT NOT NULL,
+    IsRead BIT NOT NULL DEFAULT 0,
+    PRIMARY KEY (UserId, ProjectNotificationId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (ProjectNotificationId) REFERENCES ProjectNotifications(ProjectNotificationId)
+);
+
+
 
 -- ========== SEARCH LOGS ==========
 CREATE TABLE SearchLogs (

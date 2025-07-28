@@ -2,8 +2,12 @@
 <%@ page import="model.User" %>
 <%
     User headerUser = (User) session.getAttribute("user");
+    Boolean skipUserIdSet = (Boolean) request.getAttribute("skipUserIdSet");
+
+    if (headerUser != null && (skipUserIdSet == null || !skipUserIdSet)) {
+        session.setAttribute("userId", headerUser.getUserId());
+    }
 %>
-<% session.setAttribute("userId", (Integer)headerUser.getUserId());%>
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -43,12 +47,22 @@
                     <i class="far fa-bell"></i>
                 </button>
                 <div class="notification-dropdown" id="notificationDropdown">
-                    <ul id="notificationList">
-                        <!-- JS will populate list here -->
-                    </ul>
+                    <div class="notification-scrollable">
+                        <div class="notification-section">
+                            <button class="section-toggle" onclick="toggleSection('systemSection')">
+                                ▶ System
+                            </button>
+                            <ul id="systemSection" class="notification-section-content">
+                                <!-- JS will populate system notifications here -->
+                            </ul>
+                        </div>
+                        <div id="notificationList">
+                            <!-- JS will populate project notifications here -->
+                        </div>
+                    </div>
                     <div class="notification-actions">
-                        <button onclick="markAllRead(event)">Mark all read</button>
-                        <button onclick="markAllUnread(event)">Mark all unread</button>
+                        <button onclick="markAllRead()">Mark all read</button>
+                        <button onclick="markAllUnread()">Mark all unread</button>
                         <button onclick="window.location.href='${pageContext.request.contextPath}/ManageNotification.jsp'">Manage</button>
                     </div>
                 </div>
@@ -88,7 +102,7 @@
                             </a>
                             <% if(headerUser.getRole().equalsIgnoreCase("User")) {%>
                             <a href="${pageContext.request.contextPath}/VIP.jsp" class="dropdown-item">
-                                <span>Get VIP</span>
+                                <span>Get Premium</span>
                             </a>
                             <%}%>
                         </div>

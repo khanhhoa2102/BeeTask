@@ -730,6 +730,7 @@
         }
 
         window.onclick = function(event) {
+
             if (event.target.classList.contains('modal')) {
                 closeAddBoardModal();
                 closeAddTaskModal();
