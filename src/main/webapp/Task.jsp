@@ -729,7 +729,8 @@
             window.taskManager.sortBoardTasks(boardId, sortBy);
         }
 
-            window.onclick = function (event) {
+        window.onclick = function(event) {
+
             if (event.target.classList.contains('modal')) {
                 closeAddBoardModal();
                 closeAddTaskModal();

@@ -768,6 +768,9 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch(`${window.contextPath}/project?action=getMembers&projectId=${projectId}`)
                     .then((res) => res.json())
                     .then((members) => {
+                        // Save globally
+                        window.projectMembers = members;
+                        
                         const list = document.getElementById("projectMemberList")
                         list.innerHTML = "" // Clear existing members
 
@@ -908,6 +911,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("taskDetailPriority").innerText = priority
         document.getElementById("taskDetailStatus").innerText = status
         document.getElementById("taskDetailModal").style.display = "block"
+        loadAttachmentsForTask(taskId);
+        
     }
     window.closeTaskDetailModal = () => {
         document.getElementById("taskDetailModal").style.display = "none"
@@ -1057,40 +1062,55 @@ function assignTask(taskId, selectedUserIds) {
 
 function openAssignModal(taskId, assignedUserIds = []) {
     console.log(">>> openAssignModal() called with taskId =", taskId);
-    document.getElementById("assignTaskId").value = taskId;
-    document.getElementById("assignModal").style.display = "block";
-    console.log(">>> assignTaskId.value set =", document.getElementById("assignTaskId").value);
-    
-    const modal = document.getElementById("assignModal");
-    const form = document.getElementById("assignForm");
-    const checkboxesContainer = document.getElementById("userCheckboxes");
 
-    // Set Task ID
-    document.getElementById("assignTaskId").value = taskId;
-
-    // Clear previous checkboxes
-    checkboxesContainer.innerHTML = "";
-
-    // Danh sách user nên được khai báo global từ backend render (hoặc fetch từ API)
-    if (!window.allUsers) {
-        console.error("User list (allUsers) is not loaded.");
+    const projectId = new URLSearchParams(window.location.search).get("projectId");
+    if (!projectId) {
+        console.error("No projectId found in URL");
         return;
     }
 
-    // Render checkbox cho từng user
-    window.allUsers.forEach(user => {
-        const isChecked = assignedUserIds.includes(user.userId);
-        const checkbox = document.createElement("div");
-        checkbox.innerHTML = `
-            <label>
-                <input type="checkbox" name="assignees" value="${user.userId}" ${isChecked ? 'checked' : ''} />
-                ${user.name}
-            </label>
-        `;
-        checkboxesContainer.appendChild(checkbox);
-    });
+    const assignTaskIdInput = document.getElementById("assignTaskId");
+    const assignModal = document.getElementById("assignModal");
+    const checkboxesContainer = document.getElementById("userCheckboxes");
 
-    modal.style.display = "block";
+    // Gán taskId vào hidden input
+    assignTaskIdInput.value = taskId;
+
+    // Xóa các checkbox cũ
+    checkboxesContainer.innerHTML = "<p>Loading members...</p>";
+
+    // Gọi API để lấy danh sách thành viên của project
+    fetch(`${window.contextPath}/project?action=getMembers&projectId=${projectId}`)
+        .then(response => response.json())
+        .then(members => {
+            if (!members || members.length === 0) {
+                checkboxesContainer.innerHTML = "<p>No members found in this project.</p>";
+                return;
+            }
+
+            // Xóa nội dung loading
+            checkboxesContainer.innerHTML = "";
+
+            // Hiển thị checkbox cho từng thành viên
+            members.forEach(member => {
+                const isChecked = assignedUserIds.includes(member.userId);
+                const checkboxWrapper = document.createElement("div");
+                checkboxWrapper.classList.add("form-check", "mb-2");
+                checkboxWrapper.innerHTML = `
+                    <input class="form-check-input" type="checkbox" name="assignees" value="${member.userId}" id="member-${member.userId}" ${isChecked ? 'checked' : ''}>
+                    <label class="form-check-label" for="member-${member.userId}">
+                        ${member.username || member.name}
+                    </label>
+                `;
+                checkboxesContainer.appendChild(checkboxWrapper);
+            });
+
+            assignModal.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error fetching project members:", error);
+            checkboxesContainer.innerHTML = "<p>Error loading members.</p>";
+        });
 }
 
 function closeAssignModal() {

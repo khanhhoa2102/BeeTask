@@ -1,6 +1,5 @@
 package controller;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dao.TaskAttachmentDAO;
 import jakarta.servlet.ServletException;
@@ -23,51 +22,55 @@ import org.json.JSONObject;
                  maxRequestSize = 1024 * 1024 * 50)
 public class UploadAttachmentController extends HttpServlet {
 
-    // Đặt đường dẫn tuyệt đối
-    private static final String UPLOAD_DIR = "C:\\Users\\ACER\\Documents\\Study\\FPT\\Project_BeeTask\\BeeTask\\BeeTaskUploads";
-
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        try {
-            int taskId = Integer.parseInt(request.getParameter("taskId"));
-            Part filePart = request.getPart("file");
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws IOException, ServletException {
+    try {
+        int taskId = Integer.parseInt(request.getParameter("taskId"));
+        Part filePart = request.getPart("file");
 
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            String fileType = filePart.getContentType();
-            int fileSize = (int) filePart.getSize();
-            String uniqueFileName = UUID.randomUUID() + "_" + fileName;
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        String fileType = filePart.getContentType();
+        int fileSize = (int) filePart.getSize();
+        String uniqueFileName = UUID.randomUUID() + "_" + fileName;
 
-            // Lưu file vào thư mục uploads/{taskId}
-            String taskUploadPath = UPLOAD_DIR + File.separator + taskId;
-            File taskUploadDir = new File(taskUploadPath);
-            if (!taskUploadDir.exists()) {
-                taskUploadDir.mkdirs();
-            }
+        // 🆕 Lưu bên ngoài thư mục webapp
+        String projectRoot = System.getProperty("user.dir");
+        String uploadRootPath = projectRoot + File.separator + "BeeTaskUploads";
 
-            String filePath = taskUploadPath + File.separator + uniqueFileName;
-            filePart.write(filePath);
-
-            // Lưu đường dẫn DB dưới dạng: "{taskId}/{uniqueFileName}"
-            TaskAttachment attachment = new TaskAttachment(taskId, taskId + "/" + uniqueFileName, fileName, fileType, fileSize);
-            new TaskAttachmentDAO().insertAttachment(attachment);
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            JsonObject json = new JsonObject();
-            json.addProperty("success", true);
-            json.addProperty("message", "Uploaded");
-            json.addProperty("fileName", fileName);
-            response.getWriter().write(json.toString());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+        File uploadDir = new File(uploadRootPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs(); // Tạo thư mục BeeTaskUploads nếu chưa có
         }
+
+        String taskUploadPath = uploadRootPath + File.separator + taskId;
+        File taskUploadDir = new File(taskUploadPath);
+        if (!taskUploadDir.exists()) {
+            taskUploadDir.mkdirs(); // Tạo thư mục cho task
+        }
+
+        String filePath = taskUploadPath + File.separator + uniqueFileName;
+        filePart.write(filePath);
+
+        TaskAttachment attachment = new TaskAttachment(taskId, taskId + "/" + uniqueFileName, fileName, fileType, fileSize);
+        new TaskAttachmentDAO().insertAttachment(attachment);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("success", true);
+        json.addProperty("message", "Uploaded");
+        json.addProperty("fileName", fileName);
+        response.getWriter().write(json.toString());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
     }
+}
     
     // GET method to load attachments for a given task
     @Override
@@ -90,9 +93,14 @@ public class UploadAttachmentController extends HttpServlet {
             return;
         }
 
-        File taskFolder = new File(UPLOAD_DIR, String.valueOf(taskId));
+        // 🆕 Sử dụng đường dẫn tương đối với thư mục project
+        String projectRoot = System.getProperty("user.dir");
+        String uploadRootPath = projectRoot + File.separator + "BeeTaskUploads";
+        File taskFolder = new File(uploadRootPath, String.valueOf(taskId));
+
         if (!taskFolder.exists() || !taskFolder.isDirectory()) {
             response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().write("[]");
             return;
         }
@@ -106,7 +114,7 @@ public class UploadAttachmentController extends HttpServlet {
                     JSONObject fileObj = new JSONObject();
                     fileObj.put("fileName", file.getName());
 
-                    // Tạo đường dẫn download (dùng servlet khác hoặc chính servlet nếu bạn tích hợp)
+                    // Tạo URL download (giả định bạn có servlet /uploadDownload)
                     String fileUrl = request.getContextPath() + "/uploadDownload"
                             + "?taskId=" + taskId
                             + "&filename=" + URLEncoder.encode(file.getName(), "UTF-8");
