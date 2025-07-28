@@ -18,8 +18,7 @@ import java.util.List;
 
 
 
-
-@WebServlet("/leaderstaticservlet")
+@WebServlet(name = "LeaderStaticServlet", urlPatterns = {"/leaderstaticservlet"})
 public class LeaderStaticServlet extends HttpServlet {
 
     @Override

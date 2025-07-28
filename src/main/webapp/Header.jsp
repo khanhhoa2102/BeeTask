@@ -23,11 +23,6 @@
             </button>
         </div>
 
-        <div class="header-center">
-            <input type="text" class="search-box" placeholder="Search...">
-            <button class="create-btn">Create</button>
-        </div>
-
         <div class="header-right">
             <!-- Dark Mode Toggle -->
             <div class="dark-mode-section">
@@ -66,9 +61,6 @@
                         <button onclick="window.location.href='${pageContext.request.contextPath}/ManageNotification.jsp'">Manage</button>
                     </div>
                 </div>
-                <button class="header-icon-btn" id="helpBtn" title="Help">
-                    <i class="far fa-question-circle"></i>
-                </button>
 
                 <% if (headerUser != null) { %>
                 <!-- User Avatar & Dropdown -->
@@ -106,15 +98,6 @@
                             </a>
                             <%}%>
                         </div>
-
-                        <!-- Workspace -->
-                        <div class="dropdown-section">
-                            <a href="#" class="dropdown-item workspace-item">
-                                <i class="fas fa-users"></i>
-                                <span>Create Workspace</span>
-                            </a>
-                        </div>
-
                         <!-- Help & Logout -->
                         <div class="dropdown-section">
                             <a href="#" class="dropdown-item">
