@@ -59,7 +59,7 @@
                     </p>
                     <div class="hero-buttons">
                         <button class="btn btn-primary btn-large" onclick="window.location.href = 'Authentication/Register.jsp'">Get Started for Free <i class="fas fa-arrow-right"></i></button>
-                        <button class="btn btn-outline btn-large" onclick="window.location.href = 'Home/Tutorial.jsp'">View Demo</button>
+                        <button class="btn btn-outline btn-large" onclick="window.location.href = 'Home/TutorialLanding.jsp'">View Demo</button>
                     </div>
                 </div>
             </div>

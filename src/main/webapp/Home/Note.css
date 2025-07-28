@@ -37,13 +37,22 @@ body.dark-theme {
   margin-bottom: 24px;
 }
 
+
 .notes-title {
   font-size: 1.75rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   gap: 10px;
-  color: inherit;
+  color: #333333;
+}
+body.dark-theme .notes-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
 }
 
 .add-note-btn {

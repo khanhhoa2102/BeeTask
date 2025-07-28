@@ -507,7 +507,7 @@
                 // Set completion callback to redirect to home
                 window.tutorialController.onComplete(() => {
                     setTimeout(() => {
-                        window.location.href = 'Home.jsp';
+                        window.location.href = '<%= request.getContextPath() %>/Authentication/Register.jsp';
                     }, 1500);
                 });
             } else if (tutorialApp) {

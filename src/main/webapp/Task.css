@@ -251,21 +251,25 @@ body.dark-mode .boards-count {
   align-items: center;
 }
 
-.search-box i {
-  position: absolute;
-  left: 0.8rem; /* Adjusted position */
-  color: #a0aec0;
-  z-index: 1;
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1; /* Cho phép mở rộng */
+  min-width: 200px; /* Giới hạn tối thiểu */
+  max-width: 400px; /* Giới hạn tối đa nếu cần */
 }
 
 .search-box input {
   padding: 0.6rem 0.8rem 0.6rem 2.2rem; /* Reduced padding */
+  margin-left: 7%;
   border: 1px solid #e2e8f0;
   border-radius: 0.6rem; /* Reduced radius */
   background: rgba(255, 255, 255, 0.9);
   font-size: 0.8rem; /* Reduced font size */
-  width: 220px; /* Reduced width */
+  width: 90%; /* Reduced width */
   transition: all 0.3s ease;
+  
 }
 
 body.dark-mode .search-box input {
@@ -1681,7 +1685,7 @@ body.dark-mode .ai-suggestion-item p strong {
   }
 
   .search-box input {
-    width: 180px; /* Further reduced width */
+    width: 100%; /* Further reduced width */
   }
 
   .boards-container.grid-view {
@@ -1846,7 +1850,6 @@ body.dark-mode .notification {
 }
 
 .task-assignees span {
-    background-color: #000;
     padding: 2px 6px;
     border-radius: 6px;
     font-size: 12px;

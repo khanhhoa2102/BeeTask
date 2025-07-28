@@ -572,7 +572,7 @@
                         <span class="beetask-nav-text">Home</span>
                     </a>
                 </li>
-                <li class="beetask-nav-item <%= uri.endsWith("/projects.jsp") ? "beetask-active" : "" %>">
+                <li class="beetask-nav-item <%= uri.endsWith("/Projects.jsp") ? "beetask-active" : "" %>">
                     <a href="<%= session.getAttribute("user") == null ? contextPath + "/Authentication/Login.jsp" : contextPath + "/Projects.jsp" %>" class="beetask-nav-link" data-tooltip="Projects">
                         <i class="fas fa-folder-open"></i>
                         <span class="beetask-nav-text">Projects</span>
@@ -589,18 +589,6 @@
             <div class="beetask-divider"></div>
 
             <ul class="beetask-nav-menu">
-                <li class="beetask-nav-item <%= uri.endsWith("/CalendarHome.jsp") ? "beetask-active" : "" %>">
-                    <a href="<%= session.getAttribute("user") == null ? contextPath + "/Authentication/Login.jsp" : contextPath + "/Home/CalendarHome.jsp" %>" class="beetask-nav-link" data-tooltip="Today">
-                        <i class="fas fa-calendar-day"></i>
-                        <span class="beetask-nav-text">Today</span>
-                    </a>
-                </li>
-                <li class="beetask-nav-item <%= uri.endsWith("/Table.jsp") ? "beetask-active" : "" %>">
-                    <a href="<%= session.getAttribute("user") == null ? contextPath + "/Authentication/Login.jsp" : contextPath + "/Home/Table.jsp" %>" class="beetask-nav-link" data-tooltip="Calendar">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span class="beetask-nav-text">Calendar</span>
-                    </a>
-                </li>
                 <li class="beetask-nav-item <%= uri.endsWith("/Note.jsp") ? "beetask-active" : "" %>">
                     <a href="<%= session.getAttribute("user") == null ? contextPath + "/Authentication/Login.jsp" : contextPath + "/notes" %>" class="beetask-nav-link" data-tooltip="Notes">
                         <i class="fas fa-sticky-note"></i>
@@ -612,7 +600,7 @@
             <div class="beetask-divider"></div>
 
             <ul class="beetask-nav-menu">
-                <li class="beetask-nav-item <%= uri.endsWith("/leaderstaticservlet") ? "beetask-active" : "" %>">
+                <li class="beetask-nav-item <%= uri.endsWith("/Statistic.jsp") ? "beetask-active" : "" %>">
                     <a href="<%= session.getAttribute("user") == null ? contextPath + "/Authentication/Login.jsp" : contextPath + "/leaderstaticservlet" %>" class="beetask-nav-link" data-tooltip="Statistics">
                         <i class="fas fa-chart-bar"></i>
                         <span class="beetask-nav-text">Statistics</span>
@@ -626,7 +614,7 @@
         <div class="beetask-footer">
             <ul class="beetask-nav-menu">
                 <li class="beetask-nav-item <%= uri.endsWith("/Setting.jsp") ? "beetask-active" : "" %>">
-                    <a href="${pageContext.request.contextPath}/Home/Setting.jsp" class="beetask-nav-link" data-tooltip="Settings">
+                    <a href="${pageContext.request.contextPath}/account/settings" class="beetask-nav-link" data-tooltip="Settings">
                         <i class="fas fa-cog"></i>
                         <span class="beetask-nav-text">Settings</span>
                     </a>

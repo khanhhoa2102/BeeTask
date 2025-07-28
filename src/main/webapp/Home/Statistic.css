@@ -211,8 +211,6 @@ body.dark-mode .table-container {
     background-color: #1e293b;
     color: #e2e8f0;
     border-color: #334155;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-     border: 2px solid #475569;
 }
 
 body.dark-mode .project-title,

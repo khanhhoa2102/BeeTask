@@ -118,10 +118,6 @@ DateTimeFormatter displayFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"
                                 <i class="fas fa-plus"></i>
                                 Add Board
                             </button>
-                            <button class="btn btn-secondary" onclick="toggleViewMode()">
-                                <i class="fas fa-th-large" id="viewModeIcon"></i>
-                                <span id="viewModeText">Grid View</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -137,14 +133,6 @@ DateTimeFormatter displayFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
                                 <input type="text" placeholder="Search boards..." id="boardSearch">
-                            </div>
-                            <div class="view-toggle">
-                                <button class="view-btn active" data-view="grid" title="Grid View">
-                                    <i class="fas fa-th-large"></i>
-                                </button>
-                                <button class="view-btn" data-view="list" title="List View">
-                                    <i class="fas fa-list"></i>
-                                </button>
                             </div>
                         </div>
                     </div>

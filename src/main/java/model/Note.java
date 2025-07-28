@@ -23,6 +23,7 @@ public class Note {
         this.userId = userId;
         this.labelId = labelId;
     }
+    
 
     // Getters & Setters
     public int getNoteId() {
