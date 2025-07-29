@@ -91,6 +91,16 @@ public class ProjectNotificationServlet extends HttpServlet {
                     projectNotificationDAO.deleteNotificationByUser(userId, id);
                     break;
                 }
+                
+                case "getTotalUnread":{
+                    int total = projectNotificationDAO.getTotalUnreadCount(userId);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    String json = "{\"unreadCount\":" + total + "}";
+                    response.getWriter().write(json);
+                    break;
+                }
 
                 case "getByUserId": {
                     List<ProjectNotification> notifications = projectNotificationDAO.getNotificationsByUserId(userId);
