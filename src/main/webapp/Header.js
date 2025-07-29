@@ -1,3 +1,5 @@
+/* global id */
+
 document.addEventListener('DOMContentLoaded', function() {
     // User Avatar Dropdown functionality
     const userAvatarBtn = document.getElementById('userAvatarBtn');
@@ -153,7 +155,7 @@ function loadNotifications() {
                 deleteBtn.textContent = "Delete";
                 deleteBtn.addEventListener("click", function (e) {
                     e.stopPropagation();
-                    deleteNotification(notification.notificationId);
+                    deleteSysNotification(notification.notificationId);
                 });
 
                 buttonDiv.appendChild(toggleBtn);
@@ -190,6 +192,7 @@ function markAllRead(){
             if (response === "OK") {
                 loadNotifications();
                 loadProjectNotifications();
+                updateUnreadCount();
             }
         });
 }
@@ -201,6 +204,7 @@ function markAllUnread(){
             if (response === "OK") {
                 loadNotifications();
                 loadProjectNotifications();
+                updateUnreadCount();
             }
         });
 }
@@ -210,7 +214,19 @@ function markNotificationAsRead(id) {
         .then(res => res.text())
         .then(response => {
             if (response === "OK") {
-                loadNotifications(); // Reload updated list
+                loadNotifications();
+                updateUnreadCount();
+            }
+        });
+}
+
+function deleteSysNotification(id) {
+    fetch(`${contextPath}/notifications?action=delete&id=${id}`)
+        .then(res => res.text())
+        .then(response => {
+            if (response === "OK") {
+                loadNotifications();
+                updateUnreadCount();
             }
         });
 }
@@ -220,17 +236,8 @@ function markNotificationAsUnread(id) {
         .then(res => res.text())
         .then(response => {
             if (response === "OK") {
-                loadNotifications(); // Reload updated list
-            }
-        });
-}
-
-function deleteNotification(id) {
-    fetch(`${contextPath}/notifications?action=delete&id=${id}`)
-        .then(res => res.text())
-        .then(response => {
-            if (response === "OK") {
-                loadNotifications(); // Refresh after deletion
+                loadNotifications();
+                updateUnreadCount();
             }
         });
 }
@@ -290,19 +297,42 @@ function loadProjectNotifications() {
         });
 }
 
+function updateUnreadCount() {
+    fetch(`${contextPath}/projectnotifications?action=getTotalUnread`)
+        .then(res => res.json())
+        .then(data => {
+            const count = data.unreadCount;
+            const badge = document.getElementById('unreadCountBadge');
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        })
+        .catch(error => {
+            console.error('Error getting unread count:', error);
+        });
+}
+
+
 
 function toggleRead(notificationId, isRead) {
     fetch(`${contextPath}/projectnotifications?action=${isRead ? 'markRead' : 'markUnread'}&id=${notificationId}`)
-            .then(() => loadProjectNotifications());
+            .then(() => {
+                loadProjectNotifications();
+                updateUnreadCount();
+    });
 }
 
 function deleteNotification(notificationId) {
     fetch(`${contextPath}/projectnotifications?action=deleteByUser&id=${notificationId}`)
-        .then(() => loadProjectNotifications());
+        .then(() => {
+            loadProjectNotifications();
+            updateUnreadCount();
+    });
 }
 
 loadNotifications();
 loadProjectNotifications();
+updateUnreadCount();
 
 setInterval(loadNotifications, 30000);
 setInterval(loadProjectNotifications, 30000);
+setInterval(updateUnreadCount, 30000);

@@ -260,3 +260,21 @@ body.dark-mode .notification-actions button:hover {
         transform: translateY(0);
     }
 }
+
+.notificationBtn {
+    position: relative;
+}
+
+.unreadCountBadge {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    background-color: red;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+    display: none; /* Hide if no unread */
+    min-width: 16px;
+    text-align: center;
+}

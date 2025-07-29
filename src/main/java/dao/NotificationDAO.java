@@ -120,6 +120,22 @@ public class NotificationDAO {
 
         return notification;
     }
+    
+    public int getUnreadCount(int userId){
+        String sql = "SELECT COUNT(*) FROM Notifications WHERE userId = ? AND isRead = 0";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 
     // UPDATE (mark as read)

@@ -38,8 +38,9 @@
                 <button class="header-icon-btn" id="bookmarkBtn" title="Bookmarks">
                     <i class="far fa-bookmark"></i>
                 </button>
-                <button class="header-icon-btn" id="notificationBtn" title="Notifications" onclick="toggleDropdown()">
+                <button class="header-icon-btn" id="notificationBtn" title="Notifications" onclick="toggleDropdown()" style="position: relative;">
                     <i class="far fa-bell"></i>
+                    <span id="unreadCountBadge">0</span>
                 </button>
                 <div class="notification-dropdown" id="notificationDropdown">
                     <div class="notification-scrollable">
