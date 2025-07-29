@@ -26,6 +26,7 @@ public class ProjectDAO {
                 project.setDescription(rs.getString("Description"));
                 project.setCreatedBy(rs.getInt("CreatedBy"));
                 project.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                project.setLocked(rs.getBoolean("IsLocked"));
 
                 System.out.println("Found project: " + project.getName());
                 return project;
@@ -191,7 +192,7 @@ public class ProjectDAO {
                 project.setDescription(rs.getString("Description"));
                 project.setCreatedBy(rs.getInt("CreatedBy"));
                 project.setCreatedAt(rs.getTimestamp("CreatedAt"));
-
+project.setLocked(rs.getBoolean("IsLocked"));
                 projects.add(project);
             }
 
@@ -226,7 +227,7 @@ public class ProjectDAO {
                 project.setDescription(rs.getString("Description"));
                 project.setCreatedBy(rs.getInt("CreatedBy"));
                 project.setCreatedAt(rs.getTimestamp("CreatedAt"));
-
+                project.setLocked(rs.getBoolean("IsLocked"));
                 projects.add(project);
             }
 

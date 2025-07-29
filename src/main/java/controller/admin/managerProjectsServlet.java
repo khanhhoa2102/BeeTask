@@ -25,17 +25,46 @@ public class managerProjectsServlet extends HttpServlet {
             if (action != null && projectIdParam != null) {
                 int projectId = Integer.parseInt(projectIdParam);
                 if ("lock".equalsIgnoreCase(action)) {
-                    projectDao.setProjectLockStatus(projectId, true);  // ✅ khóa
+                    projectDao.setProjectLockStatus(projectId, true);  //  khóa
                 } else if ("unlock".equalsIgnoreCase(action)) {
-                    projectDao.setProjectLockStatus(projectId, false); // ✅ mở khóa
+                    projectDao.setProjectLockStatus(projectId, false); // mở khóa
                 }
             }
 
             // Lấy danh sách tất cả các dự án cho admin
             List<ProjectOverview> allProjects = projectDao.getAllProjectsBasicForAdmin();
+            
+            
+            
+            
+                        
+            
+            
+            
+            
+            
+            
+            //Tiềm kiếm  và lọc
+          // Xử lý tìm kiếm / lọc
+        String keyword = request.getParameter("keyword");
+        String lockStatus = request.getParameter("status");
+
+      
+        if ((keyword != null && !keyword.isEmpty()) || (lockStatus != null && !lockStatus.isEmpty())) {
+            allProjects = projectDao.searchProjectsForAdmin(keyword, lockStatus);
+        } else {
+            allProjects = projectDao.getAllProjectsBasicForAdmin();
+        }
+            
+            
+            
+            
+            
+            
+            
 
             request.setAttribute("projects", allProjects);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/Admin/AdminAllProjects.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/Admin/ManagementProject.jsp");
             dispatcher.forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,7 +76,7 @@ public class managerProjectsServlet extends HttpServlet {
     
     
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             int projectId = Integer.parseInt(request.getParameter("projectId"));
             boolean isLocked = Boolean.parseBoolean(request.getParameter("isLocked"));
@@ -59,4 +88,5 @@ public class managerProjectsServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to update lock status.");
         }
     }
+
 }

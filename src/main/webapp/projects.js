@@ -42,39 +42,82 @@ class ProjectManager {
     this.filteredProjects = [...this.projects]
   }
 
-  bindProjectNavigation() {
-    // Handle project card clicks for navigation - Simple and direct approach
-    document.addEventListener("click", (e) => {
-      const projectCard = e.target.closest(".project-card")
+//  bindProjectNavigation() {
+//    // Handle project card clicks for navigation - Simple and direct approach
+//    document.addEventListener("click", (e) => {
+//      const projectCard = e.target.closest(".project-card")
+//
+//      if (projectCard) {
+//        // Don't navigate if clicking on action buttons or their children
+//        if (
+//          e.target.closest(".action-btn") ||
+//          e.target.closest(".card-actions") ||
+//          e.target.classList.contains("action-btn")
+//        ) {
+//          console.log("Clicked on action button, not navigating")
+//          return
+//        }
+//
+//        const projectId = projectCard.dataset.projectId
+//        console.log("Project card clicked, projectId:", projectId)
+//
+//        if (projectId) {
+//          // Add loading state
+//          projectCard.classList.add("loading")
+//
+//          // Show notification
+//          this.showNotification("Đang mở danh sách task...", "info")
+//
+//          // Navigate immediately (remove the setTimeout delay)
+//          console.log("Navigating to Task.jsp?projectId=" + projectId)
+//          window.location.href = `Task.jsp?projectId=${projectId}`
+//        }
+//      }
+//    })
+//  }
 
-      if (projectCard) {
-        // Don't navigate if clicking on action buttons or their children
-        if (
-          e.target.closest(".action-btn") ||
-          e.target.closest(".card-actions") ||
-          e.target.classList.contains("action-btn")
-        ) {
-          console.log("Clicked on action button, not navigating")
-          return
-        }
 
-        const projectId = projectCard.dataset.projectId
-        console.log("Project card clicked, projectId:", projectId)
 
-        if (projectId) {
-          // Add loading state
-          projectCard.classList.add("loading")
 
-          // Show notification
-          this.showNotification("Openning...", "info")
+bindProjectNavigation() {
+  // Handle project card clicks for navigation - Simple and direct approach
+  document.addEventListener("click", (e) => {
+    const projectCard = e.target.closest(".project-card")
 
-          // Navigate immediately (remove the setTimeout delay)
-          console.log("Navigating to Task.jsp?projectId=" + projectId)
-          window.location.href = `Task.jsp?projectId=${projectId}`
-        }
+    if (projectCard) {
+      const isLocked = projectCard.dataset.projectLocked === "true"
+      if (isLocked) {
+        console.log("Project is locked. Navigation disabled.")
+        return
       }
-    })
-  }
+
+      // Don't navigate if clicking on action buttons or their children
+      if (
+        e.target.closest(".action-btn") ||
+        e.target.closest(".card-actions") ||
+        e.target.classList.contains("action-btn")
+      ) {
+        console.log("Clicked on action button, not navigating")
+        return
+      }
+      const projectId = projectCard.dataset.projectId
+      console.log("Project card clicked, projectId:", projectId)
+
+      if (projectId) {
+        projectCard.classList.add("loading")
+        this.showNotification("Đang mở danh sách task...", "info")
+        window.location.href = `Task.jsp?projectId=${projectId}`
+      }
+    }
+  })
+}
+
+
+
+
+
+
+
 
   bindEvents() {
     // Search functionality

@@ -12,7 +12,7 @@
 <head>
     <%@include file="HeaderAdmin.jsp" %>
     <title>BeeTask </title>
-    <link rel="stylesheet" href="TemplatesAdmin.css">
+    <link rel="stylesheet" href="ManagementTemplates.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -43,12 +43,17 @@
             <div class="header-container">
                 <h1 class="page-title"> </h1>
                 <div class="search-container">
-<!--                    <i class="fas fa-search search-icon"></i>-->
-<!--                    <input type="text" id="templateSearch" class="search-input" placeholder="Tìm mẫu">-->
+
                 </div>
             </div>
         </div>
 
+
+            <div class="featured-grid">
+                
+                
+                
+                
         <div class="content">
     <div class="create-board-section">
         <div class="create-board-card" onclick="createNewBoard()">
@@ -61,55 +66,9 @@
             </div>
         </div>
     </div>
-    <div class="categories-section">
-        <div class="categories-grid">
-            <div class="category-item" data-category="business">
-                <div class="category-icon business-gradient">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <span class="category-name">Business</span>
-            </div>
-            <div class="category-item" data-category="design">
-                <div class="category-icon design-gradient">
-                    <i class="fas fa-palette"></i>
-                </div>
-                <span class="category-name">Design</span>
-            </div>
-            <div class="category-item" data-category="education">
-                <div class="category-icon education-gradient">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <span class="category-name">Education</span>
-            </div>
-            <div class="category-item" data-category="development">
-                <div class="category-icon development-gradient">
-                    <i class="fas fa-code"></i>
-                </div>
-                <span class="category-name">Development</span>
-            </div>
-            <div class="category-item" data-category="marketing">
-                <div class="category-icon marketing-gradient">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <span class="category-name">Marketing</span>
-            </div>
-            <div class="category-item" data-category="project">
-                <div class="category-icon project-gradient">
-                    <i class="fas fa-tasks"></i>
-                </div>
-                <span class="category-name">Project Management</span>
-            </div>
-            <div class="category-item" data-category="remote">
-                <div class="category-icon remote-gradient">
-                    <i class="fas fa-home"></i>
-                </div>
-                <span class="category-name">Remote Work</span>
-            </div>
-        </div>
-    </div>
 </div>
-
-            <div class="featured-grid">
+                
+                
             <% for (Template t : templates) { %>
                 <div class="featured-card" data-template-id="<%= t.getTemplateId() %>" data-category="<%= t.getCategory() %>">
                     <div class="card-image">
@@ -118,9 +77,7 @@
                             <button class="overlay-btn" onclick="previewTemplate(<%= t.getTemplateId() %>)" title="Preview">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="overlay-btn" onclick="useTemplate(<%= t.getTemplateId() %>)" title="Use">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                            
                         </div>
                        
                     </div>
@@ -189,21 +146,7 @@
         <textarea id="boardDescription" name="description" class="form-textarea" placeholder="Describe your template ..." rows="3"></textarea>
     </div>
     
-    
-   <div class="form-group">
-    <label for="boardCategory">Category</label>
-    <select id="boardCategory" name="category" class="form-select" onchange="toggleCustomCategory()">
-        <option value="Business">Business</option>
-        <option value="Development">Development</option>
-        <option value="Design">Design</option>
-        <option value="Marketing">Marketing</option>
-        <option value="Education">Education</option>
-        <option value="Project Management">Project Management</option>
-        <option value="Remote Work">Remote Work</option>
-        <option value="Other">Other</option>
-    </select>
-</div>
-    
+  
     
     
 <div class="form-group" id="customCategoryGroup" style="display:none;">
